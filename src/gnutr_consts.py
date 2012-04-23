@@ -14,6 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+"""Default values related to gnutrition version."""
+DISABLED = False
+CHECK_VERSION = True
+CHECK_INTERVAL = 604800   # 60*60*24*7
+LATEST_VERSION = "http://www.gnu.org/software/gnutrition/version"
 
 PLAN = 0
 RECIPE = 1

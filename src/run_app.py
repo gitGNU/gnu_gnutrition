@@ -27,8 +27,9 @@ class RunApp:
         else:
             self.startup()
 
-
     def startup( self):
+        import version
+        version.check_version()
         db_uname = config.get_value( 'Username')
         db_pword = config.get_value( 'Password')
 

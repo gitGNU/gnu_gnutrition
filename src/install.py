@@ -15,6 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 MAJOR_VERSION = 0
-MINOR_VERSION = 31.1
-VERSION = "0.31.1"
-dir = "/usr/local/share/gnutrition"
+MINOR_VERSION = 31
+VERSION = "0.31"
+dir = "/home/tsinclair/local/share/gnutrition"

@@ -52,8 +52,16 @@ class ErrorDialog( gtk.MessageDialog):
             gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, msg)
         self.set_resizable( False)
 
+class NotifyDialog( gtk.MessageDialog):
+    def __init__( self, msg, parent=None):
+        gtk.MessageDialog.__init__( self, parent, 
+            gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING, 
+            gtk.BUTTONS_CLOSE, msg)
+        self.set_resizable( False)
+        self.set_default_response( gtk.RESPONSE_CLOSE)
+
 dlg_dict = { 'warn': WarnDialog, 'error': ErrorDialog, 
-    'question':QuestionDialog}
+    'question':QuestionDialog, 'notify': NotifyDialog}
 
 def Dialog( type, msg, parent=None):
     dlg = dlg_dict[ type]( msg, parent)

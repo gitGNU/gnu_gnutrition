@@ -14,14 +14,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
 import config
 import gtk
 
 class RunApp:
     def __init__( self):
         if not config.get_value( 'Name'):
+            # First run, program default values can be added here
             import druid
+            # Set default version check information
+            import gnutr_consts
+            config.set_key_value('check_disabled', gnutr_consts.CHECK_DISABLED)
+            config.set_key_value('check_version', gnutr_consts.CHECK_VERSION)
+            config.set_key_value('check_interval', gnutr_consts.CHECK_INTERVAL)
+            config.set_key_value('last_check', 0)
             self.druid = druid.Druid( self)
             self.druid.show()
         else:

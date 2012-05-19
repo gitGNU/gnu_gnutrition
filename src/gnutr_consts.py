@@ -1,6 +1,7 @@
 """Default values related to gnutrition version and program default values."""
 #  gnutrition - a nutrition and diet analysis program.
 #  Copyright( C) 2000-2002 Edgar Denny (edenny@skyweb.net)
+#  Copyright (C) 2012 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

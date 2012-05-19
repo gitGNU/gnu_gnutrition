@@ -3,6 +3,7 @@
 #
 #  gnutrition - a nutrition and diet analysis program.
 #  Copyright (C) 2001 Edgar Denny (e.denny@ic.ac.uk)
+#  Copyright (C) 2010 Free SOftware FOundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

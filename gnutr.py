@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # Generated automatically from run-gnutrition.py.in by configure.
 #
-#  gnutrition - a nutrition and diet analysis program.
+#  GNUtrition - a nutrition and diet analysis program.
 #  Copyright (C) 2001 Edgar Denny (e.denny@ic.ac.uk)
 #  Copyright (C) 2010 Free SOftware FOundation, Inc.
 #

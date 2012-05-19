@@ -1,4 +1,4 @@
-#  gnutrition - a nutrition and diet analysis program.
+#  GNUtrition - a nutrition and diet analysis program.
 #  Copyright( C) 2000 - 2002 Edgar Denny (edenny@skyweb.net)
 #  Coprygith (C) 2012 Free Software Foundation, Inc.
 #

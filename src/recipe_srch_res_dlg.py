@@ -98,7 +98,7 @@ class RecipeSrchResDlg:
                     "recipe_no = '%d'" %( recipe.num))
                 recipe.prep_desc = self.db.get_single_result()
 
-                self.db.query( "SELECT amount, msre_no, fd_no FROM " +
+                self.db.query( "SELECT Amount, Msre_No, NDB_No FROM " +
                     "ingredient WHERE recipe_no = '%d'" 
                     %( recipe.num))
                 ingr_list = self.db.get_result()

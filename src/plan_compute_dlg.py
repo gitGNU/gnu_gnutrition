@@ -81,7 +81,7 @@ class PlanComputeDlg:
             self.add_recipe_to_total( tot_list, recipe_num, num_portions)
 
         # get foods in plan within the dates
-        self.db.query( "SELECT amount, msre_no, fd_no FROM " +
+        self.db.query( "SELECT Amount, Msre_No, NDB_No FROM " +
             "food_plan_temp WHERE date >='%s' AND date <='%s'" 
             %( start_date, end_date))
         result = self.db.get_result()
@@ -114,20 +114,20 @@ class PlanComputeDlg:
             tot_list[i] = ( nutr_no, avg)
 
     def get_ingredients( self, recipe_num):
-        self.db.query(  "SELECT amount, msre_no, fd_no FROM " +
+        self.db.query(  "SELECT Amount, Msre_No, NDB_No FROM " +
             "ingredient WHERE recipe_no = '%d'" %( recipe_num))
         return self.db.get_result()
 
     def get_food_nutrients( self, food_num):
-        self.db.query( "SELECT nutr_no, nutr_val FROM nut_data " +
-            "WHERE fd_no = '%d'" %( food_num))
+        self.db.query( "SELECT Nutr_No, Nutr_Val FROM nut_data " +
+            "WHERE NDB_No = '%d'" %( food_num))
         return self.db.get_result()
 
     def get_gm_per_measure( self, food_num, msre_num):
         if int( msre_num) == 99999:
             return 1.0
-        self.db.query( "SELECT wgt_val FROM weight WHERE " +
-            "fd_no = '%d' AND msre_no = '%d'" %( food_num, msre_num))
+        self.db.query( "SELECT Gm_wgt FROM weight WHERE " +
+            "NDB_No = '%d' AND Msre_No = '%d'" %( food_num, msre_num))
         return float( self.db.get_single_result())
 
     def add_food_nutr_comp( self, tot_list, food_num, amount, gm_per_msre):

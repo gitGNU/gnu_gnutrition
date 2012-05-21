@@ -61,7 +61,7 @@ energy_dict = {
 
 
 # rdi_dict = {key: value}
-# key = nutr_no
+# key = Nutr_No
 # value =  ( by_weight, pregnancy, lactation, [( age, male, female)])
 rdi_dict = {
     203: ( 1, 6, 17.5,

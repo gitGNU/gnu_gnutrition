@@ -39,7 +39,6 @@ class Person:
             person_num = 10001
             self.db.query( "INSERT INTO person VALUES ( '%d', '%s', '%s')" 
                 % ( person_num, person_name, user))
-#            result = self.db.query( "SELECT * FROM person;")
         else:
             match = 0
             for name in result:
@@ -59,16 +58,16 @@ class Person:
 
         # create a series of temporary tables
         self.db.query( "CREATE TEMPORARY TABLE food_plan_temp " + 
-            "( person_no SMALLINT(6) UNSIGNED NOT NULL, " + 
+            "(person_no SMALLINT(6) UNSIGNED NOT NULL, " + 
             "date DATE NOT NULL, " +
             "time TIME NOT NULL, " + 
-            "amount FLOAT(7,2), " + 
-            "msre_no MEDIUMINT(5) UNSIGNED NOT NULL, " + 
-            "fd_no SMALLINT(5) UNSIGNED NOT NULL, " +
-            "INDEX (date, time, fd_no) )")
+            "Amount FLOAT(7,2), " + 
+            "Msre_No MEDIUMINT(5) UNSIGNED NOT NULL, " + 
+            "NDB_No SMALLINT(5) UNSIGNED NOT NULL, " +
+            "INDEX (date, time, NDB_No) )")
 
         self.db.query( "CREATE TEMPORARY TABLE recipe_plan_temp " +
-            "( person_no SMALLINT(6) UNSIGNED NOT NULL, " +
+            "(person_no SMALLINT(6) UNSIGNED NOT NULL, " +
             "date DATE NOT NULL, " +
             "time TIME NOT NULL, " +
             "no_portions FLOAT(7,2) NOT NULL, " +

@@ -65,7 +65,7 @@ class NutrGoalDlg:
     def get_goal( self):
         person_no = self.person.get_person_num()
 
-        self.person.db.query( "SELECT nutr_no, goal_val FROM nutr_goal " + 
+        self.person.db.query( "SELECT Nutr_No, goal_val FROM nutr_goal " + 
             "WHERE person_no = '%d'" % ( person_no))
         goal_list = self.person.db.get_result()
 

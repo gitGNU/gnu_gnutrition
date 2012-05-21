@@ -302,7 +302,7 @@ class PlanWin:
             import store
             self.store = store.Store()
 
-        self.db.query( "SELECT time, amount, msre_no, fd_no " +
+        self.db.query( "SELECT time, Amount, Msre_No, NDB_No " +
             "FROM food_plan_temp WHERE date = '%s'" %( date))
         result = self.db.get_result()
 
@@ -356,7 +356,7 @@ class PlanWin:
     def delete_from_plan_temp_db( self, date, food=None, recipe=None):
         if food:
             self.db.query( "DELETE FROM food_plan_temp WHERE " +
-                "date = '%s' AND time = '%s' AND fd_no = '%d'"
+                "date = '%s' AND time = '%s' AND NDB_No = '%d'"
                 %( date, food.time, food.food_num))
         else:
             self.db.query( "DELETE FROM recipe_plan_temp WHERE " +
@@ -366,7 +366,7 @@ class PlanWin:
     def edit_plan_temp_db( self, date, food=None, recipe=None):
         if food:
             self.db.query( "SELECT * FROM food_plan_temp WHERE " +
-                "date = '%s' AND time = '%s' AND fd_no = '%d'"
+                "date = '%s' AND time = '%s' AND NDB_No = '%d'"
                 %( date, food.time, food.food_num))
             data = self.db.get_result()
             # FIXME: catches a bug where two foods have the same name,
@@ -378,7 +378,7 @@ class PlanWin:
                 data
 
             self.db.query( "DELETE FROM food_plan_temp WHERE " +
-                "date = '%s' AND time = '%s' AND fd_no = '%d'"
+                "date = '%s' AND time = '%s' AND NDB_No = '%d'"
                 %( date, food.time, food.food_num))
 
             self.db.query( "INSERT INTO food_plan_temp VALUES ( " +

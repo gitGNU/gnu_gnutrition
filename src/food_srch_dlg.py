@@ -109,17 +109,17 @@ class FoodSrchDlg:
         fg_desc = self.ui.txt_fg_combo.get_active_text()
 
         if self.ui.use_regex_check.get_active():
-            where = "fd_desc REGEXP '%s'" % ( txt)
+            where = "Long_Desc REGEXP '%s'" % (txt)
         else:
-            where = "fd_desc LIKE '%%%s%%'" % ( txt)
+            where = "Long_Desc LIKE '%%%s%%'" % (txt)
             
         if fg_desc == 'All Foods':
-            self.db.query( "SELECT fd_no FROM food_des " +
+            self.db.query( "SELECT NDB_No FROM food_des " +
                 "WHERE %s" % ( where))
         else:
-            fg_num = self.store.fg_desc2num[ fg_desc]
-            self.db.query("SELECT fd_no FROM food_des " +
-                "WHERE fd_gp = '%s' AND %s"
+            fg_num = self.store.fg_desc2num[fg_desc]
+            self.db.query("SELECT NDB_No FROM food_des " +
+                "WHERE FdGrp_Cd = '%s' AND %s"
                 % ( str( fg_num), where))
         result = self.db.get_result()
 
@@ -174,19 +174,19 @@ class FoodSrchDlg:
         for nutr_desc, constraint in constr_list:
             nutr_num = dict[nutr_desc]
             nutr_tot_list.append( (nutr_num, '0.0', constraint))
-            query = query + " nutr_no = '%s' OR" % ( str( nutr_num))
-        query = query + " nutr_no = '208' )"
+            query = query + " Nutr_No = '%s' OR" % ( str( nutr_num))
+        query = query + " Nutr_No = '208' )"
 
         dict = self.store.fg_desc2num
         if fg_desc == 'All Foods':
-            query = ( "SELECT fd_no, nutr_no, nutr_val FROM nut_data " +
+            query = ( "SELECT NDB_No, Nutr_No, Nutr_Val FROM nut_data " +
                 "WHERE " + query)
         else: 
             fg_num = self.store.fg_desc2num[fg_desc]
-            query = ( "SELECT nut_data.fd_no, nutr_no, nutr_val FROM " +
+            query = ( "SELECT nut_data.NDB_No, Nutr_No, Nutr_Val FROM " +
                 "nut_data, food_des WHERE " +
-                "food_des.fd_gp = '" + str( fg_num) + "' AND " +
-                "nut_data.fd_no = food_des.fd_no AND " + query)
+                "food_des.FdGrp_Cd = '" + str( fg_num) + "' AND " +
+                "nut_data.NDB_No = food_des.NDB_No AND " + query)
         self.db.query( query)
         result = self.db.get_result()
 

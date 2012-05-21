@@ -71,6 +71,7 @@ distclean: clean deb-clean rpm-clean
 	rm -f Makefile run-gnutrition.py
 	rm -f config.cache config.log config.status
 	rm -f src/install.py
+	rm -f data/.data_prepped
 
 deb:
 	dpkg-buildpackage -rfakeroot -us -uc

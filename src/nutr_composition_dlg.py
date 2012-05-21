@@ -88,15 +88,15 @@ class NutrCompositionDlg:
 
     def add_food_to_nutr_total( self, amount, msre_num, food_num):
 
-        self.db.query( "SELECT nutr_no, nutr_val FROM nut_data " +
-            "WHERE fd_no ='%d'" % ( food_num))
+        self.db.query( "SELECT Nutr_No, Nutr_Val FROM nut_data " +
+            "WHERE NDB_No ='%d'" % ( food_num))
         list_food_nutr = self.db.get_result()
 
         if int( msre_num) == 99999:
             gm_per_msre = 1.0
         else:
-            self.db.query( "SELECT wgt_val FROM weight " +
-                "WHERE fd_no ='%d' AND msre_no ='%d'" % ( food_num, msre_num))
+            self.db.query( "SELECT Gm_wgt FROM weight " +
+                "WHERE NDB_No ='%d' AND Msre_No ='%d'" % ( food_num, msre_num))
             gm_per_msre = self.db.get_single_result()
 
         for i in range( len( self.list_nutr_tot)):
@@ -158,7 +158,7 @@ class NutrCompositionDlg:
 
         person_num = self.person.get_person_num()
 
-        self.db.query( "SELECT nutr_no, goal_val FROM nutr_goal " +
+        self.db.query( "SELECT Nutr_No, goal_val FROM nutr_goal " +
             "WHERE person_no ='%d'" % ( person_num))
         list_nutr_goal = self.db.get_result()
 

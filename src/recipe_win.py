@@ -182,6 +182,7 @@ Do you wish to save it first?""", self.parent)
         return self.db.get_single_result()
 
     def save_recipe(self, recipe):
+        print 'Saving recipe:', recipe.desc
         self.db.query("""INSERT INTO recipe VALUES
             (NULL, '%s', '%s', '%s', '%s')""" % (recipe.desc,
             recipe.num_serv, str(self.num_ingr), str(recipe.cat_num)))
@@ -238,7 +239,6 @@ or is not a number.""", self.parent)
         recipe = self.get_recipe()
         if not recipe:
             return
-
         recipe.num = self.check_recipe_exists(recipe.desc)
         if recipe.num:
             dlg = gnutr.Dialog('question', 
@@ -248,9 +248,11 @@ in the database. Do you want to overwrite it?""", self.parent)
             if reply == gtk.RESPONSE_YES:
                 dlg.destroy()
                 self.delete_recipe(recipe.desc)
+                self.save_recipe(recipe)
             else:
                 dlg.destroy()
-        self.save_recipe(recipe)
+        else:
+            self.save_recipe(recipe)
 
     def add_ingredient(self, ingr):
         match = 0

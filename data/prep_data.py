@@ -9,7 +9,7 @@ if not path.isfile(weight_orig):
 measure = path.join(pfx, 'MEASURE.txt')
 
 field_dict = {'NDB_No':0, 'Seq':1, 'Amount':2, 'Msre_Desc':3, 'Gm_wgt':4}
-weight_fmt = "%s^%s^%s^%s^%s^%s\n"
+weight_fmt = "%s^%s^%s^%s^%s\n"
 measure_fmt = "%s^%s\n"
 
 measure_out = open(measure, 'w')
@@ -24,7 +24,6 @@ for line in weight_in:
     weight_out.write(weight_fmt % (field_list[field_dict['NDB_No']],
                                    field_list[field_dict['Seq']],
                                    field_list[field_dict['Amount']],
-                                   field_list[field_dict['Msre_Desc']],
                                    Msre_No,
                                    field_list[field_dict['Gm_wgt']]))
 

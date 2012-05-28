@@ -27,6 +27,9 @@ class Database:
             return
     # supress warning on "DROP TABLE IF EXISTS" for temp tables
         warnings.filterwarnings("ignore", "Unknown table.*_temp")
+    # supress 'Data truncated ...' 
+        warnings.filterwarnings("ignore", "Data truncated*")
+
         self.db = MySQLdb.Connect(user=uname, passwd=pword)
         self.cursor = self.db.cursor()
         self.user = uname
@@ -149,8 +152,6 @@ class Database:
             "Seq SMALLINT(2) NOT NULL, " +
             # Amount == Unit modifier (for example, 1 in "1 cup").
             "Amount FLOAT(5,3) NOT NULL, " +
-            # Msre_Desc identifies units of measure (see above)
-            "Msre_Desc CHAR(80) NOT NULL, " +
             "Msre_No MEDIUMINT(6) UNSIGNED NOT NULL, " +
             "Gm_wgt FLOAT(7,1) NOT NULL, " +
             "INDEX (NDB_No, Seq) " +
@@ -235,7 +236,7 @@ class Database:
         self.cursor = self.db.cursor()
         return 1
 
-    def query(self, query):
+    def query(self, query, caller=None):
         try:
             self.cursor.execute(query)
         except MySQLdb.Error, sqlerr:
@@ -244,6 +245,7 @@ class Database:
             import traceback
             import sys
             traceback.print_exc()
+            if caller: print 'Caller ', caller
             sys.exit()
         self.result = self.cursor.fetchall()
         self.rows = self.db.affected_rows()

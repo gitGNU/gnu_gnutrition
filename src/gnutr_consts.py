@@ -25,7 +25,6 @@ CHECK_INTERVAL = 604800   # 60*60*24*7
 LATEST_VERSION = "http://www.gnu.org/software/gnutrition/version"
 
 PLAN = 0
-FOOD_PLAN_FMT_STR = "'%d','%s','%s','%d','%d','%f','%s'"
 RECIPE = 1
 FOOD = 2
 

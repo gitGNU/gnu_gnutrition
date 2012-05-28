@@ -98,6 +98,7 @@ class BaseWinUI:
 A Diet and Nutrition Analysis Program
 
 (C) 2002 Edgar Denny
+(C) 2010 2012 Free Software Foundation, Inc.
 
 http://www.gnu.org/software/gnutrition/""" % (install.VERSION))
         about_label.set_justify(gtk.JUSTIFY_CENTER)

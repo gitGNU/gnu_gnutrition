@@ -55,25 +55,25 @@ class GnutrComboBox(gtk.ComboBox):
                 return True
             it = model.iter_next(it)
 
-class GnutrToolbar( gtk.Toolbar):
-    def __init__( self):
-        gtk.Toolbar.__init__( self)
-        self.set_show_arrow( False)
+class GnutrToolbar(gtk.Toolbar):
+    def __init__(self):
+        gtk.Toolbar.__init__(self)
+        self.set_show_arrow(False)
 
-    def append_button( self, stock_id, label, gtk_tooltips, tooltip):
+    def append_button(self, stock_id, label, gtk_tooltips, tooltip):
         icon = gtk.Image()
-        icon.set_from_stock( stock_id, gtk.ICON_SIZE_LARGE_TOOLBAR)
-        button = gtk.ToolButton( icon, label)
-        button.set_tooltip( gtk_tooltips, tooltip)
-        self.insert( button, -1)
+        icon.set_from_stock(stock_id, gtk.ICON_SIZE_LARGE_TOOLBAR)
+        button = gtk.ToolButton(icon, label)
+        button.set_tooltip(gtk_tooltips, tooltip)
+        self.insert(button, -1)
         return button
 
 class GnutrImageMenuItem(gtk.ImageMenuItem):
-    def __init__( self, label_text, stock_image):
-        gtk.ImageMenuItem.__init__( self, label_text)
+    def __init__(self, label_text, stock_image):
+        gtk.ImageMenuItem.__init__(self, label_text)
         icon = gtk.Image()
-        icon.set_from_stock( stock_image, gtk.ICON_SIZE_MENU)
-        self.set_image( icon)
+        icon.set_from_stock(stock_image, gtk.ICON_SIZE_MENU)
+        self.set_image(icon)
 
 
 class GnutrComboBoxEntry(gtk.ComboBoxEntry):

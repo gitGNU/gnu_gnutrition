@@ -31,9 +31,7 @@ install: data_prep
 	${INSTALL} -m 644 -c *.txt ${datadir}/data
 
 data_prep: 
-	@if [ ! -f .data_prepped ]; then \
-		./prep_data_files.sh ; \
-	fi
+	./prep_data_files.sh *.txt
 
 uninstall:
 	rm -f ${datadir}/data/*.txt
@@ -42,4 +40,4 @@ uninstall:
 clean:
 
 dist_clean: clean
-	rm -f Makefile .data_prepped
+	rm -f Makefile

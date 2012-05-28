@@ -1,5 +1,5 @@
 #  GNUtrition - a nutrition and diet analysis program.
-#  Copyright( C) 2000-2002 Edgar Denny (edenny@skyweb.net)
+#  Copyright(C) 2000-2002 Edgar Denny (edenny@skyweb.net)
 #  Copyright (C) 2010 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -23,42 +23,42 @@ import store
 import help
 
 class RecipeSrchDlg:
-    def __init__( self, app):
+    def __init__(self, app):
         self.ui = recipe_srch_dlg_ui.RecipeSrchDlgUI()
         self.app = app
         self.store = store.Store()
 
-        self.ui.dialog.connect( 'response', self.on_response)
-        self.ui.category_combo.set_rows( self.store.cat_desc_tuple, 0)
+        self.ui.dialog.connect('response', self.on_response)
+        self.ui.category_combo.set_rows(self.store.cat_desc_tuple, 0)
 
-    def show( self):
+    def show(self):
         self.ui.dialog.vbox.show_all()
         self.ui.dialog.run()
 
-    def on_response( self, w, r, d=None):
+    def on_response(self, w, r, d=None):
         if r == gtk.RESPONSE_HELP:
-            help.open( '')
+            help.open('')
         elif r == gtk.RESPONSE_OK:
             result_list = self.get_search_match()
             if not result_list:
-                gnutr.Dialog( 'warn', 'No recipe found.')
+                gnutr.Dialog('warn', 'No recipe found.')
                 return
 
-            if not hasattr( self, 'recipe_srch_res_dlg'):
+            if not hasattr(self, 'recipe_srch_res_dlg'):
                 import recipe_srch_res_dlg
                 self.recipe_srch_res_dlg = \
-                    recipe_srch_res_dlg.RecipeSrchResDlg( self.app)
-                self.recipe_srch_res_dlg.ui.dialog.connect( 'hide', 
+                    recipe_srch_res_dlg.RecipeSrchResDlg(self.app)
+                self.recipe_srch_res_dlg.ui.dialog.connect('hide', 
                     self.on_hide)
-            self.recipe_srch_res_dlg.show( result_list, gnutr_consts.RECIPE)
+            self.recipe_srch_res_dlg.show(result_list, gnutr_consts.RECIPE)
         elif r == gtk.RESPONSE_CANCEL or r == gtk.RESPONSE_DELETE_EVENT:
             self.ui.dialog.hide()
 
-    def on_hide( self, w, d=None):
+    def on_hide(self, w, d=None):
         self.ui.dialog.hide()
 
-    def get_search_match( self):
-        if not hasattr( self, 'db'):
+    def get_search_match(self):
+        if not hasattr(self, 'db'):
             import database
             self.db = database.Database()
 
@@ -69,14 +69,14 @@ class RecipeSrchDlg:
             return None;
 
         if cat_desc == 'All':
-            self.db.query( "SELECT recipe_no, recipe_name " +
+            self.db.query("SELECT recipe_no, recipe_name " +
                 "FROM recipe WHERE recipe_name REGEXP '%s'" %(srch_text))
             result_list = self.db.get_result()
         else:
             dict = self.store.cat_desc2num
             cat_num = dict[cat_desc]
-            self.db.query( ("SELECT recipe_no, recipe_name " +
+            self.db.query(("SELECT recipe_no, recipe_name " +
                 "FROM recipe WHERE category_no = '%d' " +
-                "AND recipe_name REGEXP '%s'") %( cat_num, srch_text))
+                "AND recipe_name REGEXP '%s'") %(cat_num, srch_text))
             result_list = self.db.get_result()
         return result_list

@@ -1,5 +1,5 @@
 #  GNUtrition - a nutrition and diet analysis program.
-#  Copyright( C) 2000 - 2002 Edgar Denny (edenny@skyweb.net)
+#  Copyright(C) 2000 - 2002 Edgar Denny (edenny@skyweb.net)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,11 +21,11 @@ import os
 dir = os.environ['HOME'] + '/.gnutrition'
 fn = dir + '/config'
 
-if not os.access( dir, os.F_OK):
-    os.mkdir( dir)
+if not os.access(dir, os.F_OK):
+    os.mkdir(dir)
 
-def get_value( key):
-    db = shelve.open( fn, 'c')
+def get_value(key):
+    db = shelve.open(fn, 'c')
     try:
         value = db[key]
     except KeyError:
@@ -33,7 +33,7 @@ def get_value( key):
     db.close()
     return value
 
-def set_key_value( key, value):
-    db = shelve.open( fn)
+def set_key_value(key, value):
+    db = shelve.open(fn)
     db[key] = value
     db.close()

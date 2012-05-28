@@ -1,5 +1,5 @@
 #  GNUtrition - a nutrition and diet analysis program.
-#  Copyright( C) 2000-2002 Edgar Denny (edenny@skyweb.net)
+#  Copyright(C) 2000-2002 Edgar Denny (edenny@skyweb.net)
 #  Copyright (C) 2010 2012 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -19,53 +19,53 @@
 import gobject
 import gtk
 
-class Recipe( gobject.GObject):
-    def __init__( self):
+class Recipe(gobject.GObject):
+    def __init__(self):
         self.__gobject_init__()
 
-gobject.type_register( Recipe)
+gobject.type_register(Recipe)
 
-class Ingredient( gobject.GObject):
-    def __init__( self):
+class Ingredient(gobject.GObject):
+    def __init__(self):
         self.__gobject_init__()
 
-gobject.type_register( Ingredient)
+gobject.type_register(Ingredient)
 
-class WarnDialog( gtk.MessageDialog):
-    def __init__( self, msg, parent=None):
-        gtk.MessageDialog.__init__( self, parent, 
+class WarnDialog(gtk.MessageDialog):
+    def __init__(self, msg, parent=None):
+        gtk.MessageDialog.__init__(self, parent, 
             gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING, 
             gtk.BUTTONS_CLOSE, msg)
-        self.set_resizable( False)
-        self.set_default_response( gtk.RESPONSE_CLOSE)
+        self.set_resizable(False)
+        self.set_default_response(gtk.RESPONSE_CLOSE)
 
-class QuestionDialog( gtk.MessageDialog):
-    def __init__( self, msg, parent=None):
-        gtk.MessageDialog.__init__( self, parent, 
+class QuestionDialog(gtk.MessageDialog):
+    def __init__(self, msg, parent=None):
+        gtk.MessageDialog.__init__(self, parent, 
             gtk.DIALOG_DESTROY_WITH_PARENT,
             gtk.MESSAGE_WARNING, gtk.BUTTONS_YES_NO, msg)
-        self.set_resizable( False)
+        self.set_resizable(False)
 
-class ErrorDialog( gtk.MessageDialog):
-    def __init__( self, msg, parent=None):
-        gtk.MessageDialog.__init__( self, parent, 
+class ErrorDialog(gtk.MessageDialog):
+    def __init__(self, msg, parent=None):
+        gtk.MessageDialog.__init__(self, parent, 
             gtk.DIALOG_DESTROY_WITH_PARENT,
             gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, msg)
-        self.set_resizable( False)
+        self.set_resizable(False)
 
-class NotifyDialog( gtk.MessageDialog):
-    def __init__( self, msg, parent=None):
-        gtk.MessageDialog.__init__( self, parent, 
+class NotifyDialog(gtk.MessageDialog):
+    def __init__(self, msg, parent=None):
+        gtk.MessageDialog.__init__(self, parent, 
             gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING, 
             gtk.BUTTONS_CLOSE, msg)
-        self.set_resizable( False)
-        self.set_default_response( gtk.RESPONSE_CLOSE)
+        self.set_resizable(False)
+        self.set_default_response(gtk.RESPONSE_CLOSE)
 
 dlg_dict = { 'warn': WarnDialog, 'error': ErrorDialog, 
     'question':QuestionDialog, 'notify': NotifyDialog}
 
-def Dialog( type, msg, parent=None):
-    dlg = dlg_dict[ type]( msg, parent)
+def Dialog(type, msg, parent=None):
+    dlg = dlg_dict[ type](msg, parent)
     if type == 'question':
         return dlg
     dlg.run()

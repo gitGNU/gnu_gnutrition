@@ -28,4 +28,4 @@ while [ $# -gt 0 ]; do
 	mv ${1}.tmp ${1}
 	shift 1
 done
-touch .data_prepped
+./prep_data.py

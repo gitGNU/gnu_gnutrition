@@ -1,5 +1,5 @@
 # GNUtrition - a nutrition and diet analysis program.
-# Copyright( C) 2000-2002 Edgar Denny (edenny@skyweb.net)
+# Copyright (C) 2000-2002 Edgar Denny (edenny@skyweb.net)
 # Copyright (C) 2010 2012 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ class Database:
         self.__dict__ = self._shared_state
         if self._shared_state:
             return
-	# supress warning on "DROP TABLE IF EXISTS" for temp tables
+    # supress warning on "DROP TABLE IF EXISTS" for temp tables
         warnings.filterwarnings("ignore", "Unknown table.*_temp")
         self.db = MySQLdb.Connect(user=uname, passwd=pword)
         self.cursor = self.db.cursor()
@@ -78,13 +78,11 @@ class Database:
             "Ref_desc CHAR(135), " + 
             "Refuse SMALLINT(3), " + 
             "SciName CHAR(65), " + 
-            # "n_fac_Pts SMALLINT(3) NOT NULL, " +
             "N_Factor FLOAT(4,2), " +
             "Pro_Factor FLOAT(4,2), " + 
             "Fat_Factor FLOAT(4,2), " + 
             "CHO_Factor FLOAT(4,2), " + 
             "INDEX (NDB_No), INDEX (FdGrp_Cd) " +
-#            ",CONSTRAINT fk_food_des_fd_group FOREIGN KEY fk_food_des_FdGrp_Cd (FdGrp_Cd) REFERENCES fd_group(FdGrp_Cd)) " +
             ") ENGINE=InnoDB", 'food_des')
 
         # Create Food Group Description (fd_group) table.
@@ -119,8 +117,6 @@ class Database:
             "CC CHAR(1), " +
             # end new fields
             "INDEX (NDB_No, Nutr_No) " +
-#            ",CONSTRAINT fk_nut_data_food_des FOREIGN KEY (NDB_No) REFERENCES food_des(NDB_No), " +
-#            "CONSTRAINT fk_nut_data_nutr_def FOREIGN KEY (NDB_No) REFERENCES nutr_def(Nutr_No) " +
             ") " +
             "ENGINE=InnoDB", 'nut_data')
 
@@ -133,39 +129,39 @@ class Database:
             "NutrDesc CHAR(60) NOT NULL, " +
             # Two new in sr24
             "Num_Dec SMALLINT(1) NOT NULL, " +
-            "SR_Order MEDIUMINT(6)  NOT NULL, " +
+            "SR_Order MEDIUMINT(6) NOT NULL, " +
             #
             "INDEX (Nutr_No)) " +
             "ENGINE=InnoDB", 'nutr_def')
 
-        # Create weight table.
+        # Create temporary weight table.
         # Data file WEIGHT.
-        self.create_load_table("CREATE TABLE weight " +
+        self.create_load_table("CREATE TABLE weight" +
             "(NDB_No SMALLINT(5) UNSIGNED NOT NULL, " +
-#            Not in sr24; refers to a file not among USDA sr24 database files
-#            "Msre_No MEDIUMINT(5) UNSIGNED NOT NULL, " +
-            # New in sr24
+            # Seq == Sequence number for measure description (Msre_Desc)
+            # The NDB_No for a food item will appear once for each measure
+            # description. Measure descriptions are sequenced. For example:
+            # NDB_No Seq Amount Msre_Desc                Gm_wgt
+            # 01001   1    1     cup                       227
+            # 01001   2    1     tbsp                       14.2
+            # 01001   3    1     pat (1" sq, 1/3" high)      5.0
+            # 01001   4    1     stick                     113
             "Seq SMALLINT(2) NOT NULL, " +
+            # Amount == Unit modifier (for example, 1 in "1 cup").
             "Amount FLOAT(5,3) NOT NULL, " +
-            # This 'replaces' Msre_No commented above 
+            # Msre_Desc identifies units of measure (see above)
             "Msre_Desc CHAR(80) NOT NULL, " +
-            # end New
+            "Msre_No MEDIUMINT(6) UNSIGNED NOT NULL, " +
             "Gm_wgt FLOAT(7,1) NOT NULL, " +
-            # New in sr24
-            "Num_Data_Pts SMALLINT(3), " +
-            "Std_Dev FLOAT(7,3), " +
             "INDEX (NDB_No, Seq) " +
-#            ",CONSTRAINT fk_weight_measure FOREIGN KEY (Msre_No) REFERENCES measure(Msre_No) " +
             ")ENGINE=InnoDB", 'weight')
 
-# Measure Description File is no longer one of the USDA database files.
-# Msre_Desc (renamed Msre_Desc) is included directly in weight table above.
         # create measure table
-#        self.create_load_table( "CREATE TABLE measure " + 
-#            "( Msre_No MEDIUMINT( 5) UNSIGNED NOT NULL, " + 
-#            "Msre_Desc CHAR( 120) NOT NULL, " + 
-#            "INDEX( Msre_No) ) " +
-#            "ENGINE=InnoDB", 'measure')
+        self.create_load_table("CREATE TABLE measure " +
+            "(Msre_No MEDIUMINT(6) UNSIGNED NOT NULL, " +
+            "Msre_Desc CHAR(80) NOT NULL, " +
+            "INDEX(Msre_No) ) " +
+            "ENGINE=InnoDB", 'measure')
 
         # create recipe table
         self.create_table("CREATE TABLE recipe " +
@@ -176,16 +172,16 @@ class Database:
             "category_no TINYINT(3) UNSIGNED NOT NULL, " +
             "PRIMARY KEY (recipe_no), " +
             "INDEX (recipe_name(20), category_no)) " +
-            "ENGINE=InnoDB")
+            "ENGINE=InnoDB", 'recipe')
 
         # create ingredient table
         self.create_table("CREATE TABLE ingredient " + 
             "(recipe_no MEDIUMINT(6) NOT NULL, " + 
-            "Amount FLOAT(7,2) NOT NULL, " +
+            "amount FLOAT(7,2) NOT NULL, " +
             "Msre_No MEDIUMINT(5) UNSIGNED NOT NULL, " +
             "NDB_No SMALLINT(5) UNSIGNED NOT NULL, " +
             "INDEX (recipe_no)) " +
-            "ENGINE=InnoDB")
+            "ENGINE=InnoDB", 'ingredient')
 
         # create recipe category table
         self.create_load_table("CREATE TABLE category " +
@@ -200,7 +196,7 @@ class Database:
             "prep_time CHAR(50), " +
             "prep_desc TEXT, " +
             "INDEX (recipe_no)) " +
-            "ENGINE=InnoDB")
+            "ENGINE=InnoDB", 'preparation')
 
         # create person table
         self.create_table("CREATE TABLE person " +
@@ -208,17 +204,17 @@ class Database:
             "PRIMARY KEY, " +
             "person_name CHAR(100), INDEX person_name (person_name(10)), " +
             "user_name CHAR(50)) " +
-            "ENGINE=InnoDB")
+            "ENGINE=InnoDB", 'person')
 
         # create food_plan table
         self.create_table("CREATE TABLE food_plan " +
             "(person_no SMALLINT(6) UNSIGNED NOT NULL, " +
             "date DATE NOT NULL, " +
             "time TIME NOT NULL, " +
-            "Amount FLOAT(7,2) NOT NULL, " +
-            "Msre_No MEDIUMINT(5) UNSIGNED NOT NULL, " +
-            "NDB_No SMALLINT(5) UNSIGNED NOT NULL) " +
-            "ENGINE=InnoDB")
+            "amount FLOAT(7,2) NOT NULL, " +
+            "Msre_No MEDIUMINT(6) NOT NULL, " +
+            "Ndb_No SMALLINT(5) UNSIGNED NOT NULL) " +
+            "ENGINE=InnoDB", 'food_plan')
 
         # create recipe_plan table
         self.create_table("CREATE TABLE recipe_plan " +
@@ -227,14 +223,14 @@ class Database:
             "time TIME NOT NULL, " +
             "no_portions FLOAT(7,2) NOT NULL, " +
             "recipe_no MEDIUMINT(6) UNSIGNED NOT NULL) " +
-            "ENGINE=InnoDB")
+            "ENGINE=InnoDB", 'recipe_plan')
 
         # create nutr_goal table
         self.create_table("CREATE TABLE nutr_goal " +
             "(person_no SMALLINT(6) UNSIGNED NOT NULL, " +
             "Nutr_No SMALLINT(3) UNSIGNED NOT NULL, " +
             "goal_val FLOAT(11,4) NOT NULL) " +
-            "ENGINE=InnoDB")
+            "ENGINE=InnoDB", 'nutr_goal')
         self.cursor.close()
         self.cursor = self.db.cursor()
         return 1
@@ -244,9 +240,7 @@ class Database:
             self.cursor.execute(query)
         except MySQLdb.Error, sqlerr:
             print 'Error :', sqlerr, '\nquery:', query
-
             self.cursor.execute('SHOW ERRORS');
-            print self.get_result()
             import traceback
             import sys
             traceback.print_exc()
@@ -254,6 +248,7 @@ class Database:
         self.result = self.cursor.fetchall()
         self.rows = self.db.affected_rows()
         self.db.commit()
+#        return self.get_result()
 
     def get_result(self):
         result = self.result
@@ -285,15 +280,20 @@ class Database:
         print 'Error: not a single value'
         return None
 
-    def create_table(self, query):
+    def create_table(self, query, tablename):
         self.query(query)
+        print "table created: ", tablename
 
-    def create_load_table(self, query, table):
-        self.query(query)
-        fn = install.dir + '/data/' + table.upper() + '.txt'
+    def load_table(self, fn, table):
         self.query("LOAD DATA LOCAL INFILE '"+ fn + "' " +
             "INTO TABLE " + table + " FIELDS TERMINATED BY '^'")
-        print "table created: ", table
+
+    def create_load_table(self, query, filename):
+        from os import path
+        self.create_table(query, filename)
+        fn = path.join(install.dir,'data',filename.upper() + '.txt')
+        self.load_table(fn, filename)
+        print "table loaded: ", filename
 
     def add_user(self, user, password):
         self.query("GRANT USAGE ON *.* TO " + user +

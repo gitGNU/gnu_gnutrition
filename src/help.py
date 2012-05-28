@@ -1,5 +1,5 @@
 #  GNUtrition - a nutrition and diet analysis program.
-#  Copyright( C) 2000-2002 Edgar Denny (edenny@skyweb.net)
+#  Copyright(C) 2000-2002 Edgar Denny (edenny@skyweb.net)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,11 +20,11 @@ import install
 import os
 import string
 
-def test_access( file):
-    path_list = string.split( os.environ['PATH'], ':')
+def test_access(file):
+    path_list = string.split(os.environ['PATH'], ':')
     for p in path_list:
-        if os.path.exists( p):
-            a = os.access( p + '/' + file, os.F_OK | os.X_OK)
+        if os.path.exists(p):
+            a = os.access(p + '/' + file, os.F_OK | os.X_OK)
             if a:
                 return 1
     return 0
@@ -32,18 +32,18 @@ def test_access( file):
 def get_browser():
     browser_list = ['galeon', 'mozilla', 'lynx']
     for b in browser_list:
-        if test_access( b):
-            browser = webbrowser.GenericBrowser( b + ' %s')
-            webbrowser.register( b, None, browser)
+        if test_access(b):
+            browser = webbrowser.GenericBrowser(b + ' %s')
+            webbrowser.register(b, None, browser)
             return b
     print 'No Web browser found.'
     return ''
 
-def open( html_page):
+def open(html_page):
     url = 'file://' + install.dir + '/doc/' + html_page
 
     if selected_browser:
-        controller = webbrowser.get( selected_browser)
-        controller.open( url)
+        controller = webbrowser.get(selected_browser)
+        controller.open(url)
 
 selected_browser = get_browser()

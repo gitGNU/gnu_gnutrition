@@ -1,6 +1,6 @@
 """Default values related to gnutrition version and program default values."""
 #  GNUtrition - a nutrition and diet analysis program.
-#  Copyright( C) 2000-2002 Edgar Denny (edenny@skyweb.net)
+#  Copyright(C) 2000-2002 Edgar Denny (edenny@skyweb.net)
 #  Copyright (C) 2012 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -25,6 +25,7 @@ CHECK_INTERVAL = 604800   # 60*60*24*7
 LATEST_VERSION = "http://www.gnu.org/software/gnutrition/version"
 
 PLAN = 0
+FOOD_PLAN_FMT_STR = "'%d','%s','%s','%d','%d','%f','%s'"
 RECIPE = 1
 FOOD = 2
 

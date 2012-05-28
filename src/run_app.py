@@ -1,5 +1,5 @@
 #  GNUtrition - a nutrition and diet analysis program.
-#  Copyright( C) 2000-2002 Edgar Denny (edenny@skyweb.net)
+#  Copyright(C) 2000-2002 Edgar Denny (edenny@skyweb.net)
 #  Copyright (C) 2010 2012 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -19,8 +19,8 @@ import config
 import gtk
 
 class RunApp:
-    def __init__( self):
-        if not config.get_value( 'Name'):
+    def __init__(self):
+        if not config.get_value('Name'):
             # First run, program default values can be added here
             import druid
             # Set default version check information
@@ -29,25 +29,25 @@ class RunApp:
             config.set_key_value('check_version', gnutr_consts.CHECK_VERSION)
             config.set_key_value('check_interval', gnutr_consts.CHECK_INTERVAL)
             config.set_key_value('last_check', 0)
-            self.druid = druid.Druid( self)
+            self.druid = druid.Druid(self)
             self.druid.show()
         else:
             self.startup()
 
-    def startup( self):
+    def startup(self):
         import version
         version.check_version()
-        db_uname = config.get_value( 'Username')
-        db_pword = config.get_value( 'Password')
+        db_uname = config.get_value('Username')
+        db_pword = config.get_value('Password')
 
         import database 
-        self.db = database.Database( db_uname, db_pword)
-        success = self.db.change_user( db_uname, db_pword, 'gnutr_db')
+        self.db = database.Database(db_uname, db_pword)
+        success = self.db.change_user(db_uname, db_pword, 'gnutr_db')
 
         if success == 0:
             import gnutr
             import sys
-            gnutr.Dialog( 'error', 
+            gnutr.Dialog('error', 
                 'Failed to connect to the database.\n\n' +
                 'I suggest that you delete the file\n ' +
                 '"~/.gnutrition/config" and run "gnutrition" again.')
@@ -62,7 +62,7 @@ class RunApp:
         self.person.setup()
 
         import base_win
-        self.base_win = base_win.BaseWin( self)
+        self.base_win = base_win.BaseWin(self)
         self.base_win.show()
 
 def run_app():

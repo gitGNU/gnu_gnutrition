@@ -37,6 +37,7 @@ clean:
 	rm -f gnutrition.pdf
 	rm -f gnutrition.tex gnutrition.aux gnutrition.log gnutrition.out
 	rm -Rf DB* # temp dirs created by db2html
+	rm -rf gnutrition.junk
 
 install: gnutrition/book1.html 
 	mkdir -p $(docdir)/stylesheet-images

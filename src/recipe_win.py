@@ -193,7 +193,7 @@ Do you wish to save it first?""", self.parent)
                 str(ingr.amount), str(ingr.msre_num), str(ingr.food_num)))
 
         self.db.query("""INSERT INTO preparation VALUES
-            (LAST_INSERT_ID(), '0.0', '%s')"""  %(recipe.prep_desc))
+            (LAST_INSERT_ID(), '0.0', "%s")"""  %(recipe.prep_desc))
 
     def delete_recipe(self, recipe_name):
         self.db.query("""SELECT recipe_no FROM recipe
@@ -304,12 +304,15 @@ in the database. Do you want to overwrite it?""", self.parent)
 
     def get_ingredient_list(self):
         ingr_list = []
-        ret = True
-        iter = self.ui.treemodel.get_iter_root()
-        while ret:
-            ingr = self.ui.treemodel.get_value(iter, 3)
-            ingr_list.append(ingr)
-            ret = self.ui.treemodel.iter_next(iter)
+        #ret = True
+        #iter = self.ui.treemodel.get_iter_root()
+        #while ret:
+        #    ingr = self.ui.treemodel.get_value(iter, 3)
+            #print 'ingredient', ingr
+        #    ingr_list.append(ingr)
+        #    ret = self.ui.treemodel.iter_next(iter)
+        for row in self.ui.treemodel:
+            ingr_list.append(row[3])
         return ingr_list
 
     def on_plan_view_activate(self, w, d=None):

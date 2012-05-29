@@ -1,5 +1,5 @@
 #  GNUtrition - a nutrition and diet analysis program.
-#  Copyright( C) 2000-2002 Edgar Denny (edenny@skyweb.net)
+#  Copyright(C) 2000-2002 Edgar Denny (edenny@skyweb.net)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,30 +20,30 @@ import gnutr
 import help
 
 class RecipeEditDlg:
-    def __init__( self, app):
+    def __init__(self, app):
         self.ui = recipe_edit_dlg_ui.RecipeEditDlgUI()
         self.app = app
 
-        self.ui.dialog.connect( 'response', self.on_response)
+        self.ui.dialog.connect('response', self.on_response)
 
-    def show( self, recipe):
+    def show(self, recipe):
         self.recipe = recipe
         self.ui.dialog.vbox.show_all()
-        self.ui.recipe_entry.set_text( recipe.desc)
-        self.ui.num_serv_entry.set_text( str( recipe.num_portions))
+        self.ui.recipe_entry.set_text(recipe.desc)
+        self.ui.num_serv_entry.set_text(str(recipe.num_portions))
         self.ui.dialog.run()
 
-    def on_response( self, w, r, d=None):
+    def on_response(self, w, r, d=None):
         if r == gtk.RESPONSE_HELP:
-            help.open( '')
+            help.open('')
         elif r == gtk.RESPONSE_OK:
             try:
                 self.recipe.num_portions = \
-                    float( self.ui.num_serv_entry.get_text())
+                    float(self.ui.num_serv_entry.get_text())
             except ValueError:
-                gnutr.Dialog( 'error', 
+                gnutr.Dialog('error', 
                     'The number of portions must be a number.')
-            self.app.base_win.plan.replace_recipe( self.recipe)
+            self.app.base_win.plan.replace_recipe(self.recipe)
             self.ui.dialog.hide()
         elif r == gtk.RESPONSE_CANCEL or r == gtk.RESPONSE_DELETE_EVENT:
             self.ui.dialog.hide()

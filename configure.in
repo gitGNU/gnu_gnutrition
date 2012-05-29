@@ -1,3 +1,21 @@
+# Copyright (C) 2000, 2001, 2002 Edgar Denny
+# Copyright (C) 2010 Free Software Foundation, Inc.
+#
+# This file is part of GNUtrition.
+# 
+# GNUtrition is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# GNUtrition is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with GNUtrition.  If not, see <http://www.gnu.org/licenses/>.
+
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(src/run_app.py)
 
@@ -5,8 +23,11 @@ PACKAGE=gnutrition
 AC_SUBST(PACKAGE)
 
 MAJOR_VERSION=0
-MINOR_VERSION=6
-VERSION=0.6
+<<<<<<< TREE
+MINOR_VERSION=31.2
+VERSION="0.31.2"
+=======
+>>>>>>> MERGE-SOURCE
 AC_SUBST(MAJOR_VERSION)
 AC_SUBST(MINOR_VERSION)
 AC_SUBST(VERSION)

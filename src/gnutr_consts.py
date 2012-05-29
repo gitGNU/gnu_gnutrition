@@ -1,5 +1,7 @@
-#  gnutrition - a nutrition and diet analysis program.
-#  Copyright( C) 2000-2002 Edgar Denny (edenny@skyweb.net)
+"""Default values related to gnutrition version and program default values."""
+#  GNUtrition - a nutrition and diet analysis program.
+#  Copyright(C) 2000-2002 Edgar Denny (edenny@skyweb.net)
+#  Copyright (C) 2012 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,6 +16,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+# This needs to be added to install process, somthing like:
+# configure --disable-version-check
+CHECK_DISABLED = False
+# Next two can be changed by user
+CHECK_VERSION = True
+CHECK_INTERVAL = 604800   # 60*60*24*7
+LATEST_VERSION = "http://www.gnu.org/software/gnutrition/version"
 
 PLAN = 0
 RECIPE = 1

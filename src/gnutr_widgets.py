@@ -1,3 +1,20 @@
+# Copyright (C) 2010 Free Software Foundation, Inc.
+#
+# This file is part of GNUtrition.
+# 
+# GNUtrition is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# GNUtrition is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with GNUtrition.  If not, see <http://www.gnu.org/licenses/>.
+
 import gtk
 import gobject
 
@@ -38,25 +55,25 @@ class GnutrComboBox(gtk.ComboBox):
                 return True
             it = model.iter_next(it)
 
-class GnutrToolbar( gtk.Toolbar):
-    def __init__( self):
-        gtk.Toolbar.__init__( self)
-        self.set_show_arrow( False)
+class GnutrToolbar(gtk.Toolbar):
+    def __init__(self):
+        gtk.Toolbar.__init__(self)
+        self.set_show_arrow(False)
 
-    def append_button( self, stock_id, label, gtk_tooltips, tooltip):
+    def append_button(self, stock_id, label, gtk_tooltips, tooltip):
         icon = gtk.Image()
-        icon.set_from_stock( stock_id, gtk.ICON_SIZE_LARGE_TOOLBAR)
-        button = gtk.ToolButton( icon, label)
-        button.set_tooltip( gtk_tooltips, tooltip)
-        self.insert( button, -1)
+        icon.set_from_stock(stock_id, gtk.ICON_SIZE_LARGE_TOOLBAR)
+        button = gtk.ToolButton(icon, label)
+        button.set_tooltip(gtk_tooltips, tooltip)
+        self.insert(button, -1)
         return button
 
 class GnutrImageMenuItem(gtk.ImageMenuItem):
-    def __init__( self, label_text, stock_image):
-        gtk.ImageMenuItem.__init__( self, label_text)
+    def __init__(self, label_text, stock_image):
+        gtk.ImageMenuItem.__init__(self, label_text)
         icon = gtk.Image()
-        icon.set_from_stock( stock_image, gtk.ICON_SIZE_MENU)
-        self.set_image( icon)
+        icon.set_from_stock(stock_image, gtk.ICON_SIZE_MENU)
+        self.set_image(icon)
 
 
 class GnutrComboBoxEntry(gtk.ComboBoxEntry):

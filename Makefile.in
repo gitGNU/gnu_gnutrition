@@ -1,5 +1,6 @@
-# gnutrition - a nutrition and diet analysis program.
+# GNUtrition - a nutrition and diet analysis program.
 # Copyright (C) 2001-2002 Edgar Denny (edenny@skyweb.net)
+# Copyright (C) 2010 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -70,6 +71,7 @@ distclean: clean deb-clean rpm-clean
 	rm -f Makefile run-gnutrition.py
 	rm -f config.cache config.log config.status
 	rm -f src/install.py
+	rm -f data/.data_prepped
 
 deb:
 	dpkg-buildpackage -rfakeroot -us -uc

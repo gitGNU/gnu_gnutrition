@@ -1,5 +1,6 @@
-# gnutrition - a nutrition and diet analysis program.
-# Copyright( C) 2000-2002 Edgar Denny (edenny@skyweb.net)
+# GNUtrition - a nutrition and diet analysis program.
+# Copyright(C) 2000-2002 Edgar Denny (edenny@skyweb.net)
+# Copyright (C) 2010 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,7 +31,7 @@ nutr_data_list = [
     [291, 'Fiber (g)', 0, 2, 3, 4, 5], 
     [268, 'Energy (kJ)', 0, 2, 3, 5, 6], 
     # micro-nutrients
-#    [392, 'A( IU)', 1, 0, 1, 1, 2], 
+#    [392, 'A(IU)', 1, 0, 1, 1, 2], 
     [318, 'A (mg RE)', 1, 0, 1, 1, 2], 
     [394, 'E (mg ATE)', 1, 0, 1, 2, 3], 
     [401, 'C (mg)', 1, 0, 1, 3, 4],
@@ -110,57 +111,57 @@ class Nutrient:
     pass
 
 class NutrientGoalDlgUI:
-    def __init__( self):
-        self.dialog = gtk.Dialog( title='Nutrient Goal',
+    def __init__(self):
+        self.dialog = gtk.Dialog(title='Nutrient Goal',
             flags=gtk.DIALOG_MODAL,
-            buttons=( gtk.STOCK_HELP, gtk.RESPONSE_HELP, 
+            buttons=(gtk.STOCK_HELP, gtk.RESPONSE_HELP, 
             'gtk-save', 1,
             gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-        self.dialog.set_resizable( False)
+        self.dialog.set_resizable(False)
 
-        hbox1 = gtk.HBox( False, 0)
-        self.dialog.vbox.pack_start( hbox1, True, True, 0)
+        hbox1 = gtk.HBox(False, 0)
+        self.dialog.vbox.pack_start(hbox1, True, True, 0)
 
         notebook1 = gtk.Notebook()
-        notebook1.set_border_width( 5)
-        hbox1.pack_start( notebook1, True, True, 0)
+        notebook1.set_border_width(5)
+        hbox1.pack_start(notebook1, True, True, 0)
 
         self.table_list = []
-        self.table_list.append( gtk.Table( 4, 6, False))
-        self.table_list.append( gtk.Table( 4, 11, False))
-        self.table_list.append( gtk.Table( 4, 10, False))
-        self.table_list.append( gtk.Table( 4, 14, False))
-        self.table_list.append( gtk.Table( 4, 5, False))
+        self.table_list.append(gtk.Table(4, 6, False))
+        self.table_list.append(gtk.Table(4, 11, False))
+        self.table_list.append(gtk.Table(4, 10, False))
+        self.table_list.append(gtk.Table(4, 14, False))
+        self.table_list.append(gtk.Table(4, 5, False))
         
-        for i in range( 5):
-            self.table_list[i].set_border_width( 5)
-            self.table_list[i].set_row_spacings( 5)
-            self.table_list[i].set_col_spacings( 5)
-            self.table_list[i].attach( gtk.Label( 'Daily Goal'), 1, 2, 0, 1,
+        for i in range(5):
+            self.table_list[i].set_border_width(5)
+            self.table_list[i].set_row_spacings(5)
+            self.table_list[i].set_col_spacings(5)
+            self.table_list[i].attach(gtk.Label('Daily Goal'), 1, 2, 0, 1,
                 gtk.FILL | gtk.EXPAND, 0, 0, 0)
-            self.table_list[i].attach( gtk.Label( 'Daily Goal'), 3, 4, 0, 1,
+            self.table_list[i].attach(gtk.Label('Daily Goal'), 3, 4, 0, 1,
                 gtk.FILL | gtk.EXPAND, 0, 0, 0)
-            notebook1.add( self.table_list[i])
+            notebook1.add(self.table_list[i])
 
         label_list = []
-        label0 = gtk.Label( '')
+        label0 = gtk.Label('')
         label0.set_text_with_mnemonic('M_acro-Nutrients')
-        label_list.append( label0)
-        label1 = gtk.Label( '')
+        label_list.append(label0)
+        label1 = gtk.Label('')
         label1.set_text_with_mnemonic('M_icro-Nutrients')
-        label_list.append( label1)
-        label2 = gtk.Label( '')
+        label_list.append(label1)
+        label2 = gtk.Label('')
         label2.set_text_with_mnemonic('Ami_no Acids')
-        label_list.append( label2)
-        label3 = gtk.Label( '')
+        label_list.append(label2)
+        label3 = gtk.Label('')
         label3.set_text_with_mnemonic('Fa_ts')
-        label_list.append( label3)
-        label4 = gtk.Label( '')
+        label_list.append(label3)
+        label4 = gtk.Label('')
         label4.set_text_with_mnemonic('Misce_llaneous')
-        label_list.append( label4)
+        label_list.append(label4)
 
-        for i in range( 5):
-            notebook1.set_tab_label( notebook1.get_nth_page( i), label_list[i])
+        for i in range(5):
+            notebook1.set_tab_label(notebook1.get_nth_page(i), label_list[i])
 
         self.nutr_list = []
         for num, label_text, table_num, l, r, t, b in nutr_data_list:
@@ -171,15 +172,15 @@ class NutrientGoalDlgUI:
             nutr.right = r
             nutr.top = t
             nutr.bottom = b
-            nutr.label = gtk.Label( label_text)
-            nutr.label.set_alignment( 1.0, 0.5)
+            nutr.label = gtk.Label(label_text)
+            nutr.label.set_alignment(1.0, 0.5)
             nutr.entry = gtk.Entry()
-            self.nutr_list.append( nutr)
+            self.nutr_list.append(nutr)
 
         for nutr in self.nutr_list:
-            self.table_list[ nutr.table_num].attach( nutr.label,
+            self.table_list[ nutr.table_num].attach(nutr.label,
                 nutr.left, nutr.right, nutr.top, nutr.bottom,
                 gtk.FILL, 0, 0, 0)
-            self.table_list[ nutr.table_num].attach( nutr.entry,
+            self.table_list[ nutr.table_num].attach(nutr.entry,
                 nutr.left+1, nutr.right+1, nutr.top, nutr.bottom,
                 gtk.FILL | gtk.EXPAND, 0, 0, 0)

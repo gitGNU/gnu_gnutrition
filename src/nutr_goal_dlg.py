@@ -1,5 +1,6 @@
-# gnutrition - a nutrition and diet analysis program.
-# Copyright( C) 2000-2002 Edgar Denny (edenny@skyweb.net)
+# GNUtrition - a nutrition and diet analysis program.
+# Copyright (C) 2000-2002 Edgar Denny (edenny@skyweb.net)
+# Copyright (C) 2010 2012 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,28 +22,28 @@ import person
 import help
 
 class NutrGoalDlg:
-    def __init__( self):
+    def __init__(self):
         self.ui = nutr_goal_dlg_ui.NutrientGoalDlgUI()
         self.connect_signals()
         self.person = person.Person()
 
-    def connect_signals( self):
-        self.ui.dialog.connect( 'response', self.on_response)
+    def connect_signals(self):
+        self.ui.dialog.connect('response', self.on_response)
 
-    def show( self):
+    def show(self):
         goal_list = self.get_goal()
 
         for nutr in self.ui.nutr_list:
-            nutr.entry.set_text( '0.000')
+            nutr.entry.set_text('0.000')
 
         for goal_num, goal_val in goal_list:
             for nutr in self.ui.nutr_list:
                 if nutr.num == goal_num:
-                    nutr.entry.set_text( '%.3f' %( goal_val))
+                    nutr.entry.set_text('%.3f' %(goal_val))
         self.ui.dialog.vbox.show_all()
         self.ui.dialog.run()
 
-    def on_response( self, w, r, d=None):
+    def on_response(self, w, r, d=None):
         if r == gtk.RESPONSE_CANCEL or r == gtk.RESPONSE_DELETE_EVENT: 
             self.ui.dialog.hide()
 
@@ -50,33 +51,33 @@ class NutrGoalDlg:
             goal_list = []
             for nutr in self.ui.nutr_list:
                 try:
-                    val = float( nutr.entry.get_text())
+                    val = float(nutr.entry.get_text())
                 except:
-                    gnutr.Dialog( 'error', 
+                    gnutr.Dialog('error', 
                         'Save Failed: A nutrient goal entry\nis not a number.')
                     return
-                goal_list.append( ( nutr.num, val))
-            self.save_goal( goal_list)
+                goal_list.append((nutr.num, val))
+            self.save_goal(goal_list)
 
         elif r == gtk.RESPONSE_HELP:
-            help.open( '')
+            help.open('')
 
-    def get_goal( self):
+    def get_goal(self):
         person_no = self.person.get_person_num()
 
-        self.person.db.query( "SELECT nutr_no, goal_val FROM nutr_goal " + 
-            "WHERE person_no = '%d'" % ( person_no))
+        self.person.db.query("SELECT Nutr_No, goal_val FROM nutr_goal " + 
+            "WHERE person_no = '%d'" % (person_no))
         goal_list = self.person.db.get_result()
 
         return goal_list
 
-    def save_goal( self, goal_list):
+    def save_goal(self, goal_list):
         person_num = self.person.get_person_num()
 
         # delete the old goals if necessary
-        self.person.db.query( "DELETE FROM nutr_goal " +
-            "WHERE person_no = '%d'" % ( person_num))
+        self.person.db.query("DELETE FROM nutr_goal " +
+            "WHERE person_no = '%d'" % (person_num))
 
         for nutr_num, nutr_val in goal_list:
-            self.person.db.query( "INSERT INTO nutr_goal VALUES " +
-                "('%d', '%d', '%f')" % ( person_num, int(nutr_num), float(nutr_val)))
+            self.person.db.query("INSERT INTO nutr_goal VALUES " +
+                "('%d', '%d', '%f')" % (person_num, int(nutr_num), float(nutr_val)))

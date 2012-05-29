@@ -1,5 +1,6 @@
-# gnutrition - a nutrition and diet analysis program.
+# GNUtrition - a nutrition and diet analysis program.
 # Copyright (C) 2001 Edgar Denny (e.denny@ic.ac.uk)
+# Copyright (C) 2010 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,12 +26,20 @@ INSTALL     = @INSTALL@
 
 all:
 
-install:
+install: data_prep
 	mkdir -p ${datadir}/data
 	${INSTALL} -m 644 -c *.txt ${datadir}/data
+
+data_prep: 
+	./prep_data_files.sh *.txt
 
 uninstall:
 	rm -f ${datadir}/data/*.txt
 	rm -rf ${datadir}/data
 
 clean:
+	rm -f MEASURE.txt; \
+	[ -f WEIGHT.orig ] && mv WEIGHT.orig WEIGHT.txt
+
+dist_clean: clean
+	rm -f Makefile

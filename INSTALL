@@ -12,6 +12,8 @@ REQUIREMENTS
         the latest version can be downloaded from:
             http://dustman.net/andy/python/MySQLdb/0.3.5
 
+      For documentation:
+      * docbook-utils for db2html command  (not critical)
 
 UPGRADING
 

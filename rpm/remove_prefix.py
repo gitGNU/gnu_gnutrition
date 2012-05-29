@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-#  gnutrition - a nutrition and diet analysis program.  
+#  GNUtrition - a nutrition and diet analysis program.  
 #  Copyright (C) 2001 Edgar Denny (e.denny@ic.ac.uk)
 #
 # This program is free software: you can redistribute it and/or modify

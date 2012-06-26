@@ -59,21 +59,21 @@ class Person:
 
         # create a series of temporary tables
         self.db.query("CREATE TEMPORARY TABLE food_plan_temp " + 
-            "(person_no SMALLINT(6) UNSIGNED NOT NULL, " + 
-            "date DATE NOT NULL, " +
-            "time TIME NOT NULL, " + 
-            "amount FLOAT(7,2), " +
-            "Msre_No MEDIUMINT(6) UNSIGNED NOT NULL, " +
-            "NDB_No SMALLINT(5) UNSIGNED NOT NULL, " +
-            "INDEX (date, time, NDB_No) )")
+            "(person_no INTEGER NOT NULL, " + 
+            "date TEXT NOT NULL, " +
+            "time TEXT NOT NULL, " + 
+            "amount REAL NOT NULL, " +
+            "Msre_No INTEGER NOT NULL, " +
+            "NDB_No INTEGER NOT NULL, " +
+            "PRIMARY KEY (date, time, NDB_No))")
 
         self.db.query("CREATE TEMPORARY TABLE recipe_plan_temp " +
-            "(person_no SMALLINT(6) UNSIGNED NOT NULL, " +
-            "date DATE NOT NULL, " +
-            "time TIME NOT NULL, " +
-            "no_portions FLOAT(7,2) NOT NULL, " +
-            "recipe_no MEDIUMINT(6) UNSIGNED NOT NULL, " +
-            "INDEX (date, recipe_no, time) )")
+            "(person_no INTEGER NOT NULL, " +
+            "date TEXT NOT NULL, " +
+            "time TEXT NOT NULL, " +
+            "no_portions REAL NOT NULL, " +
+            "recipe_no INTEGER NOT NULL, " +
+            "PRIMARY KEY (date, recipe_no, time) )")
 
         # copy any data from stored tables to temporary ones
         self.db.query("SELECT * FROM food_plan WHERE person_no = '%d'" 

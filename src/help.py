@@ -31,7 +31,8 @@ def test_access(file):
     return 0
 
 def get_browser():
-    browser_list = ['galeon', 'mozilla', 'lynx']
+    browser_list = ['galeon', 'mozilla', 'lynx', 'firefox', 'seamonkey',
+                    'google-chrome']
     for b in browser_list:
         if test_access(b):
             browser = webbrowser.GenericBrowser(b + ' %s')
@@ -41,7 +42,7 @@ def get_browser():
     return ''
 
 def open(html_page):
-    url = 'file://' + install.dir + '/doc/' + html_page
+    url = 'file://' + install.idir + '/doc/' + html_page
 
     if selected_browser:
         controller = webbrowser.get(selected_browser)

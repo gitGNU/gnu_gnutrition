@@ -183,29 +183,27 @@ Do you wish to save it first?""", self.parent)
 
     def save_recipe(self, recipe):
         print 'Saving recipe:', recipe.desc
+        recipe_no = self.db.next_row('recipe_no', 'recipe')
         self.db.query("""INSERT INTO recipe VALUES
-            (NULL, '%s', '%s', '%s', '%s')""" % (recipe.desc,
+            ('%d', '%s', '%s', '%s', '%s')""" % (recipe_no, recipe.desc,
             recipe.num_serv, str(self.num_ingr), str(recipe.cat_num)))
 
         for ingr in recipe.ingr_list:
             self.db.query("""INSERT INTO ingredient VALUES
-                (LAST_INSERT_ID(), '%s', '%s', '%s' )""" % (
+                ('%d', '%s', '%s', '%s' )""" % (recipe_no,
                 str(ingr.amount), str(ingr.msre_num), str(ingr.food_num)))
 
         self.db.query("""INSERT INTO preparation VALUES
-            (LAST_INSERT_ID(), '0.0', "%s")"""  %(recipe.prep_desc))
+            ('%d', '0.0', "%s")"""  % (recipe_no, recipe.prep_desc))
 
     def delete_recipe(self, recipe_name):
         self.db.query("""SELECT recipe_no FROM recipe
             WHERE recipe_name = '%s'""" %(recipe_name))
         recipe_num = str(self.db.get_single_result())
-
         self.db.query("DELETE FROM recipe WHERE recipe_no = '%s'" 
             % (recipe_num))
-
         self.db.query("DELETE FROM ingredient WHERE recipe_no = '%s'" 
             % (recipe_num))
-
         self.db.query("DELETE FROM recipe_plan WHERE recipe_no = '%s'" 
             % (recipe_num))
         self.db.query("DELETE FROM preparation WHERE recipe_no = '%s'"

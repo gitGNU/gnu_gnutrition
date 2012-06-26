@@ -29,7 +29,7 @@ class DruidPage:
             label1.set_alignment(0.0, 0.5)
             self.vbox.pack_start(label1, False, False, 5)
 
-            label2 = gtk.Label('You seem to be running GNUtrition for the first time.\n\nThe following steps will set up GNUtrition by asking a few simple questions. Before you start, you will need to have the MySQL database system installed in your system. You will also need to know the MySQL root username and password.')
+            label2 = gtk.Label('You seem to be running GNUtrition for the first time.\n\nThe following steps will set up GNUtrition by asking a few simple questions.')
             label2.set_alignment(0.0, 0.5)
             label2.set_line_wrap(True)
             label2.set_justify(gtk.JUSTIFY_FILL)
@@ -46,27 +46,27 @@ class DruidPage:
             label1.set_alignment(0.0, 0.5)
             table1.attach(label1, 0, 2, 0, 1, gtk.FILL, 0, 0, 0)
 
-            label2 = gtk.Label(
-                'Enter the root username and password for MySQL.') 
-            label2.set_alignment(0.0, 0.5)
-            table1.attach(label2, 0, 2, 1, 2, gtk.FILL, 0, 0, 0)
+#            label2 = gtk.Label(
+#                'Enter the root username and password for MySQL.') 
+#            label2.set_alignment(0.0, 0.5)
+#            table1.attach(label2, 0, 2, 1, 2, gtk.FILL, 0, 0, 0)
 
-            label3 = gtk.Label('MySQL root username') 
-            label3.set_alignment(1.0, 0.5)
-            table1.attach(label3, 0, 1, 2, 3, gtk.FILL, 0, 0, 0)
+#            label3 = gtk.Label('MySQL root username') 
+#            label3.set_alignment(1.0, 0.5)
+#            table1.attach(label3, 0, 1, 2, 3, gtk.FILL, 0, 0, 0)
 
-            self.root_user_entry = gtk.Entry()
-            table1.attach(self.root_user_entry, 1, 2, 2, 3, 
-                gtk.FILL | gtk.EXPAND, 0, 0, 0)
+#            self.root_user_entry = gtk.Entry()
+#            table1.attach(self.root_user_entry, 1, 2, 2, 3, 
+#                gtk.FILL | gtk.EXPAND, 0, 0, 0)
 
-            label4 = gtk.Label('MySQL root password') 
-            label4.set_alignment(1.0, 0.5)
-            table1.attach(label4, 0, 1, 3, 4, gtk.FILL, 0, 0, 0)
+#            label4 = gtk.Label('MySQL root password') 
+#            label4.set_alignment(1.0, 0.5)
+#            table1.attach(label4, 0, 1, 3, 4, gtk.FILL, 0, 0, 0)
 
-            self.root_pass_entry = gtk.Entry()
-            self.root_pass_entry.set_visibility(False);
-            table1.attach(self.root_pass_entry, 1, 2, 3, 4, 
-                gtk.FILL | gtk.EXPAND, 0, 0, 0)
+#            self.root_pass_entry = gtk.Entry()
+#            self.root_pass_entry.set_visibility(False);
+#            table1.attach(self.root_pass_entry, 1, 2, 3, 4, 
+#                gtk.FILL | gtk.EXPAND, 0, 0, 0)
 
             label5 = gtk.Label('When you press the "Next" button GNUtrition will check to see if the GNUtrition Database is already installed. If not, GNUtrition will install it for you.') 
             label5.set_alignment(0.0, 0.5)
@@ -95,38 +95,39 @@ class DruidPage:
 
         # User Setup
         elif page_num == 3:
-            table1 = gtk.Table(2, 4, False)
-            table1.set_row_spacings(5)
-            table1.set_col_spacings(5)
-            self.vbox.pack_start(table1, True, True, 0)
+            pass
+            #table1 = gtk.Table(2, 4, False)
+            #table1.set_row_spacings(5)
+            #table1.set_col_spacings(5)
+            #self.vbox.pack_start(table1, True, True, 0)
 
-            label1 = gtk.Label('User Setup.')
-            label1.set_alignment(0.0, 0.5)
-            table1.attach(label1, 0, 2, 0, 1, gtk.FILL, 0, 0, 0)
+            #label1 = gtk.Label('User Setup.')
+            #label1.set_alignment(0.0, 0.5)
+            #table1.attach(label1, 0, 2, 0, 1, gtk.FILL, 0, 0, 0)
 
-            label2 = gtk.Label('In order to access the database you need to create a normal MySQL username and password. Specify your choice below. GNUtrition will remember them for you.')
-            label2.set_alignment(0.0, 0.5)
-            label2.set_line_wrap(True)
-            label2.set_justify(gtk.JUSTIFY_FILL)
-            table1.attach(label2, 0, 2, 1, 2, gtk.FILL, 0, 0, 0)
+            #label2 = gtk.Label('In order to access the database you need to create a normal MySQL username and password. Specify your choice below. GNUtrition will remember them for you.')
+            #label2.set_alignment(0.0, 0.5)
+            #label2.set_line_wrap(True)
+            #label2.set_justify(gtk.JUSTIFY_FILL)
+            #table1.attach(label2, 0, 2, 1, 2, gtk.FILL, 0, 0, 0)
 
-            label3 = gtk.Label('MySQL username') 
-            label3.set_alignment(1.0, 0.5)
-            table1.attach(label3, 0, 1, 2, 3, gtk.FILL, 0, 0, 0)
+            #label3 = gtk.Label('MySQL username') 
+            #label3.set_alignment(1.0, 0.5)
+            #table1.attach(label3, 0, 1, 2, 3, gtk.FILL, 0, 0, 0)
 
-            self.user_entry = gtk.Entry()
-            self.user_entry.set_text(getpass.getuser())
-            table1.attach(self.user_entry, 1, 2, 2, 3, 
-                gtk.FILL | gtk.EXPAND, 0, 0, 0)
+            #self.user_entry = gtk.Entry()
+            #self.user_entry.set_text(getpass.getuser())
+            #table1.attach(self.user_entry, 1, 2, 2, 3, 
+            #    gtk.FILL | gtk.EXPAND, 0, 0, 0)
 
-            label4 = gtk.Label('MySQL password') 
-            label4.set_alignment(1.0, 0.5)
-            table1.attach(label4, 0, 1, 3, 4, gtk.FILL, 0, 0, 0)
+            #label4 = gtk.Label('MySQL password') 
+            #label4.set_alignment(1.0, 0.5)
+            #table1.attach(label4, 0, 1, 3, 4, gtk.FILL, 0, 0, 0)
 
-            self.pass_entry = gtk.Entry()
-            self.pass_entry.set_visibility(False)
-            table1.attach(self.pass_entry, 1, 2, 3, 4, 
-                gtk.FILL | gtk.EXPAND, 0, 0, 0)
+            #self.pass_entry = gtk.Entry()
+            #self.pass_entry.set_visibility(False)
+            #table1.attach(self.pass_entry, 1, 2, 3, 4, 
+            #    gtk.FILL | gtk.EXPAND, 0, 0, 0)
 
         # Error in User Setup
         elif page_num == 4:

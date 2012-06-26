@@ -41,8 +41,7 @@ class PlanWin:
         self.update()
 
     def get_current_date(self):
-        self.db.query("SELECT CURDATE()")
-        return self.db.get_single_result()
+        return self.db.curdate()
 
     def connect_signals(self):
         self.ui.save_button.connect('clicked', self.on_save_released)

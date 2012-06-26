@@ -17,13 +17,14 @@
 #
 
 import shelve
-import os
+from os import environ, path, access, F_OK, mkdir
 
-dir = os.environ['HOME'] + '/.gnutrition'
-fn = dir + '/config'
-
-if not os.access(dir, os.F_OK):
-    os.mkdir(dir)
+home = environ['HOME']
+user = path.basename(home)
+udir = path.join(home, '.gnutrition')
+fn = path.join(udir, 'config')
+if not access(udir, F_OK):
+    mkdir(udir)
 
 def get_value(key):
     db = shelve.open(fn, 'c')

@@ -1,5 +1,4 @@
-# GNUtrition - a nutrition and diet analysis program.
-# Copyright (C) 2001-2002 Edgar Denny (edenny@skyweb.net)
+# GNUtrition - a nutrition and diet analysis program.  # Copyright (C) 2001-2002 Edgar Denny (edenny@skyweb.net)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,4 +16,4 @@
 MAJOR_VERSION = @MAJOR_VERSION@
 MINOR_VERSION = @MINOR_VERSION@
 VERSION = "@MAJOR_VERSION@.@MINOR_VERSION@"
-dir = "@prefix@/share/gnutrition"
+idir = "@prefix@/share/gnutrition"

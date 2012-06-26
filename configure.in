@@ -1,5 +1,5 @@
 # Copyright (C) 2000, 2001, 2002 Edgar Denny
-# Copyright (C) 2010 Free Software Foundation, Inc.
+# Copyright (C) 2010, 2012 Free Software Foundation, Inc.
 #
 # This file is part of GNUtrition.
 # 
@@ -24,8 +24,8 @@ AC_SUBST(PACKAGE)
 
 MAJOR_VERSION=0
 <<<<<<< TREE
-MINOR_VERSION=31.2
-VERSION="0.31.2"
+MINOR_VERSION=32
+VERSION="0.32"
 =======
 >>>>>>> MERGE-SOURCE
 AC_SUBST(MAJOR_VERSION)
@@ -36,8 +36,8 @@ dnl Get the default Python
 AC_PATH_PROG(PYTHON, python)
 AC_SUBST(PYTHON)
 
-dnl Checking for Python >= 2.2
-AC_MSG_CHECKING(for python >= 2.2)
+dnl Checking for Python >= 2.6
+AC_MSG_CHECKING(for python >= 2.6)
 
 prog1="
 import sys
@@ -51,7 +51,7 @@ import sys
 
 if $PYTHON -c "$prog1" 1>&AC_FD_CC 2>&AC_FD_CC
 then  
-    dnl The default Python path is 2.2 or higher.
+    dnl The default Python path is 2.6 or higher.
     AC_MSG_RESULT(yes)
 else
     dnl The default Python path is lower that 2.2. Can we find
@@ -86,23 +86,6 @@ then
 else
     AC_MSG_ERROR([
 **** The python interpreter can't find the python bindings for gtk.])
-fi
-
-dnl Check that the python bindings for MySQL are installed
-AC_MSG_CHECKING(for MySQLdb)
-prog4="
-import sys
-try:
-    import MySQLdb
-except ImportError:
-    sys.exit(1)
-sys.exit(0)"
-if $PYTHON -c "$prog4" 1>&AC_FD_CC 2>&AC_FD_CC
-then  
-    AC_MSG_RESULT(yes)
-else
-    AC_MSG_ERROR([
-**** The python interpreter can't find the python bindings for MySQL.])
 fi
 
 AC_OUTPUT( run-gnutrition.py\

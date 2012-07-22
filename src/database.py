@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import sqlite3 as dbms
 import datetime, time
+import re
 
 def ticks():
     return time.time()
@@ -31,6 +32,10 @@ def curdate():
 dbms.register_adapter(datetime.datetime, curtime)
 dbms.register_adapter(datetime.datetime, curdate)
 
+def regexp(exp, text):
+    """Define a function to be called when sqlite3 module sees 'REGEXP'"""
+    return re.search(exp, text) is not None
+
 class Database:
     _shared_state = {}
     def __init__(self):
@@ -43,17 +48,18 @@ class Database:
         self.user = config.user
         dbfile =  path.join(config.udir, 'gnutr_db')
         try:
-            self.db = dbms.connect(dbfile)
+            con = dbms.connect(dbfile)
         except self.Error, e:
             "Error {0:s}:".format(e.args[0])
             raise self.Error
-        else:
-            # text_factory must be set to 'str' due to current limitations
-            # in csv.reader()
-            self.db.text_factory = str
-            self.cursor = self.db.cursor()
-            self.rows = 0
-            self.result = None
+        # text_factory must be set to 'str' due to current limitations
+        # in csv.reader()
+        con.text_factory = str
+        con.create_function('REGEXP', 2, regexp)
+        self.con = con
+        self.cursor = con.cursor()
+        self.rows = 0
+        self.result = None
 
     def initialize(self):
         # Create Food Description (food_des) table.
@@ -233,7 +239,7 @@ class Database:
             "goal_val REAL NOT NULL)", 'nutr_goal')
 
         self.cursor.close()
-        self.cursor = self.db.cursor()
+        self.cursor = self.con.cursor()
         return 1
 
     def curtime(self):
@@ -255,6 +261,7 @@ class Database:
             else:
                 self.cursor.execute(sql)
         except self.Error, sqlerr:
+            self.con.rollback()
             import sys
             print 'Error :', sqlerr, '\nquery:', sql
             if caller: print 'Caller ', caller
@@ -264,7 +271,7 @@ class Database:
         self.result = tuple(result)
         self.last_query = sql
         self.last_query_params = sql_params
-        self.db.commit()
+        self.con.commit()
 
     def get_result(self):
         result = self.result

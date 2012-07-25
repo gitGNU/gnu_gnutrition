@@ -107,8 +107,9 @@ class RecipeWin:
             self.food_edit_dlg.show(ingr, gnutr_consts.RECIPE)
 
     def on_exit_activate(self, w, d=None):
-        if self.is_dirty:
-            self.ask_save("Save your work?")
+        if len(self.get_ingredient_list()) > 0 or self.prep_description():
+            if self.is_dirty():
+                self.ask_save("Save your work?")
         gtk.main_quit()
     
     def on_about_activate(self, w, d=None):
@@ -220,35 +221,50 @@ Do you wish to save it first?""")
         self.db.query("DELETE FROM preparation WHERE recipe_no = '%s'"
             % (recipe_num))
 
-    def get_recipe(self):
-        recipe = gnutr.Recipe()
-        recipe.num_serv = self.ui.num_serv_entry.get_text()
-        recipe.desc = self.ui.recipe_entry.get_text()
-        recipe.cat_desc = self.ui.category_combo.get_active_text()
-       
+    def prep_description(self):
         start = self.ui.text_buffer.get_start_iter();
         end = self.ui.text_buffer.get_end_iter();
-        recipe.prep_desc = self.ui.text_buffer.get_text(start, end, True)
+        return self.ui.text_buffer.get_text(start, end, True)
 
-        if not recipe.desc:
+    def grab_window(self):
+        desc = self.ui.recipe_entry.get_text()
+        num_serv = self.ui.num_serv_entry.get_text()
+        cat_desc = self.ui.category_combo.get_active_text()
+        prep_desc = self.prep_description()
+        return (desc,num_serv,cat_desc,prep_desc)
+
+    def get_recipe(self):
+        r = gnutr.Recipe()
+        (r.desc,r.num_serv,r.cat_desc,r.prep_desc) = self.grab_window()
+
+        if not r.desc:
             gnutr.Dialog('error', 'No recipe name is defined.', self.parent)
             return None
 
-        if not recipe.num_serv:
+        if not r.num_serv:
             gnutr.Dialog('error', 
 """The number of servings is not defined,
 or is not a number.""", self.parent)
             return None
 
-        recipe.cat_num = self.store.cat_desc2num[recipe.cat_desc]
-        recipe.ingr_list = self.get_ingredient_list()
-        return recipe
+        r.cat_num = self.store.cat_desc2num[r.cat_desc]
+        r.ingr_list = self.get_ingredient_list()
+        return r
 
+    def empty_window(self):
+        (desc, num_serv, cat_desc, prep_desc) = self.grab_window()
+        if desc or num_serv or cat_desc or prep_desc: return False
+        return True
+       
     def is_dirty(self):
         if self.dirty:
             print 'Dirty flag is set.'
             return True
+        if self.empty_window():
+            print 'No recipe displayed.'
+            return False
         showing = self.get_recipe()
+        if not showing: return False
         if not self.check_recipe_exists(showing.desc):
             print 'Recipe name has changed.'
             return True
@@ -274,7 +290,7 @@ or is not a number.""", self.parent)
 
         start = self.ui.text_buffer.get_start_iter();
         end = self.ui.text_buffer.get_end_iter();
-        curr_prep_desc = self.ui.text_buffer.get_text(start, end, True)
+        curr_prep_desc = self.prep_description()
         if prep_desc != curr_prep_desc:
             print 'Recipe Instructions have changed.'
             return True

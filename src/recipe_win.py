@@ -33,8 +33,10 @@ class RecipeWin:
         self.db = database.Database()
         self.num_ingr = 0
         self.parent = parent
-
         self.store = store.Store()
+        # Dirty flag. Set True if user edits a recipe. If not set do not ask
+        # 'Do you wish to save' the recipe.
+        self.dirty = False
         self.ui.category_combo.set_rows(self.store.cat_desc_tuple)
 
     def connect_signals(self):
@@ -105,6 +107,8 @@ class RecipeWin:
             self.food_edit_dlg.show(ingr, gnutr_consts.RECIPE)
 
     def on_exit_activate(self, w, d=None):
+        if self.is_dirty:
+            self.ask_save("Save your work?")
         gtk.main_quit()
     
     def on_about_activate(self, w, d=None):
@@ -125,6 +129,7 @@ class RecipeWin:
         else:
             self.ui.treemodel.remove(iter)
             self.num_ingr = self.num_ingr - 1
+            self.dirty = True
 
     def on_nutr_released(self, w, d=None):
         if self.num_ingr == 0:
@@ -152,6 +157,7 @@ or is not a number.""", self.parent)
         self.ui.treemodel.set_value(iter, 0, ingr.amount)
         self.ui.treemodel.set_value(iter, 1, ingr.msre_desc)
         self.ui.treemodel.set_value(iter, 3, ingr)
+        self.dirty = True
 
     def on_goal_released(self, w, d=None):
         if not hasattr(self, 'nutr_goal_dlg'):
@@ -159,22 +165,26 @@ or is not a number.""", self.parent)
             self.nutr_goal_dlg = nutr_goal_dlg.NutrGoalDlg()
         self.nutr_goal_dlg.show()
 
-    def on_clear_released(self, w, d=None):
-        if self.num_ingr != 0:
-            dlg = gnutr.Dialog('question', 
-"""You are about to clear the recipe. 
-Do you wish to save it first?""", self.parent)
+    def ask_save(self, mesg):
+            dlg = gnutr.Dialog('question', mesg, self.parent)
             reply = dlg.run()
-            if reply == gtk.RESPONSE_OK:
+            if reply == gtk.RESPONSE_YES:
                 dlg.destroy()
                 self.on_save_released(None)
             else:
+                print 'Not saving changes.'
                 dlg.destroy()
+
+    def on_clear_released(self, w, d=None):
+        if self.num_ingr != 0 and self.is_dirty():
+            self.ask_save("""You are about to clear the recipe. 
+Do you wish to save it first?""")
         self.ui.recipe_entry.set_text('')
         self.ui.num_serv_entry.set_text('')
         self.ui.treemodel.clear()
         self.num_ingr = 0
         self.ui.text_buffer.set_text('')
+        self.dirty = False
 
     def check_recipe_exists(self, recipe_name):
         self.db.query("""SELECT recipe_no FROM recipe WHERE
@@ -195,6 +205,7 @@ Do you wish to save it first?""", self.parent)
 
         self.db.query("""INSERT INTO preparation VALUES
             ('%d', '0.0', "%s")"""  % (recipe_no, recipe.prep_desc))
+        self.dirty = False
 
     def delete_recipe(self, recipe_name):
         self.db.query("""SELECT recipe_no FROM recipe
@@ -233,9 +244,52 @@ or is not a number.""", self.parent)
         recipe.ingr_list = self.get_ingredient_list()
         return recipe
 
+    def is_dirty(self):
+        if self.dirty:
+            print 'Dirty flag is set.'
+            return True
+        showing = self.get_recipe()
+        if not self.check_recipe_exists(showing.desc):
+            print 'Recipe name has changed.'
+            return True
+
+        self.db.query("""SELECT recipe_no, no_serv, category_no FROM recipe
+            WHERE recipe_name = '%s'""" % (showing.desc))
+        (recipe_no, no_serv, category_no) = self.db.get_row_result()
+        print 'recipe_no:', recipe_no
+        print 'no_serv:', no_serv
+        print 'category_no:', category_no
+        if int(no_serv) != int(showing.num_serv):
+            print 'Number of servings has changed.'
+            print 'recipe', no_serv, 'showing', showing.num_serv
+            return True
+
+        if category_no != showing.cat_num:
+            print 'Category has changed.'
+            return True
+
+        self.db.query("""SELECT prep_desc FROM preparation
+                        WHERE recipe_no = '{0:d}'""".format(recipe_no))
+        prep_desc = self.db.get_single_result()
+
+        start = self.ui.text_buffer.get_start_iter();
+        end = self.ui.text_buffer.get_end_iter();
+        curr_prep_desc = self.ui.text_buffer.get_text(start, end, True)
+        if prep_desc != curr_prep_desc:
+            print 'Recipe Instructions have changed.'
+            return True
+        # Create ingredient list to compare
+        # self.db.query("""SELECT amount, Msre_No, NDB_No FROM ingredient
+        #                 WHERE recipe_no = '{0:s}'""".format(recipe_no))
+        # result  = self.db.get_result()
+        # for (amount, msre_no, food_no) in result:
+        #     pass
+        return False
+
     def on_save_released(self, w, d=None):
         recipe = self.get_recipe()
         if not recipe:
+            print 'No recipe to save.'
             return
         recipe.num = self.check_recipe_exists(recipe.desc)
         if recipe.num:
@@ -246,10 +300,12 @@ in the database. Do you want to overwrite it?""", self.parent)
             if reply == gtk.RESPONSE_YES:
                 dlg.destroy()
                 self.delete_recipe(recipe.desc)
+                print 'Saving changes to recipe.'
                 self.save_recipe(recipe)
             else:
                 dlg.destroy()
         else:
+            print 'Saving new recipe.'
             self.save_recipe(recipe)
 
     def add_ingredient(self, ingr):
@@ -281,6 +337,7 @@ in the database. Do you want to overwrite it?""", self.parent)
             self.ui.treemodel.set_value(iter3, 3, ingr)
             self.ui.treemodel.remove(iter1)
         self.num_ingr = self.num_ingr + 1
+        self.dirty = True
 
     def update(self, recipe):
         self.num_ingr = 0
@@ -302,6 +359,7 @@ in the database. Do you want to overwrite it?""", self.parent)
 
     def get_ingredient_list(self):
         ingr_list = []
+        # HERE: This was misbehaving.
         #ret = True
         #iter = self.ui.treemodel.get_iter_root()
         #while ret:

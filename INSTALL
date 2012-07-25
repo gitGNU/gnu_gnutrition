@@ -2,7 +2,7 @@ REQUIREMENTS
 
     GNUTRITION is written is Python. It requires the following:
 
-	  * Python >= 2.6
+	  * Python >= 2.6  (Python 3.x will not work with current sources)
 
       * The Python bindings to GTK+ and GNOME.
         On Fedora 15 the package name is pygtk2

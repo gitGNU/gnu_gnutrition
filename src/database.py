@@ -154,23 +154,18 @@ class Database:
             "Seq INTEGER NOT NULL, " +
             # Amount == Unit modifier (for example, 1 in "1 cup").
             "Amount REAL NOT NULL, " +
-            "Msre_No INTEGER NOT NULL, " +
+			"Msre_Desc TEXT NOT NULL, " +
             "Gm_wgt REAL NOT NULL, " +
+			"Num_Data_Pts INTEGER, " +
+			"Std_Dev REAL, " +
             "PRIMARY KEY(NDB_No, Seq))",
             ### Insert statement
             "INSERT INTO 'weight' VALUES " +
-            "(?, ?, ?, ?, ?)",
+            "(?, ?, ?, ?, ?, ?, ?)",
             'weight')
 
-        # create measure table
-        self.create_load_table("CREATE TABLE measure " +
-            "(Msre_No INTEGER PRIMARY KEY NOT NULL, " +
-            "Msre_Desc TEXT NOT NULL)",
-            "INSERT INTO 'measure' VALUES (?, ?)",
-            'measure')
-
         # create recipe table
-        # HERE: recipe_no had AUTOINCREMENT but barfs on the syntax
+        # HERE: recipe_no had AUTOINCREMENT in MySQL version
         self.create_table("CREATE TABLE recipe " +
             "(recipe_no INTEGER NOT NULL, " +
             "recipe_name TEXT NOT NULL, " +
@@ -179,20 +174,11 @@ class Database:
             "category_no INTEGER NOT NULL, " +
             "PRIMARY KEY (recipe_no , recipe_name, category_no))", 'recipe')
 
-        #trigger = """\
-        #CREATE TRIGGER recipe_number BEFORE INSERT ON recipe
-        #  BEGIN
-        #    UPDATE recipe SET recipe_no = recipe.ROWID WHERE recipe_no = NULL;
-        #  END;
-        #"""
-        #self.query(trigger)
-        
-
         # create ingredient table
         self.create_table("CREATE TABLE ingredient " + 
-            "(recipe_no INTEGER NOT NULL, " + 
+            "(recipe_no INTEGER PRIMARY KEY NOT NULL, " + 
             "amount REAL NOT NULL, " +
-            "Msre_No INTEGER NOT NULL, " +
+            "Msre_Desc TEXT NOT NULL, " +
             "NDB_No INTEGER NOT NULL)", 'ingredient')
 
         # create recipe category table
@@ -221,7 +207,7 @@ class Database:
             "date TEXT NOT NULL, " +
             "time TEXT NOT NULL, " +
             "amount REAL NOT NULL, " +
-            "Msre_No INTEGER NOT NULL, " +
+            "Msre_Desc TEXT NOT NULL, " +
             "Ndb_No INTEGER NOT NULL)", 'food_plan')
 
         # create recipe_plan table
@@ -361,7 +347,3 @@ class Database:
         else:
             m += 1
         return m
-
-if __name__ == '__main__':
-    db = Database()
-    #db.initialize()

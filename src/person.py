@@ -63,7 +63,7 @@ class Person:
             "date TEXT NOT NULL, " +
             "time TEXT NOT NULL, " + 
             "amount REAL NOT NULL, " +
-            "Msre_No INTEGER NOT NULL, " +
+            "Msre_Desc TEXT NOT NULL, " +
             "NDB_No INTEGER NOT NULL, " +
             "PRIMARY KEY (date, time, NDB_No))")
 
@@ -81,10 +81,10 @@ class Person:
         result = self.db.get_result()
 
         if result and len(result) != 0:
-            for person_no, date, time, amount, msre_no, ndb_no in result:
+            for person_no, date, time, amount, msre_desc, ndb_no in result:
                 self.db.query("INSERT INTO food_plan_temp VALUES" +
-                    "('%d', '%s', '%s', '%f', '%d', '%d' )"
-                    %(person_no, str(date), str(time), amount, msre_no, ndb_no))
+                    "('%d', '%s', '%s', '%f', '%s', '%d' )"
+                    %(person_no, str(date), str(time), amount, msre_desc, ndb_no))
 
         self.db.query("SELECT * FROM recipe_plan WHERE person_no = '%d'" 
             % (person_num))

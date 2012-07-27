@@ -35,11 +35,7 @@ class Store:
         self.fg_desc2num = {} 
         self.fd_desc2num = {} 
         self.fd_num2desc = {} 
-        self.msre_num2desc = {} 
-        self.msre_desc2num = {} 
-
         self.db = database.Database()
-
         self.create_nutr_num_list()
         self.create_nutr_desc_list()
         self.create_cat_desc_list()
@@ -47,7 +43,6 @@ class Store:
         self.create_nutr_desc_nutr_no_dict()
         self.create_fd_gp_desc_fd_gp_no_dict()
         self.create_fd_desc_fd_no_dict()
-        self.create_msre_no_msre_desc_dict()
         self.create_cat_desc_cat_no_dict()
 
     def create_cat_desc_cat_no_dict(self):
@@ -110,17 +105,7 @@ class Store:
             self.fd_num2desc[num] = desc
 
     def get_msre_desc_tuples(self, fd_num):
-        self.db.query("SELECT Msre_Desc FROM measure, weight WHERE " +
-            "weight.NDB_No = '%d' AND measure.Msre_No = weight.Msre_No" 
-            %(fd_num))
+        self.db.query("SELECT Msre_Desc FROM weight WHERE " +
+            "NDB_No = '{0:d}'".format(fd_num))
         result = self.db.get_result()
         return (('gm',),) + result
-    
-    def create_msre_no_msre_desc_dict(self):
-        self.db.query("SELECT Msre_No, Msre_Desc FROM measure")
-        result = self.db.get_result()
-        for num, desc in result:
-            self.msre_num2desc[num] = desc
-            self.msre_desc2num[desc] = num
-        self.msre_num2desc[99999] = 'gm'
-        self.msre_desc2num['gm'] = 99999

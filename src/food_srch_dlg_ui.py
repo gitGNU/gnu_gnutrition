@@ -119,7 +119,7 @@ class FoodSrchDlgUI:
         label45.set_alignment(1, 0.5)
 
         constraint_spin_adj = gtk.Adjustment(1, -5, 5, 1, 1, 1)
-        self.constraint_spin = gtk.SpinButton(constraint_spin_adj, 1, 0)
+        self.constraint_spin = gtk.SpinButton(constraint_spin_adj, 0, 0)
         label45.set_mnemonic_widget(self.constraint_spin)
         self.table_nutr.attach(self.constraint_spin, 3, 4, 4, 5, 
             gtk.FILL, 0, 0, 0)

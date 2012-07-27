@@ -101,7 +101,7 @@ class FoodSrchResDlg:
 
             ingr = gnutr.Ingredient()
             ingr.food_num = food_num
-            ingr.food_desc = self.store.fd_num2desc[ ingr.food_num]
+            ingr.food_desc = self.store.fd_num2desc[ingr.food_num]
 
             if self.view_type != gnutr_consts.FOOD:
                 try:
@@ -112,7 +112,6 @@ class FoodSrchResDlg:
             if (self.view_type == gnutr_consts.PLAN or
                     self.view_type == gnutr_consts.RECIPE):
                 ingr.msre_desc = self.ui.combo.get_active_text()
-                ingr.msre_num = self.store.msre_desc2num[ ingr.msre_desc]
 
             if self.view_type == gnutr_consts.PLAN:
                 self.ui.dialog.hide()

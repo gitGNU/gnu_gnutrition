@@ -201,8 +201,8 @@ Do you wish to save it first?""")
 
         for ingr in recipe.ingr_list:
             self.db.query("""INSERT INTO ingredient VALUES
-                ('%d', '%s', '%s', '%s' )""" % (recipe_no,
-                str(ingr.amount), str(ingr.msre_num), str(ingr.food_num)))
+                ('{0:d}', '{1:f}', '{2:s}', '{3:d}')""".format(recipe_no,
+                ingr.amount, ingr.msre_desc, ingr.food_num))
 
         self.db.query("""INSERT INTO preparation VALUES
             ('%d', '0.0', "%s")"""  % (recipe_no, recipe.prep_desc))
@@ -294,12 +294,6 @@ or is not a number.""", self.parent)
         if prep_desc != curr_prep_desc:
             print 'Recipe Instructions have changed.'
             return True
-        # Create ingredient list to compare
-        # self.db.query("""SELECT amount, Msre_No, NDB_No FROM ingredient
-        #                 WHERE recipe_no = '{0:s}'""".format(recipe_no))
-        # result  = self.db.get_result()
-        # for (amount, msre_no, food_no) in result:
-        #     pass
         return False
 
     def on_save_released(self, w, d=None):
@@ -370,8 +364,8 @@ in the database. Do you want to overwrite it?""", self.parent)
         self.ui.recipe_entry.set_text(recipe.desc)
         self.ui.num_serv_entry.set_text(str(recipe.num_serv))
         self.ui.category_combo.set_active_text(recipe.cat_desc)
-
-        self.ui.text_buffer.set_text(recipe.prep_desc) 
+        if recipe.prep_desc:
+            self.ui.text_buffer.set_text(recipe.prep_desc) 
 
     def get_ingredient_list(self):
         ingr_list = []

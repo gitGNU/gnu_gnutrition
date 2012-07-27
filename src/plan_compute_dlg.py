@@ -28,7 +28,6 @@ class PlanComputeDlg:
         self.ui = plan_compute_dlg_ui.PlanComputeDlgUI()
         self.app = app
         self.db = database.Database()
-
         self.ui.dialog.connect('response', self.on_response)
 
     def show(self):
@@ -82,13 +81,13 @@ class PlanComputeDlg:
             self.add_recipe_to_total(tot_list, recipe_num, num_portions)
 
         # get foods in plan within the dates
-        self.db.query("SELECT amount, Msre_No, NDB_No FROM " +
+        self.db.query("SELECT amount, Msre_Desc, NDB_No FROM " +
             "food_plan_temp WHERE date >='%s' AND date <='%s'" 
             %(start_date, end_date))
         result = self.db.get_result()
 
-        for amount, msre_num, fd_num in result:
-            self.add_food_to_total(tot_list, amount, msre_num, fd_num)
+        for amount, msre_desc, fd_num in result:
+            self.add_food_to_total(tot_list, amount, msre_desc, fd_num)
 
         if avg:
             self.divide_total_by_no_days(tot_list, start_date, end_date)
@@ -115,7 +114,7 @@ class PlanComputeDlg:
             tot_list[i] = (nutr_no, avg)
 
     def get_ingredients(self, recipe_num):
-        self.db.query("SELECT amount, Msre_No, NDB_No FROM " +
+        self.db.query("SELECT amount, Msre_Desc, NDB_No FROM " +
             "ingredient WHERE recipe_no = '%d'" %(recipe_num))
         return self.db.get_result()
 
@@ -124,11 +123,9 @@ class PlanComputeDlg:
             "WHERE NDB_No = '%d'" %(food_num))
         return self.db.get_result()
 #HERE: take into account Amount unit modifier
-    def get_gm_per_measure(self, food_num, msre_num):
-        if int(msre_num) == 99999:
-            return 1.0
+    def get_gm_per_measure(self, food_num, msre_desc):
         self.db.query("SELECT Gm_wgt FROM weight WHERE " +
-            "NDB_No = '%d' AND Msre_No = '%d'" %(food_num, msre_num))
+            "NDB_No = '%d' AND Msre_Desc = '%s'" %(food_num, msre_desc))
         return float(self.db.get_single_result())
 
     def add_food_nutr_comp(self, tot_list, food_num, amount, gm_per_msre):
@@ -148,11 +145,11 @@ class PlanComputeDlg:
         self.db.query("SELECT no_serv FROM recipe WHERE " +
             "recipe_no = '%d'" %(recipe_num))
         num_serv = float(self.db.get_single_result())
-        for amount, msre_num, fd_num in ingr_list:
+        for amount, msre_desc, fd_num in ingr_list:
             tot_amount = amount * num_portions / num_serv
-            gm_per_msre = self.get_gm_per_measure(fd_num, msre_num)
+            gm_per_msre = self.get_gm_per_measure(fd_num, msre_desc)
             self.add_food_nutr_comp(tot_list, fd_num, tot_amount, gm_per_msre)
 
-    def add_food_to_total(self, tot_list, amount, msre_no, fd_no):
-        gm_per_msre = self.get_gm_per_measure(fd_no, msre_no)
+    def add_food_to_total(self, tot_list, amount, msre_desc, fd_no):
+        gm_per_msre = self.get_gm_per_measure(fd_no, msre_desc)
         self.add_food_nutr_comp(tot_list, fd_no, amount, gm_per_msre)

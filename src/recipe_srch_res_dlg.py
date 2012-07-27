@@ -90,27 +90,25 @@ class RecipeSrchResDlg:
             # plan_win.py
             if self.view == gnutr_consts.RECIPE:
                 self.db.query("SELECT no_serv, category_no FROM " +
-                    "recipe WHERE recipe_no = '%d'" %(recipe.num))
+                    "recipe WHERE recipe_no = '{0:d}'".format(recipe.num))
                 recipe.num_serv, recipe.cat_num = self.db.get_row_result()
                 recipe.cat_desc = self.store.cat_num2desc[ recipe.cat_num]
 
                 self.db.query("SELECT prep_desc FROM preparation WHERE " +
-                    "recipe_no = '%d'" %(recipe.num))
+                    "recipe_no = '{0:d}'".format(recipe.num))
                 recipe.prep_desc = self.db.get_single_result()
 
-                self.db.query("SELECT Amount, Msre_No, NDB_No FROM " +
-                    "ingredient WHERE recipe_no = '%d'" 
-                    %(recipe.num))
+                self.db.query("SELECT amount, Msre_Desc, NDB_No FROM " +
+                    "ingredient WHERE recipe_no = '{0:d}'".format(recipe.num))
                 ingr_list = self.db.get_result()
 
                 recipe.ingr_list = []
-                for amount, msre_num, food_num in ingr_list:
+                for amount, msre_desc, food_num in ingr_list:
                     ingr = gnutr.Ingredient()
                     ingr.amount = amount
                     ingr.food_num = food_num
-                    ingr.msre_num = msre_num
                     ingr.food_desc = self.store.fd_num2desc[ food_num]
-                    ingr.msre_desc = self.store.msre_num2desc[ msre_num]
+                    ingr.msre_desc = msre_desc
                     recipe.ingr_list.append(ingr)
 
                 self.app.base_win.recipe.update(recipe)

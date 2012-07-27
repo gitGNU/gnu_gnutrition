@@ -48,7 +48,6 @@ class FoodEditDlg:
             except ValueError:
                 gnutr.Dialog('error', 'The amount must be a number.')
             self.ingr.msre_desc = self.ui.combo.get_active_text()
-            self.ingr.msre_num = self.store.msre_desc2num[self.ingr.msre_desc]
 
             if self.view == gnutr_consts.RECIPE:
                 self.app.base_win.recipe.replace_ingredient(self.ingr)

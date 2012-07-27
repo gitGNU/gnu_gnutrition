@@ -2,28 +2,24 @@ REQUIREMENTS
 
     GNUTRITION is written is Python. It requires the following:
 
+	  * Python >= 2.6  (Python 3.x will not work with current sources)
+
       * The Python bindings to GTK+ and GNOME.
-
-      * MySQL database server and client - version 3.22 or above.
-        At present gnutrition requires a locally installed server.
-
-      * MySQLdb modules - a Python interface to MySQL.
-        The home page is at http://dustman.net/andy/python/MySQLdb and
-        the latest version can be downloaded from:
-            http://dustman.net/andy/python/MySQLdb/0.3.5
+        On Fedora 15 the package name is pygtk2
 
       For documentation:
       * docbook-utils for db2html command  (not critical)
 
 UPGRADING
 
-    Note that if you are upgrading from version 0.2 to 0.3 or above, 
-    gnutrition now uses a MySQL database to store recipes. This means that 
-    recipes created with version 0.2 cannot be loaded into 0.3. They must be
-    re-created using version 0.3. Sorry.
+    Note that if you are upgrading from versions < 0.32 GNUtrition now uses
+	the built-in SQLite3 Python module sqlite3. If you have been using a 
+	GNUtrition version which uses a MySQL database the gnutr_db database will
+	be converted to the SQLite3 format. There is no longer a need for database
+    username or password. The new format is stored in your home directory in
+	the .gnutrition directory (back it up!).
 
-    In future versions, if the database table format is changed, I will
-    provide smoother way to upgrade between without losing data.
+    If you have recipes created with version 0.2 they must be re-created.
 
 INSTALLATION
 
@@ -39,37 +35,18 @@ INSTALLATION
         /usr/local/share
 	
     Use the `--prefix' command line option to install elsewhere. 
-    For example to install in your home directory:
-
-        ./configure --prefix=/usr
+    For example to install in your home directory under gnutrition:
+		
+		mkdir ~/gnutrition
+        ./configure --prefix=$HOME/gnutrition
         make
         make install
 
-    After installing gnutrition, you will need to make sure that
-    MySQL is set up properly, especially if you have installed
-    MySQL for the first time.
+	To put gnutrition in your $PATH (for above example) add
 
-    MySQL uses an access privilege system. When it is installed, the
-    initial root password is empty. To get gnutrition working, all you
-    need to do is make sure that you specify a root password.
+       export PATH=$PATH:$HOME/gnutrition/bin
 
-    To save you the trouble of reading the MySQL manual, this can be
-    achieved as follows:
-
-    From a shell prompt type:
-
-        mysql -uroot mysql
-
-    You should now get a MySQL prompt of "mysql>".
-
-    From then MySQL prompt type the following lines:
-
-        mysql> UPDATE user SET Password=PASSWORD('new_password') 
-                    WHERE user='root';
-        mysql> FLUSH PRIVILEGES;
-        mysql> quit
-
-    Note that in the UPDATE line above, the single quotes are needed
-    around new_password and root.
+	to your .bash_profile (or .profile, whichever you use). Then log out
+	out and log back in.
 
     That's it! You can now type "gnutrition".

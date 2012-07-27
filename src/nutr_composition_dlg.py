@@ -54,14 +54,14 @@ class NutrCompositionDlg:
         self.list_nutr_tot = nutr_list
         self.list_pcnt_goal = self.compute_pcnt_nutr_goal()
 
-    def compute_food(self, amount, msre_num, food_num):
+    def compute_food(self, amount, msre_desc, food_num):
         nutr_num_list = self.store.nutr_num_list
         self.list_nutr_tot[:] = []
 
         for nutr_num in nutr_num_list:
             self.list_nutr_tot.append((nutr_num, 0.000))
 
-        self.add_food_to_nutr_total(amount, msre_num, food_num)
+        self.add_food_to_nutr_total(amount, msre_desc, food_num)
         self.list_pcnt_goal = self.compute_pcnt_nutr_goal()
         self.update()
 
@@ -87,18 +87,16 @@ class NutrCompositionDlg:
         self.ui.fat_entry.set_text('%.3f' %(fat))
         self.ui.carb_entry.set_text('%.3f' %(carbs))
 
-    def add_food_to_nutr_total(self, amount, msre_num, food_num):
+    def add_food_to_nutr_total(self, amount, msre_desc, food_num):
 
         self.db.query("SELECT Nutr_No, Nutr_Val FROM nut_data " +
             "WHERE NDB_No ='%d'" % (food_num))
         list_food_nutr = self.db.get_result()
 
-        if int(msre_num) == 99999:
-            gm_per_msre = 1.0
-        else:
-            self.db.query("SELECT Gm_wgt FROM weight " +
-                "WHERE NDB_No ='%d' AND Msre_No ='%d'" % (food_num, msre_num))
-            gm_per_msre = self.db.get_single_result()
+        self.db.query("SELECT Gm_wgt FROM weight " +
+            "WHERE NDB_No ='{0:d}' AND Msre_Desc ='{1:s}'".format(
+                    food_num, msre_desc))
+        gm_per_msre = self.db.get_single_result()
 
         for i in range(len(self.list_nutr_tot)):
             tot_nutr_num, tot_nutr_val = self.list_nutr_tot[i]
@@ -140,10 +138,11 @@ class NutrCompositionDlg:
         for nutr_num in list_nutr_num:
             self.list_nutr_tot.append((nutr_num, 0.000))
 
+        print 'compute_nutr_total(recipe):'
         # iterate over ingredients
         for ingr in recipe.ingr_list:
-            self.add_food_to_nutr_total(ingr.amount, ingr.msre_num,
-                ingr.food_num)
+            print '    amount:',ingr.amount,'msre_desc:',ingr.msre_desc,'food_num:',ingr.food_num
+            self.add_food_to_nutr_total(ingr.amount, ingr.msre_desc, ingr.food_num)
 
         # divide by the number of servings
         for i in range(len(self.list_nutr_tot)):
@@ -164,15 +163,23 @@ class NutrCompositionDlg:
         list_nutr_goal = self.db.get_result()
 
         dict = {}
+        print 'list_nutr_tot:'
         for num, val in self.list_nutr_tot:
+            print 'num:', num, 'val:', val
             dict[num] = val
 
         list_pcnt_goal = []
+        print 'list_nutr_goal:'
         for num, val in list_nutr_goal:
+            print 'num:', num, 'val:', val
             if val == 0.0:
                 pcnt = 0.0
             else:
-                pcnt = dict[num] * 100.0 / val
+                try:
+                    pcnt = dict[num] * 100.0 / val
+                except KeyError:
+                    print 'nutr_composition_dlg: line 179, key error', num  
+                    continue
             list_pcnt_goal.append((num, pcnt))
         return list_pcnt_goal
 

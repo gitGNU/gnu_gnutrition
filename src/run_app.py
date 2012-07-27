@@ -41,18 +41,18 @@ class RunApp:
         db_pword = config.get_value('Password')
 
         import database 
-        self.db = database.Database(db_uname, db_pword)
-        success = self.db.change_user(db_uname, db_pword, 'gnutr_db')
+        self.db = database.Database()
+        #success = self.db.change_user(db_uname, db_pword, 'gnutr_db')
 
-        if success == 0:
-            import gnutr
-            import sys
-            gnutr.Dialog('error', 
-                'Failed to connect to the database.\n\n' +
-                'I suggest that you delete the file\n ' +
-                '"~/.gnutrition/config" and run "gnutrition" again.')
-            gtk.main_quit()
-            sys.exit()
+        #if success == 0:
+        #    import gnutr
+        #    import sys
+        #    gnutr.Dialog('error', 
+        #        'Failed to connect to the database.\n\n' +
+        #        'I suggest that you delete the file\n ' +
+        #        '"~/.gnutrition/config" and run "gnutrition" again.')
+        #    gtk.main_quit()
+        #    sys.exit()
 
         import store
         self.store = store.Store()

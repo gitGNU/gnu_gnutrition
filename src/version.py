@@ -71,15 +71,15 @@ def update_version(version, message=None):
 
 def check_version():
     import gnutr_consts
+    import install
+    this_ver = install.VERSION
     if config.get_value('check_disabled') or not config.get_value('check_version'):
-        return
+        return 0
     import time
     interval = config.get_value('check_interval')
     last_check = config.get_value('last_check')
     time_now = time.time()
     if (time_now - last_check > interval):
-        import install
-        this_ver = install.VERSION
         (curr_ver, mesg) = get_latest_version(gnutr_consts.LATEST_VERSION) 
         update = False
         if this_ver == curr_ver:
@@ -87,8 +87,10 @@ def check_version():
         else:
             update = cmp_version_strings(this_ver,curr_ver)
         if update:
+#HERE: Check for existing MySQL db and ask about migration/deletion
             update_version(curr_ver, mesg)
     last_check = config.set_key_value('last_check',time_now)
+    return 1
 
 if __name__ == '__main__':
     def str_cmp_test():

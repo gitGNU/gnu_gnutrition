@@ -49,12 +49,13 @@ class Druid:
 
         # Database Create
         elif self.ui.page_num == 1:
-            uname = self.ui.page_list[1].root_user_entry.get_text()
-            pword = self.ui.page_list[1].root_pass_entry.get_text()
-            if (not uname) or (not pword):
-                return
+            #uname = self.ui.page_list[1].root_user_entry.get_text()
+            #pword = self.ui.page_list[1].root_pass_entry.get_text()
+            #if (not uname) or (not pword):
+            #    return
             try:
-                self.db = database.Database(uname, pword)
+                self.db = database.Database()
+                #self.db = database.Database(uname, pword)
             except Exception, ex:
                 self.ui.set_page(2)
                 return
@@ -62,24 +63,25 @@ class Druid:
             self.db.initialize()
             
             # no error, so skip over page_db_error
-            self.ui.set_page(3)
+            #self.ui.set_page(3)
+            self.ui.set_page(5)
             return
 
-        # User Setup
+        # User Setup (skipped if using SQLite)
         elif self.ui.page_num == 3:
-            uname = self.ui.page_list[3].user_entry.get_text()
-            pword = self.ui.page_list[3].pass_entry.get_text()
-            if (not uname) or (not pword):
-                return
-            success = self.user_setup(uname, pword)
-            if not success:
-                self.ui.set_page(4)
-                return
-            self.db.change_user(uname, pword, 'gnutr_db')
+            #uname = self.ui.page_list[3].user_entry.get_text()
+            #pword = self.ui.page_list[3].pass_entry.get_text()
+            #if (not uname) or (not pword):
+            #    return
+            #success = self.user_setup(uname, pword)
+            #if not success:
+            #    self.ui.set_page(4)
+            #    return
+            #self.db.change_user(uname, pword, 'gnutr_db')
 
             # does the user have an entry in the person table?
             self.person = person.Person()
-            person_name = self.person.get_name(uname)
+            person_name = self.person.get_name(self.db.user)
             if person_name:
                 config.set_key_value('Name', person_name)
                 self.person.setup()
@@ -91,6 +93,17 @@ class Druid:
 
         # Personal details
         elif self.ui.page_num == 5:
+######
+            self.person = person.Person()
+            person_name = self.person.get_name(self.db.user)
+            if person_name:
+                config.set_key_value('Name', person_name)
+                self.person.setup()
+
+                self.ui.set_page(7)
+                return
+
+######
             name = self.ui.page_list[5].name_entry.get_text()
             age = self.ui.page_list[5].age_entry.get_text()
             weight_txt = self.ui.page_list[5].weight_entry.get_text()
@@ -176,6 +189,15 @@ class Druid:
         return 0
 
     def on_back(self, w, d=None):
+        # skip back over page_db_error
+        if self.ui.page_num == 5:
+            self.ui.set_page(1)
+        elif self.ui.page_num == 7:
+            self.ui.set_page(5)
+        else:
+            self.ui.set_page(self.ui.page_num - 1)
+
+    def on_back_original(self, w, d=None):
         # skip back over page_db_error
         if self.ui.page_num == 3:
             self.ui.set_page(1)

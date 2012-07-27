@@ -6,6 +6,6 @@
 106^Appetizer
 107^Bread
 108^Salad
-108^Soup
-109^Drink
-110^Alcohol
+109^Soup
+110^Drink
+111^Alcohol

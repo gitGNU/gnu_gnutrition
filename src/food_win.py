@@ -90,12 +90,11 @@ class FoodWin:
             return
         fd_num = self.store.fd_desc2num[fd_desc]
         msre_desc = self.ui.msre_combo.get_active_text()
-        msre_num = self.store.msre_desc2num[msre_desc]
         try:
             amount = float(self.ui.amount_entry.get_text())
         except ValueError:
             gnutr.Dialog('error', 'The amount must be a number.', self.parent)
-        self.nutr_comp_dlg.compute_food(amount, msre_num, fd_num)
+        self.nutr_comp_dlg.compute_food(amount, msre_desc, fd_num)
 
     def on_goals_released(self, w, d=None):
         if not hasattr(self, 'nutr_goal_dlg'):

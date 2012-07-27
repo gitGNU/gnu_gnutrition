@@ -573,6 +573,7 @@ PYTHON_PREFIX
 PYTHON_VERSION
 PYTHON
 VERSION
+REVISION
 MINOR_VERSION
 MAJOR_VERSION
 PACKAGE
@@ -1659,8 +1660,10 @@ PACKAGE=gnutrition
 
 
 MAJOR_VERSION=0
-MINOR_VERSION=31.2
-VERSION="0.31.2"
+MINOR_VERSION=33
+REVISION=0
+VERSION="0.33.0"
+
 
 
 
@@ -1707,8 +1710,8 @@ fi
 
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for python >= 2.2" >&5
-$as_echo_n "checking for python >= 2.2... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for python >= 2.6" >&5
+$as_echo_n "checking for python >= 2.6... " >&6; }
 
 prog1="
 import sys
@@ -1907,24 +1910,6 @@ $as_echo "yes" >&6; }
 else
     as_fn_error $? "
 **** The python interpreter can't find the python bindings for gtk." "$LINENO" 5
-fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for MySQLdb" >&5
-$as_echo_n "checking for MySQLdb... " >&6; }
-prog4="
-import sys
-try:
-    import MySQLdb
-except ImportError:
-    sys.exit(1)
-sys.exit(0)"
-if $PYTHON -c "$prog4" 1>&5 2>&5
-then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-else
-    as_fn_error $? "
-**** The python interpreter can't find the python bindings for MySQL." "$LINENO" 5
 fi
 
 ac_config_files="$ac_config_files run-gnutrition.py src/install.py Makefile src/Makefile data/Makefile pixmaps/Makefile doc/Makefile rpm/Makefile rpm/gnutrition.spec debian/Makefile"

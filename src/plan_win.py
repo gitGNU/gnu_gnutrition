@@ -41,8 +41,7 @@ class PlanWin:
         self.update()
 
     def get_current_date(self):
-        self.db.query("SELECT CURDATE()")
-        return self.db.get_single_result()
+        return self.db.curdate()
 
     def connect_signals(self):
         self.ui.save_button.connect('clicked', self.on_save_released)
@@ -301,30 +300,28 @@ class PlanWin:
         if not hasattr(self, 'store'):
             import store
             self.store = store.Store()
-        self.db.query("SELECT time, amount, Msre_No, NDB_No " +
-            "FROM food_plan_temp WHERE date = '%s'" % (date))
+        self.db.query("SELECT time, amount, Msre_Desc, NDB_No " +
+            "FROM food_plan_temp WHERE date = '{0:s}'".format(date))
         result = self.db.get_result()
 
         food_list = []
-        for time, amount, msre_no, ndb_no in result:
+        for time, amount, msre_desc, ndb_no in result:
             food = gnutr.Ingredient()
             food.time = str(time)
             food.amount = amount
-            food.msre_num = msre_no
             food.food_num = ndb_no
             food.food_desc = self.store.fd_num2desc[food.food_num]
-            food.msre_desc = self.store.msre_num2desc[food.msre_num]
+            food.msre_desc = msre_desc
             food_list.append(food)
         return food_list
 
     def food_desc_from_NDB_No(self, food_no):
-        self.db.query("SELECT Long_Desc FROM food_des WHERE NDB_No = '%d'" %
-            (food_no, seq_no))
+        self.db.query("SELECT Long_Desc FROM food_des WHERE NDB_No = '{0:d}'".format(food_no))
         return self.db.get_result()
 
-    def food_quantity_info(self, food_no, seq_no):
-        self.db.query("SELECT Amount, Gm_wgt FROM weight WHERE NDB_No = '%d'" +
-            "AND Msre_No = '%d'" % (food_no, seq_no))
+    def food_quantity_info(self, food_no, msre_desc):
+        self.db.query("SELECT Amount, Gm_wgt FROM weight WHERE NDB_No = '{0:d}'" +
+            "AND Msre_Desc = '{1:s}'".format(food_no, msre_desc))
         return self.db.get_result()
 
 
@@ -376,15 +373,15 @@ class PlanWin:
     def edit_plan_temp_db(self, date, food=None, recipe=None):
         if food:
             self.db.query("SELECT * FROM food_plan_temp WHERE " +
-                "date = '%s' AND time = '%s' AND NDB_No = '%d'"
-                %(date, food.time, food.food_num))
+                "date = '{0:s}' AND time = '{1:s}' AND NDB_No = '{2:d}'".format(
+					date, food.time, food.food_num))
             data = self.db.get_result()
             # FIXME: catches a bug where two foods have the same name,
             # date and time. At present can't distinguish between them
             if len(data) > 1:
-                person_num, date2, time, amount, msre_num, food_num = data[0]
+                person_num, date2, time, amount, msre_desc, food_num = data[0]
             else:
-                ((person_num, date2, time, amount, msre_num, food_num),) = \
+                ((person_num, date2, time, amount, msre_desc, food_num),) = \
                 data
 
             self.db.query("DELETE FROM food_plan_temp WHERE " +
@@ -392,9 +389,8 @@ class PlanWin:
                 %(date, food.time, food.food_num))
  
             self.db.query("INSERT INTO food_plan_temp VALUES (" +
-                "'%d', '%s', '%s', '%s', '%d', '%d')"
-                %(person_num, date2, time, food.amount, food.msre_num,
-                    food_num))
+                "'{0:d}', '{1:s}', '{2:s}', '{3:f}', '{4:s}', '{5:d}')".format(
+                person_num, date2, time, food.amount, food.msre_desc,food_num))
         else:
             self.db.query("SELECT * FROM recipe_plan_temp WHERE " +
                 "date = '%s' AND time = '%s' AND recipe_no = '%d'" 
@@ -429,10 +425,10 @@ class PlanWin:
         self.db.query("SELECT * FROM food_plan_temp")
         plan_list = self.db.get_result()
 
-        for person, date, time, amount, msre_no, ndb_no in plan_list:
+        for person, date, time, amount, msre_desc, ndb_no in plan_list:
             self.db.query("INSERT INTO food_plan VALUES (" + 
-                "'%d', '%s', '%s', '%f', '%d', '%d' )"
-                % (person, date, time, amount, msre_no, ndb_no))
+                "'{0:d}', '{1:s}', '{2:s}', '{3:f}', '{4:s}', '{5:d}')".format(
+                person, date, time, amount, msre_desc, ndb_no))
 
         self.db.query("SELECT * FROM recipe_plan_temp")
         recipe_list = self.db.get_result()
@@ -471,7 +467,6 @@ class PlanWin:
 
         # Note: the temporary table is used
         self.db.query("INSERT INTO food_plan_temp VALUES (" +
-            "'%d', '%s', '%s', '%f', '%d', '%d' )"
-            %(person_num, date, time, food.amount, food.msre_num, 
-            food.food_num))
+            "'{0:d}', '{1:s}', '{2:s}', '{3:f}', '{4:s}', '{5:d}')".format(
+            person_num, date, time, food.amount, food.msre_desc, food.food_num))
         self.update()

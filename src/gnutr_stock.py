@@ -20,7 +20,7 @@ import gtk
 import install
 
 def create_stock():
-    drct = install.dir + '/pixmaps/'
+    drct = install.idir + '/pixmaps/'
     recipe_pixbuf = gtk.gdk.pixbuf_new_from_file(drct + 'cake.png')
     plan_pixbuf = gtk.gdk.pixbuf_new_from_file(drct + 'plan.png')
     food_pixbuf = gtk.gdk.pixbuf_new_from_file(drct + 'banana.png')

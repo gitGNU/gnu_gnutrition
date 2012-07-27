@@ -38,8 +38,6 @@ uninstall:
 	rm -rf ${datadir}/data
 
 clean:
-	rm -f MEASURE.txt; \
-	[ -f WEIGHT.orig ] && mv WEIGHT.orig WEIGHT.txt
 
-dist_clean: clean
+distclean: clean
 	rm -f Makefile

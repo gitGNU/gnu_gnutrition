@@ -1,3 +1,604 @@
+2012-07-26  Thomas Sinclair  <thomas.a.sinclair@gmail.com>
+
+	Merging development version 0.33.0 with trunk
+
+2012-06-04  Jason Self  <jself@gnu.org>
+
+	* data/Makefile.in:
+	* data/prep_data.py:
+	* src/base_win.py:
+	* src/base_win_ui.py:
+	* src/config.py:
+	* src/druid.py:
+	* src/druid_ui.py:
+	* src/file_select_dlg.py:
+	* src/food_edit_dlg.py:
+	* src/food_edit_dlg_ui.py:
+	* src/food_srch_dlg_ui.py:
+	* src/food_srch_res_dlg.py:
+	* src/food_srch_res_dlg_ui.py:
+	* src/food_win.py:
+	* src/food_win_ui.py:
+	* src/gnutr_stock.py:
+	* src/gnutr_widgets.py:
+	* src/help.py:
+	* src/nutr_composition_dlg_ui.py:
+	* src/nutr_goal_dlg_ui.py:
+	* src/plan_add_dlg.py:
+	* src/plan_add_dlg_ui.py:
+	* src/plan_compute_dlg_ui.py:
+	* src/plan_win_ui.py:
+	* src/recipe_edit_dlg.py:
+	* src/recipe_edit_dlg_ui.py:
+	* src/recipe_srch_dlg.py:
+	* src/recipe_srch_dlg_ui.py:
+	* src/recipe_srch_res_dlg_ui.py:
+	* src/recipe_win.py:
+	* src/recipe_win_ui.py:
+	* src/save_as.py:
+
+	Updating copyright statements based on previous commits
+
+2012-05-29  Thomas Sinclair  <thomas.a.sinclair@gmail.com>
+
+	* data/DATA_SRC.txt:
+	* data/DATSRCLN.txt:
+	* data/DERIV_CD.txt:
+	* data/Dats_Src.pdf:
+	* data/FD_GROUP.txt:
+	* data/FOOD_DES.txt:
+	* data/FOOTNOTE.txt:
+	* data/LANGDESC.txt:
+	* data/LANGUAL.txt:
+	* data/NUTR_DEF.txt:
+	* data/NUT_DATA.txt:
+	* data/README:
+	* data/SRC_CD.txt:
+	* data/WEIGHT.txt:
+	* data/prep_data.py:
+	* data/prep_data_files.sh:
+	* data/sr24_doc.pdf:
+	* src/version.py:
+	* data/fd_group.txt:
+	* data/food_des.txt:
+	* data/footnote.txt:
+	* data/measure.txt:
+	* data/nut_data.txt:
+	* data/nutr_def.txt:
+	* data/script.sh:
+	* data/script2.sh:
+	* data/source.txt:
+	* data/sr13_doc.pdf:
+	* data/weight.txt:
+	* src/install.py:
+	* INSTALL:
+	* Makefile.in:
+	* README:
+	* autom4te.cache/output.0:
+	* autom4te.cache/requests:
+	* autom4te.cache/traces.0:
+	* configure:
+	* configure.in:
+	* data/Makefile.in:
+	* debian/Makefile.in:
+	* doc/Makefile.in:
+	* doc/gnutrition.sgml:
+	* gnutr.py:
+	* pixmaps/Makefile.in:
+	* rpm/Makefile.in:
+	* rpm/remove_prefix.py:
+	* run-gnutrition.py.in:
+	* src/Makefile.in:
+	* src/base_win.py:
+	* src/base_win_ui.py:
+	* src/calc_rdi.py:
+	* src/config.py:
+	* src/database.py:
+	* src/date_widget.py:
+	* src/druid.py:
+	* src/druid_ui.py:
+	* src/file_select_dlg.py:
+	* src/food_edit_dlg.py:
+	* src/food_edit_dlg_ui.py:
+	* src/food_srch_dlg.py:
+	* src/food_srch_dlg_ui.py:
+	* src/food_srch_res_dlg.py:
+	* src/food_srch_res_dlg_ui.py:
+	* src/food_win.py:
+	* src/food_win_ui.py:
+	* src/gnutr.py:
+	* src/gnutr_consts.py:
+	* src/gnutr_stock.py:
+	* src/gnutr_widgets.py:
+	* src/help.py:
+	* src/install.py.in:
+	* src/nutr_composition_dlg.py:
+	* src/nutr_composition_dlg_ui.py:
+	* src/nutr_goal_dlg.py:
+	* src/nutr_goal_dlg_ui.py:
+	* src/person.py:
+	* src/plan_add_dlg.py:
+	* src/plan_add_dlg_ui.py:
+	* src/plan_compute_dlg.py:
+	* src/plan_compute_dlg_ui.py:
+	* src/plan_win.py:
+	* src/plan_win_ui.py:
+	* src/recipe_edit_dlg.py:
+	* src/recipe_edit_dlg_ui.py:
+	* src/recipe_srch_dlg.py:
+	* src/recipe_srch_dlg_ui.py:
+	* src/recipe_srch_res_dlg.py:
+	* src/recipe_srch_res_dlg_ui.py:
+	* src/recipe_win.py:
+	* src/recipe_win_ui.py:
+	* src/run_app.py:
+	* src/save_as.py:
+	* src/store.py:
+	* src/test_gnutr_combobox.py:
+	* data/category.txt:
+	* data/CATEGORY.txt:
+
+	Merged development branch with trunk. Trunk version is now 0.3.2
+
+2012-07-26  Thomas Sinclair  <thomas.a.sinclair@gmail.com>
+
+	* data/prep_data.py:
+	* autom4te.cache/output.0:
+	* configure:
+	* configure.in:
+	* data/Makefile.in:
+	* data/README:
+	* data/prep_data_files.sh:
+	* src/database.py:
+	* src/food_edit_dlg.py:
+	* src/food_srch_dlg_ui.py:
+	* src/food_srch_res_dlg.py:
+	* src/food_win.py:
+	* src/nutr_composition_dlg.py:
+	* src/person.py:
+	* src/plan_compute_dlg.py:
+	* src/plan_win.py:
+	* src/recipe_srch_res_dlg.py:
+	* src/recipe_win.py:
+	* src/store.py:
+
+	Upped version to 0.33 to reflect significant changes:
+	SQLite in use.
+	No longer re-write WEIGTHT.txt or create MEASURE.txt. sr24 data used as-is.
+	Nutrient composition now calculates.
+	Fewer dialogs pop up.
+	A lot of console output for now. Will be removed later when app seems stable.
+
+2012-07-25  Thomas Sinclair  <thomas.a.sinclair@gmail.com>
+
+	* autom4te.cache/output.0:
+	* autom4te.cache/traces.0:
+	* configure:
+	* configure.in:
+	* src/install.py.in:
+	* src/recipe_win.py:
+
+	Added REVISION token (number) to versioning scheme to be incremented
+	for minor changes when it is judged inappropriate to increment MINOR number.
+	Version number now is MAJOR.MINOR.REVISION.
+	Eliminated a save dialog when a recipe is displayed but not modified and 'Quit'
+	is selected from menu.
+
+2012-07-24  Thomas Sinclair  <thomas.a.sinclair@gmail.com>
+
+	* INSTALL:
+
+	Added note in INSTALL about current sources not running with Python 3.x
+
+2012-07-24  Thomas Sinclair  <thomas.a.sinclair@gmail.com>
+
+	* src/recipe_win.py:
+
+	recipe_win.py: Added is_dirty() which checks for changes
+	to UI window (changes to recipe). Now if nothing has changed the user does not
+	see a dialog asking about saving recipe.
+	Fixed bug in on_clear_released() which was missing affirmative user response
+	about saving (changed gtk.RESPONSE_OK to gtk.RESPONSE_YES).
+	Added check for changes when 'Quit' is selected from menu using is_dirty().
+	Users shold not lose work now.
+
+2012-07-22  Thomas Sinclair  <thomas.a.sinclair@gmail.com>
+
+	* autom4te.cache/output.0:
+	* autom4te.cache/traces.0:
+	* configure:
+	* configure.in:
+	* src/database.py:
+
+	configure.in had bzr merge notation ('>>>>',etc).
+	Forgot to run autoconf on updated configure.in last commit (fixed).
+	Added con.create_function('REGEXP', 2, regexp) to sqlite3 initialization and
+	defined the function 'regexp'. This fixes runtime error when 'REGEXP' is
+	encountered in a query.
+
+2012-06-26  Thomas Sinclair  <thomas.a.sinclair@gmail.com>
+
+	* INSTALL:
+	* configure.in:
+	* data/CATEGORY.txt:
+	* src/config.py:
+	* src/database.py:
+	* src/druid.py:
+	* src/druid_ui.py:
+	* src/gnutr_stock.py:
+	* src/help.py:
+	* src/install.py.in:
+	* src/person.py:
+	* src/plan_win.py:
+	* src/recipe_win.py:
+	* src/run_app.py:
+	* src/version.py:
+
+	Conversion to SQLite in progress. Updated configure.in so that check for MySQL is not done and Python version >= 2.6. Updated INSTALL. First run now skips MySQL-related dialogs. Updated browser list in help.py (incomplete list). Renumbered Soup, Drink, Alcohol +1 ea. because Salad and Soup were both 108. Conversion to sqlite3 syntax.
+
+2012-06-04  Jason Self  <jself@gnu.org>
+
+	* data/Makefile.in:
+	* data/prep_data.py:
+	* src/base_win.py:
+	* src/base_win_ui.py:
+	* src/config.py:
+	* src/druid.py:
+	* src/druid_ui.py:
+	* src/file_select_dlg.py:
+	* src/food_edit_dlg.py:
+	* src/food_edit_dlg_ui.py:
+	* src/food_srch_dlg_ui.py:
+	* src/food_srch_res_dlg.py:
+	* src/food_srch_res_dlg_ui.py:
+	* src/food_win.py:
+	* src/food_win_ui.py:
+	* src/gnutr_stock.py:
+	* src/gnutr_widgets.py:
+	* src/help.py:
+	* src/nutr_composition_dlg_ui.py:
+	* src/nutr_goal_dlg_ui.py:
+	* src/plan_add_dlg.py:
+	* src/plan_add_dlg_ui.py:
+	* src/plan_compute_dlg_ui.py:
+	* src/plan_win_ui.py:
+	* src/recipe_edit_dlg.py:
+	* src/recipe_edit_dlg_ui.py:
+	* src/recipe_srch_dlg.py:
+	* src/recipe_srch_dlg_ui.py:
+	* src/recipe_srch_res_dlg_ui.py:
+	* src/recipe_win.py:
+	* src/recipe_win_ui.py:
+	* src/save_as.py:
+
+	Updating copyright statements based on previous commits
+
+2012-05-29  Thomas Sinclair  <thomas.a.sinclair@gmail.com>
+
+	* data/Makefile.in:
+	* doc/Makefile.in:
+
+	Added to 'clean' target
+
+2012-05-29  Thomas Sinclair  <thomas.a.sinclair@gmail.com>
+
+	* src/recipe_win.py:
+
+	RecipeWin.get_ingredient_list() no longer hangs when adding past first ingredient.
+
+2012-05-28  Thomas Sinclair  <thomas.a.sinclair@gmail.com>
+
+	* run-gnutrition.py.in:
+
+	Changed the envocation of GNUtrition to the preferred "#!/usr/bin/env python" (was #!/usr/bin/python).
+
+2012-05-28  Thomas Sinclair  <thomas.a.sinclair@gmail.com>
+
+	* src/recipe_win.py:
+
+	Fixed bug that caused duplicate recipies to be saved.
+
+2012-05-28  Thomas Sinclair  <thomas.a.sinclair@gmail.com>
+
+	* src/base_win_ui.py:
+
+	Added copyright for FSF to 'About' dialog.
+
+2012-05-28  Thomas Sinclair  <thomas.a.sinclair@gmail.com>
+
+	* data/prep_data.py:
+	* src/database.py:
+	* src/gnutr_consts.py:
+
+	Removed Msre_Desc from weight table as it is referenced by Msre_No in the measure table created during install. Removed unused format string for food plan from gnutr_consts.py. Added 'caller=None' to parameters for database.query(query, caller=None).
+
+2012-05-27  Thomas Sinclair  <thomas.a.sinclair@gmail.com>
+
+	* data/README:
+	* data/prep_data.py:
+	* INSTALL:
+	* data/Makefile.in:
+	* data/prep_data_files.sh:
+	* src/base_win.py:
+	* src/base_win_ui.py:
+	* src/calc_rdi.py:
+	* src/config.py:
+	* src/database.py:
+	* src/date_widget.py:
+	* src/druid.py:
+	* src/druid_ui.py:
+	* src/file_select_dlg.py:
+	* src/food_edit_dlg.py:
+	* src/food_edit_dlg_ui.py:
+	* src/food_srch_dlg.py:
+	* src/food_srch_dlg_ui.py:
+	* src/food_srch_res_dlg.py:
+	* src/food_srch_res_dlg_ui.py:
+	* src/food_win.py:
+	* src/food_win_ui.py:
+	* src/gnutr.py:
+	* src/gnutr_consts.py:
+	* src/gnutr_stock.py:
+	* src/gnutr_widgets.py:
+	* src/help.py:
+	* src/nutr_composition_dlg.py:
+	* src/nutr_composition_dlg_ui.py:
+	* src/nutr_goal_dlg.py:
+	* src/nutr_goal_dlg_ui.py:
+	* src/person.py:
+	* src/plan_add_dlg.py:
+	* src/plan_add_dlg_ui.py:
+	* src/plan_compute_dlg.py:
+	* src/plan_compute_dlg_ui.py:
+	* src/plan_win.py:
+	* src/plan_win_ui.py:
+	* src/recipe_edit_dlg.py:
+	* src/recipe_edit_dlg_ui.py:
+	* src/recipe_srch_dlg.py:
+	* src/recipe_srch_dlg_ui.py:
+	* src/recipe_srch_res_dlg.py:
+	* src/recipe_srch_res_dlg_ui.py:
+	* src/recipe_win.py:
+	* src/recipe_win_ui.py:
+	* src/run_app.py:
+	* src/save_as.py:
+	* src/store.py:
+
+	Added data/prep_data.py which 'make install' calls. It rewrites WEIGHT.txt and creates MEASURE.txt in the format which GNUtrition expects. Fixed several typos left from renaming table fields to match reference documentation. The majority of the several modified files had trivial formatting done.
+
+2012-05-27  Jason Self  <jself@gnu.org>
+
+	* data/prep_data_files.sh:
+	* src/calc_rdi.py:
+	* src/database.py:
+	* src/food_srch_dlg.py:
+	* src/nutr_composition_dlg.py:
+	* src/nutr_goal_dlg.py:
+	* src/person.py:
+	* src/plan_compute_dlg.py:
+	* src/plan_win.py:
+	* src/recipe_srch_res_dlg.py:
+	* src/store.py:
+
+	Updating copyright information based on changes introduced in revision 11
+
+2012-05-27  Jason Self  <jself@gnu.org>
+
+	* README:
+	* configure.in:
+
+	Version changes
+
+2012-05-20  Thomas Sinclair  <thomas.a.sinclair@gmail.com>
+
+	* data/DATA_SRC.txt:
+	* data/DATSRCLN.txt:
+	* data/DERIV_CD.txt:
+	* data/Dats_Src.pdf:
+	* data/FD_GROUP.txt:
+	* data/FOOD_DES.txt:
+	* data/FOOTNOTE.txt:
+	* data/LANGDESC.txt:
+	* data/LANGUAL.txt:
+	* data/NUTR_DEF.txt:
+	* data/NUT_DATA.txt:
+	* data/SRC_CD.txt:
+	* data/WEIGHT.txt:
+	* data/prep_data_files.sh:
+	* data/sr24_doc.pdf:
+	* data/fd_group.txt:
+	* data/food_des.txt:
+	* data/footnote.txt:
+	* data/measure.txt:
+	* data/nut_data.txt:
+	* data/nutr_def.txt:
+	* data/script.sh:
+	* data/script2.sh:
+	* data/source.txt:
+	* data/sr13_doc.pdf:
+	* data/weight.txt:
+	* src/install.py:
+	* Makefile.in:
+	* autom4te.cache/output.0:
+	* autom4te.cache/requests:
+	* autom4te.cache/traces.0:
+	* configure:
+	* configure.in:
+	* data/Makefile.in:
+	* src/calc_rdi.py:
+	* src/database.py:
+	* src/food_srch_dlg.py:
+	* src/nutr_composition_dlg.py:
+	* src/nutr_goal_dlg.py:
+	* src/person.py:
+	* src/plan_compute_dlg.py:
+	* src/plan_win.py:
+	* src/recipe_srch_res_dlg.py:
+	* src/store.py:
+	* data/category.txt:
+	* data/CATEGORY.txt:
+
+	Update to latest USDA data (sr13 => sr24).
+	Renamed some table fields to correlate with sr24_doc.pdf (reference).
+	Reordered table creation code in src/database.py so it is in same order as found
+	in sr24_doc.pdf. Upped version number to 0.31.2 (development branch).
+
+2012-05-19  Jason Self  <jself@gnu.org>
+
+	* gnutr.py:
+	* pixmaps/Makefile.in:
+	* rpm/Makefile.in:
+	* rpm/remove_prefix.py:
+	* run-gnutrition.py.in:
+	* src/Makefile.in:
+	* src/base_win.py:
+	* src/base_win_ui.py:
+	* src/calc_rdi.py:
+	* src/config.py:
+	* src/database.py:
+	* src/date_widget.py:
+	* src/druid.py:
+	* src/druid_ui.py:
+	* src/file_select_dlg.py:
+	* src/food_srch_dlg.py:
+	* src/food_srch_dlg_ui.py:
+	* src/food_win.py:
+	* src/food_win_ui.py:
+	* src/gnutr.py:
+	* src/gnutr_consts.py:
+	* src/gnutr_stock.py:
+	* src/help.py:
+	* src/install.py:
+	* src/install.py.in:
+	* src/nutr_composition_dlg.py:
+	* src/nutr_composition_dlg_ui.py:
+	* src/nutr_goal_dlg.py:
+	* src/nutr_goal_dlg_ui.py:
+	* src/person.py:
+	* src/plan_add_dlg.py:
+	* src/plan_add_dlg_ui.py:
+	* src/plan_compute_dlg.py:
+	* src/plan_compute_dlg_ui.py:
+	* src/plan_win.py:
+	* src/plan_win_ui.py:
+	* src/recipe_win.py:
+	* src/recipe_win_ui.py:
+	* src/run_app.py:
+	* src/save_as.py:
+	* src/store.py:
+
+	Changing some references of 'gnutrition' to 'GNUtrition'
+
+2012-05-19  Jason Self  <jself@gnu.org>
+
+	* configure.in:
+	* doc/Makefile.in:
+	* src/gnutr_widgets.py:
+	* src/test_gnutr_combobox.py:
+	* src/version.py:
+
+	Fixing typos.
+
+2012-05-19  Jason Self  <jself@gnu.org>
+
+	* src/gnutr.py:
+	* src/gnutr_consts.py:
+	* src/run_app.py:
+	* src/version.py:
+
+	Updating copyright statements for work done under contract by Thomas Sinclair
+
+2012-05-19  Jason Self  <jself@gnu.org>
+
+	* Makefile.in:
+	* configure.in:
+	* data/Makefile.in:
+	* debian/Makefile.in:
+	* doc/Makefile.in:
+	* doc/gnutrition.sgml:
+	* gnutr.py:
+	* pixmaps/Makefile.in:
+	* rpm/Makefile.in:
+	* run-gnutrition.py.in:
+	* src/Makefile.in:
+	* src/base_win.py:
+	* src/base_win_ui.py:
+	* src/database.py:
+	* src/date_widget.py:
+	* src/druid.py:
+	* src/druid_ui.py:
+	* src/file_select_dlg.py:
+	* src/food_edit_dlg.py:
+	* src/food_edit_dlg_ui.py:
+	* src/food_srch_dlg.py:
+	* src/food_srch_dlg_ui.py:
+	* src/food_srch_res_dlg.py:
+	* src/food_srch_res_dlg_ui.py:
+	* src/food_win.py:
+	* src/food_win_ui.py:
+	* src/gnutr.py:
+	* src/gnutr_widgets.py:
+	* src/install.py:
+	* src/nutr_composition_dlg_ui.py:
+	* src/nutr_goal_dlg.py:
+	* src/nutr_goal_dlg_ui.py:
+	* src/plan_add_dlg.py:
+	* src/plan_add_dlg_ui.py:
+	* src/plan_compute_dlg_ui.py:
+	* src/plan_win.py:
+	* src/plan_win_ui.py:
+	* src/recipe_edit_dlg_ui.py:
+	* src/recipe_srch_dlg.py:
+	* src/recipe_srch_dlg_ui.py:
+	* src/recipe_srch_res_dlg.py:
+	* src/recipe_srch_res_dlg_ui.py:
+	* src/recipe_win.py:
+	* src/recipe_win_ui.py:
+	* src/run_app.py:
+	* src/store.py:
+	* src/test_gnutr_combobox.py:
+
+	More version updates; updating copyright statements to reflect assignment from Peter Kozma
+
+2012-05-19  Jason Self  <jself@gnu.org>
+
+	* README:
+	* autom4te.cache/output.0:
+	* configure:
+	* src/install.py:
+
+	Updating to reflect new version 0.32
+
+2012-04-23  Thomas Sinclair  <thomas.a.sinclair@gmail.com>
+
+	* src/install.py:
+
+	This had testing code; should not have been uploaded
+
+2012-04-23  Thomas Sinclair  <thomas.a.sinclair@gmail.com>
+
+	* src/gnutr.py:
+	* src/gnutr_consts.py:
+	* src/install.py:
+	* src/run_app.py:
+	* src/version.py:
+
+	Version check and dialog notification done.
+
+2012-04-23  Thomas Sinclair  <thomas.a.sinclair@gmail.com>
+
+	* src/version.py:
+
+	Completed some function stubs
+
+2012-04-22  Thomas Sinclair  <thomas.a.sinclair@gmail.com>
+
+	* src/version.py:
+	* src/gnutr_consts.py:
+	* src/run_app.py:
+
+	Work on checking for newer version
+
 2012-03-31  Thomas Sinclair
 
 	* gnutrition/src/database.py,

@@ -1,0 +1,12 @@
+New in version 0.32:
+
+* GNUtrition will periodically check gnu.org for new versions and notify 
+  you when a newer version is available.
+* The USDA data has been updated to the latest version, SR24.
+* GNUtrition now uses the built-in SQLite3 Python module and the database 
+  has been converted to SQLite. If you have been using a GNUtrition version 
+  that uses a MySQL database the database will be converted to the SQLite3 
+  format. Once the conversion has been done there is no longer a need 
+  for you run a MySQL server for GNUtrition. The new database is stored 
+  in ~/.gnutrition. Be sure to back it up.
+

@@ -108,4 +108,4 @@ class Store:
         self.db.query("SELECT Msre_Desc FROM weight WHERE " +
             "NDB_No = '{0:d}'".format(fd_num))
         result = self.db.get_result()
-        return (('gm',),) + result
+        return result

@@ -65,8 +65,14 @@ class RunApp:
         self.base_win = base_win.BaseWin(self)
         self.base_win.show()
 
+    def shutdown(self):
+        import database 
+        db = database.Database()
+        db.close()
+        
 def run_app():
     app = RunApp()
     gtk.main()
+    app.shutdown()
 
 run_app()

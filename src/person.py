@@ -91,7 +91,7 @@ class Person:
         result = self.db.get_result()
 
         if result and len(result) != 0:
-            for person_num, date, time, wum_portions, recipe_num in result:
+            for person_num, date, time, num_portions, recipe_num in result:
                 self.db.query("INSERT INTO recipe_plan_temp VALUES" +
                     " ('%d', '%s', '%s', '%f', '%d' )" 
                     % (person_num, str(date), str(time), num_portions, 

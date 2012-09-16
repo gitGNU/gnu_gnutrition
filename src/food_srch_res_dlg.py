@@ -38,24 +38,25 @@ class FoodSrchResDlg:
         self.ui.treeview.connect('key-press-event', self.on_treeview_key_press_event)
         self.ui.treeview.connect('button-press-event', self.on_treeview_button_press_event)
 
-    def on_selection_changed(self, selection, d=None):
-        (model, iter) = selection.get_selected()
-        if iter:
-            food_num = model.get_value(iter, 1)
-            if food_num:
-                food_desc = self.store.fd_num2desc[ food_num]
-                self.ui.food_entry.set_text(food_desc)
-            else:
-                self.ui.combo.clear_rows()
-                self.ui.amount_entry.set_text('')
-                self.ui.food_entry.set_text('')
-
-    def show(self, food_num_list, view):
-        self.view_type = view
+    def clear_results(self):
         self.ui.combo.clear_rows()
         self.ui.amount_entry.set_text('')
         self.ui.food_entry.set_text('')
 
+    def on_selection_changed(self, selection, d=None):
+        (model, iter) = selection.get_selected()
+        self.clear_results()
+        if iter:
+            food_num = model.get_value(iter, 1)
+            if food_num:
+                food_desc = self.store.fd_num2desc[food_num]
+                self.ui.food_entry.set_text(food_desc)
+            else:
+                self.clear_results()
+
+    def show(self, food_num_list, view):
+        self.view_type = view
+        self.clear_results()
         self.ui.treeview.freeze_child_notify()
         self.ui.treeview.set_model(None)
         self.create_tree(self.ui.tree, food_num_list)

@@ -212,19 +212,15 @@ class PlanWin:
         text_list = string.split(time_string_next, ':')
         return str(int(text_list[0]) - 1) + ':00'
 
-    def iter_for_time(self, time_string1):
+    def iter_for_time(self, time_string):
         iter = self.ui.treemodel.get_iter_root()
         pos = 0
+        lastv = ''
         while iter:
             value = self.ui.treemodel.get_value(iter, 0)
             if value:
-                value_list = string.split(value, ':')
-                if int(value_list[0]) < 10:
-                    #time_string2 = '0' + value + ':00'
-                    time_string2 = value + ':00'
-                else:
-                    time_string2 = value + ':00'
-                if time_string1 == time_string2:
+                lastv = value
+                if time_string == value:
                     return iter, pos
             pos = pos + 1
             iter = self.ui.treemodel.iter_next(iter)
@@ -232,16 +228,13 @@ class PlanWin:
 
     def update(self):
         date = self.ui.date.entry.get_text()
-
         self.ui.treemodel.clear()
         self.set_times()
-
         food_list = self.get_foods_for_date(date)
         recipe_list = self.get_recipes_for_date(date)
 
         for recipe in recipe_list:
             iter, pos = self.iter_for_time(recipe.time)
-            
             # is there already a recipe or food in either of the two
             # rows available for the time? If both occupied create a
             # new one.
@@ -268,7 +261,6 @@ class PlanWin:
 
         for food in food_list:
             iter, pos = self.iter_for_time(food.time)
-
             # is there already a recipe or food in either of the two
             # rows available for the time? If both occupied create a
             # new one.
@@ -290,7 +282,7 @@ class PlanWin:
                     self.ui.treemodel.set_value(iter, 4, food)
                     continue
 
-            iter = self.ui.treemodel.insert(pos + 2)
+            iter = self.ui.treemodel.insert(pos + 1)
             self.ui.treemodel.set_value(iter, 1, food.amount)
             self.ui.treemodel.set_value(iter, 2, food.msre_desc)
             self.ui.treemodel.set_value(iter, 3, food.food_desc)

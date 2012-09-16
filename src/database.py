@@ -29,6 +29,14 @@ def curdate():
     """Return todays date as yyyy-mm-dd"""
     return str(dbms.DateFromTicks(ticks()))
 
+def to_days(datestr):
+    #          J  F  M  A  M  J  J  A  S  O  N  D
+    months =  [31,28,31,20,31,30,31,31,30,31,30,31]
+    ymd = datestr.split('-')
+    days = (int(ymd[0]) - 1900) * 365;
+    days = days + months[int(ymd[1])] + int(ymd[2])
+    return days
+
 dbms.register_adapter(datetime.datetime, curtime)
 dbms.register_adapter(datetime.datetime, curdate)
 
@@ -46,24 +54,29 @@ class Database:
         from os import path
         import config
         self.user = config.user
-        dbfile =  path.join(config.udir, 'gnutr_db')
+        dbfile =  path.join(config.udir, 'gnutr_db.lt3')
         try:
             con = dbms.connect(dbfile)
+            # text_factory must be set to 'str' due to current limitations
+            # in csv.reader()
+            con.text_factory = str
+            con.create_function('REGEXP', 2, regexp)
+            con.create_function('TO_DAYS', 1, to_days)
+            cur = con.cursor()
         except self.Error, e:
             "Error {0:s}:".format(e.args[0])
             raise self.Error
-        # text_factory must be set to 'str' due to current limitations
-        # in csv.reader()
-        con.text_factory = str
-        con.create_function('REGEXP', 2, regexp)
         self.con = con
-        self.cursor = con.cursor()
-        self.rows = 0
-        self.result = None
+        self.cur = cur
+
+    def close(self): 
+        if self.con:
+            self.con.close()
 
     def initialize(self):
         # Create Food Description (food_des) table.
         # Data file FOOD_DES.
+        self.query("DROP TABLE IF EXISTS food_des")
         self.create_load_table("CREATE TABLE food_des" +
             "(NDB_No INTEGER NOT NULL, " + 
             "FdGrp_Cd INTEGER NOT NULL, " + 
@@ -89,6 +102,7 @@ class Database:
 
         # Create Food Group Description (fd_group) table.
         # Data file FD_GROUP.
+        self.query("DROP TABLE IF EXISTS fd_group")
         self.create_load_table("CREATE TABLE fd_group " + 
             "(FdGrp_Cd INTEGER PRIMARY KEY NOT NULL, " + 
             "FdGrp_Desc TEXT NOT NULL)",
@@ -98,6 +112,7 @@ class Database:
 
         # Create Nutrient Data (nut_data) table.
         # Data file NUT_DATA
+        self.query("DROP TABLE IF EXISTS nut_data")
         self.create_load_table("CREATE TABLE nut_data " + 
             "(NDB_No INTEGER NOT NULL, " + 
             "Nutr_No INTEGER NOT NULL, " + 
@@ -126,6 +141,7 @@ class Database:
 
         # Create Nutrient Definition (nutr_def table.
         # Data file NUTR_DEF
+        self.query("DROP TABLE IF EXISTS nutr_def")
         self.create_load_table("CREATE TABLE nutr_def " + 
             "(Nutr_No INTEGER PRIMARY KEY NOT NULL, " + 
             "Units TEXT NOT NULL, " +
@@ -141,6 +157,7 @@ class Database:
 
         # Create temporary weight table.
         # Data file WEIGHT.
+        self.query("DROP TABLE IF EXISTS weight")
         self.create_load_table("CREATE TABLE weight" +
             "(NDB_No INTEGER NOT NULL, " +
             # Seq == Sequence number for measure description (Msre_Desc)
@@ -164,24 +181,42 @@ class Database:
             "(?, ?, ?, ?, ?, ?, ?)",
             'weight')
 
+        # May have user data from previous install that we don't want to lose
+        try:
+            self.query("SELECT name FROM sqlite_master WHERE type='table'")
+        except self.Error, sqlerr:
+            self.con.rollback()
+            import sys
+            print 'Error :', sqlerr, '\nquery:', sql
+            if caller: print 'Caller ', caller
+            sys.exit()
+        search = ['recipe', 'ingredient', 'preparation', 'person',
+                  'food_plan', 'recipe_plan', 'nutr_goal']
+        tables = []
+        for t in self.get_result():
+            if t[0] in search:
+                tables.append(t[0])
+
         # create recipe table
-        # HERE: recipe_no had AUTOINCREMENT in MySQL version
-        self.create_table("CREATE TABLE recipe " +
-            "(recipe_no INTEGER NOT NULL, " +
+        if not 'recipe' in tables:
+            self.create_table("CREATE TABLE recipe " +
+            "(recipe_no INTEGER PRIMARY KEY AUTOINCREMENT, " +
             "recipe_name TEXT NOT NULL, " +
             "no_serv INTEGER NOT NULL, " +
             "no_ingr INTEGER NOT NULL, " +
-            "category_no INTEGER NOT NULL, " +
-            "PRIMARY KEY (recipe_no , recipe_name, category_no))", 'recipe')
+            "category_no INTEGER NOT NULL)", 'recipe') 
+            # Want index on recipe_name, category_no
 
         # create ingredient table
-        self.create_table("CREATE TABLE ingredient " + 
-            "(recipe_no INTEGER PRIMARY KEY NOT NULL, " + 
+        if not 'ingredient' in tables:
+            self.create_table("CREATE TABLE ingredient " + 
+            "(recipe_no NOT NULL, " + 
             "amount REAL NOT NULL, " +
             "Msre_Desc TEXT NOT NULL, " +
             "NDB_No INTEGER NOT NULL)", 'ingredient')
 
         # create recipe category table
+        self.query("DROP TABLE IF EXISTS category")
         self.create_load_table("CREATE TABLE category " +
             "(category_no INTEGER PRIMARY KEY NOT NULL, " +
             "category_desc TEXT NOT NULL)",
@@ -190,19 +225,22 @@ class Database:
             'category')
 
         # create recipe preparation table
-        self.create_table("CREATE TABLE preparation " +
+        if not 'preparation' in tables:
+            self.create_table("CREATE TABLE preparation " +
             "(recipe_no INTEGER PRIMARY KEY NOT NULL, " +
             "prep_time TEXT, " +
             "prep_desc TEXT)", 'preparation')
 
         # create person table
-        self.create_table("CREATE TABLE person " +
+        if not 'person' in tables:
+            self.create_table("CREATE TABLE person " +
             "(person_no INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
             "person_name TEXT, " +
             "user_name TEXT)", 'person')
 
         # create food_plan table
-        self.create_table("CREATE TABLE food_plan " +
+        if not 'food_plan' in tables:
+            self.create_table("CREATE TABLE food_plan " +
             "(person_no INTEGER NOT NULL, " +
             "date TEXT NOT NULL, " +
             "time TEXT NOT NULL, " +
@@ -211,7 +249,8 @@ class Database:
             "Ndb_No INTEGER NOT NULL)", 'food_plan')
 
         # create recipe_plan table
-        self.create_table("CREATE TABLE recipe_plan " +
+        if not 'recipe_plan' in tables:
+            self.create_table("CREATE TABLE recipe_plan " +
             "(person_no INTEGER NOT NULL, " +
             "date TEXT NOT NULL, " +
             "time TEXT NOT NULL, " +
@@ -219,13 +258,12 @@ class Database:
             "recipe_no INTEGER NOT NULL)", 'recipe_plan')
 
         # create nutr_goal table
-        self.create_table("CREATE TABLE nutr_goal " +
+        if not 'nutr_goal' in tables:
+            self.create_table("CREATE TABLE nutr_goal " +
             "(person_no INTEGER NOT NULL, " +
             "Nutr_No INTEGER NOT NULL, " +
             "goal_val REAL NOT NULL)", 'nutr_goal')
 
-        self.cursor.close()
-        self.cursor = self.con.cursor()
         return 1
 
     def curtime(self):
@@ -239,25 +277,25 @@ class Database:
         try:
             if sql_params:
                 if many:
-                    self.cursor.executemany(sql, sql_params)
+                    self.cur.executemany(sql, sql_params)
                 else:
-                    self.cursor.execute(sql, sql_params)
+                    self.cur.execute(sql, sql_params)
             elif many:
-                self.cursor.executemany(sql)
+                self.cur.executemany(sql)
             else:
-                self.cursor.execute(sql)
+                self.cur.execute(sql)
+            self.con.commit()
+            result = self.cur.fetchall()
         except self.Error, sqlerr:
             self.con.rollback()
             import sys
             print 'Error :', sqlerr, '\nquery:', sql
             if caller: print 'Caller ', caller
             sys.exit()
-        result = self.cursor.fetchall()
 		# Convert to tuple as GNUtrition code expects MySQLdb tuple return
         self.result = tuple(result)
         self.last_query = sql
         self.last_query_params = sql_params
-        self.con.commit()
 
     def get_result(self):
         result = self.result
@@ -307,7 +345,7 @@ class Database:
         #    "INTO TABLE " + table + " FIELDS TERMINATED BY '^'")
         import csv
         try:
-            data = csv.reader(open(data_fn, 'r'), delimiter='^', quotechar="'")
+            data = csv.reader(open(data_fn,'r'), delimiter='^', quotechar="'")
         except Exception, e:
             print "Failed to read data file '{0:s}'".format(data_fn)
             return False

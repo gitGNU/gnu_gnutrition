@@ -29,11 +29,25 @@ def curdate():
     """Return todays date as yyyy-mm-dd"""
     return str(dbms.DateFromTicks(ticks()))
 
+def leap_year(year):
+    if year % 400 == 0:
+        return True
+    if year % 100 == 0:
+        return False
+    if year % 4 == 0:
+        return True
+    return False
+
 def to_days(datestr):
     #          J  F  M  A  M  J  J  A  S  O  N  D
     months =  [31,28,31,20,31,30,31,31,30,31,30,31]
     ymd = datestr.split('-')
-    days = (int(ymd[0]) - 1900) * 365;
+    year = int(ymd[0])
+    # We only need to know if we are spanning Feb 29
+    # BTW: the next year is 2016
+    if leap_year(year):
+        months[1] = 29
+    days = (year - 1900) * 365; 
     days = days + months[int(ymd[1])] + int(ymd[2])
     return days
 

@@ -39,3 +39,12 @@ def set_key_value(key, value):
     db = shelve.open(fn)
     db[key] = value
     db.close()
+
+def keys():
+    db = shelve.open(fn)
+    for key in db.keys():
+        print key, db[key]
+    db.close()
+
+if __name__ == '__main__':
+    keys()

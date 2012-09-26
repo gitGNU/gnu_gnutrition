@@ -185,10 +185,10 @@ class Database:
             "Seq INTEGER NOT NULL, " +
             # Amount == Unit modifier (for example, 1 in "1 cup").
             "Amount REAL NOT NULL, " +
-			"Msre_Desc TEXT NOT NULL, " +
+            "Msre_Desc TEXT NOT NULL, " +
             "Gm_wgt REAL NOT NULL, " +
-			"Num_Data_Pts INTEGER, " +
-			"Std_Dev REAL, " +
+            "Num_Data_Pts INTEGER, " +
+            "Std_Dev REAL, " +
             "PRIMARY KEY(NDB_No, Seq))",
             ### Insert statement
             "INSERT INTO 'weight' VALUES " +
@@ -260,7 +260,7 @@ class Database:
             "time TEXT NOT NULL, " +
             "amount REAL NOT NULL, " +
             "Msre_Desc TEXT NOT NULL, " +
-            "Ndb_No INTEGER NOT NULL)", 'food_plan')
+            "NDB_No INTEGER NOT NULL)", 'food_plan')
 
         # create recipe_plan table
         if not 'recipe_plan' in tables:
@@ -306,7 +306,7 @@ class Database:
             print 'Error :', sqlerr, '\nquery:', sql
             if caller: print 'Caller ', caller
             sys.exit()
-		# Convert to tuple as GNUtrition code expects MySQLdb tuple return
+        # Convert to tuple as GNUtrition code expects MySQLdb tuple return
         self.result = tuple(result)
         self.last_query = sql
         self.last_query_params = sql_params
@@ -399,3 +399,149 @@ class Database:
         else:
             m += 1
         return m
+
+def migrate(mysql):
+    """Retrieve gnutrition table data from MySQL database.
+    Parameters uname and pword are the MySQL username and password used with
+    the older version of GNUtritin."""
+    from gnutr import Dialog
+    lite = Database()
+
+    # Need to check for tables: recipe, ingredient, preparation
+    # person, food_plan, recipe_plan, nutr_goal 
+    tables = ['recipe', 'ingredient', 'preparation','person',
+              'food_plan', 'recipe_plan']
+    mysql.query('SHOW TABLES')
+    old_tables = mysql.get_result()
+    # At some point use of a 'measure' table was discontinued
+    use_msre_no = False
+    found = []
+    for t in old_tables:
+        if t[0] in tables:
+            found.append(t[0])
+        if t[0] == 'measure':
+            use_msre_no = True
+
+    # Quirks:
+    # 0.31 does not save recipe or food_plan (nothing to migrate except 
+    #      person data.
+    # 0.31.1 uses fd_no (for NDB_No) and msre_no to index measure table
+    # 0.32 onward uses NDB_No and Msre_Desc (no measure table)
+
+    # For gnutrition version < 0.32
+    def msre_desc_from_msre_no(msre_no):
+        sql = "SELECT msre_desc FROM measure WHERE msre_no = {0:d}"
+        mysql.query(sql.format(msre_no))
+        return mysql.get_single_result()
+
+    # recipie table
+    if 'recipe' in found:
+        mysql.query("SELECT recipe_no, recipe_name, no_serv, no_ingr, " +
+                    "category_no FROM recipe")
+        result = mysql.get_result()
+        if result and len(result) > 0:
+            print 'found', len(result), 'recipies'
+            print result
+            lite.query("INSERT INTO 'recipe' VALUES (?,?,?,?,?)",
+                           many=True, sql_params=result, caller='migrate')
+    # ingredient table
+    if 'ingredient' in found:
+        sql1 = "SELECT recipe_no, amount, msre_no, fd_no FROM ingredient"
+        sql2 = "SELECT recipe_no, amount, Msre_Desc, NDB_No FROM ingredient"
+        if use_msre_no:
+            mysql.query(sql1)
+        else:
+            mysql.query(sql2)
+        result = mysql.get_result()
+        if result:
+            print 'found', len(result), 'ingredients'
+            print result
+            for i in range(len(result)):
+                recipe_no = result[i][0]
+                amount = result[i][1]
+                if use_msre_no:
+                    Msre_Desc = msre_desc_from_msre_no(result[i][2])
+                else:
+                    Msre_Desc = result[i][2]
+                NDB_No = result[i][3]
+                params = (recipe_no, amount, Msre_Desc, NDB_No)
+                lite.query("INSERT INTO 'ingredient' VALUES (?,?,?,?)",
+                           many=False, sql_params=params, caller='migrate')
+
+    # preparation table
+    if 'preparation' in found:
+        mysql.query("SELECT recipe_no, prep_time, prep_desc FROM preparation")
+        result = mysql.get_result()
+        if result and len(result) > 0:
+            print 'found', len(result), 'entries in preparation table'
+            print result
+            lite.query("INSERT INTO 'preparation' VALUES (?,?,?)",
+                           many=True, sql_params=result, caller='migrate')
+
+    # person table
+    if 'person' in found:
+        mysql.query("SELECT person_no, person_name, user_name FROM person")
+        result = mysql.get_result()
+        if result and len(result) > 0:
+            print 'found', len(result), 'entries in person table'
+            print result
+            lite.query("INSERT INTO 'person' VALUES (?,?,?)",
+                           many=True, sql_params=result, caller='migrate')
+
+    # food_plan table
+    if 'food_plan' in found:
+        sql1 = "SELECT person_no, date, time, amount, msre_no, fd_no FROM food_plan"
+        sql2 = "SELECT person_no, date, time, amount, Msre_Desc, NDB_No FROM food_plan"
+        if use_msre_no:
+            mysql.query(sql1)
+        else:
+            mysql.query(sql2)
+        result = mysql.get_result()
+        if result and len(result) > 0:
+            print 'found', len(result), 'entries in food_plan table'
+            for i in range(len(result)):
+                person_no = result[i][0]
+                date = result[i][1]
+                time = result[i][2]
+                amount = result[i][3]
+                if use_msre_no:
+                    Msre_Desc = msre_desc_from_msre_no(result[i][4])
+                else:
+                    Msre_Desc = result[i][4]
+                NDB_No = result[i][5]
+                params = (person_no, date, time, amount, Msre_Desc, NDB_No)
+                lite.query("INSERT INTO 'food_plan' VALUES (?,?,?,?,?,?)",
+                           many=False, sql_params=params, caller='migrate')
+    # recipe_plan table
+    if 'recipe_plan' in found:
+        # Need to convert datetime.date and datetime.timedelta MySQL types to
+        # strings before inserting into SQLite table.
+        mysql.query("SELECT person_no, date, time, no_portions, " +
+                    "recipe_no FROM recipe_plan")
+        result = mysql.get_result()
+        print 'found', len(result), 'entries in recipe_plan table'
+        if result and len(result) > 0:
+            for r in range(len(result)):
+                person_no = result[r][0]
+                date = str(result[r][1])
+                time = str(result[r][2])
+                no_portions = result[r][3]
+                recipe_no = result[r][4]
+                params = (person_no, date, time, no_portions, recipe_no)
+                print params
+                lite.query("INSERT INTO 'recipe_plan' VALUES (?,?,?,?,?)",
+                           many=False, sql_params=params, caller='migrate')
+    # nutr_goal table needs to be recalculated
+    return True
+#---------------------------------------------------------------------------
+if __name__ == '__main__':
+    import mysql
+    try:
+       db = mysql.Database('gnutrition', 'gnutrition')
+    except Exception:
+        dialog = Dialog('error',
+                        "Unable to connect to MySQL's GNUtrition database.")
+    else: 
+        sqlite = Database()
+        sqlite.initialize()
+        migrate('gnutrition','gnutrition')

@@ -23,6 +23,7 @@ import person
 import calc_rdi
 import database
 import nutr_goal_dlg
+from gnutr import Dialog
 
 class Druid:
     def __init__(self, app):
@@ -49,161 +50,109 @@ class Druid:
 
         # Database Create
         elif self.ui.page_num == 1:
-            #uname = self.ui.page_list[1].root_user_entry.get_text()
-            #pword = self.ui.page_list[1].root_pass_entry.get_text()
-            #if (not uname) or (not pword):
-            #    return
             try:
-                self.db = database.Database()
-                #self.db = database.Database(uname, pword)
+                self.sqlite = database.Database()
             except Exception, ex:
                 self.ui.set_page(2)
                 return
             
-            self.db.initialize()
-            
+            self.sqlite.initialize()
+
+            # See if this user has GNUtrition data from older version
+            # which used MySQL. That data should be migrated to newer SQLite
+            # storage first.
+            db_uname = config.get_value('Username')
+            db_pword = config.get_value('Password')
+            if (db_uname and db_pword):
+                dialog = Dialog('question',
+                    "Would you like to try to import recipies and other\n" +
+                    "data from MySQL (from older version of gnutrition)?")
+                reply = dialog.run()
+                dialog.destroy()
+                if reply == gtk.RESPONSE_YES:
+                    self.migration = True
+                    import mysql
+                    try:
+                        self.mysql = mysql.Database(db_uname, db_pword) 
+                    except Exception:
+                        # HERE: add dialog notification about failure to
+                        #       connect to MySQL server with stored username
+                        #       and password.
+                        dialog = Dialog('error',
+                            "Unable to connect to MySQL's GNUtrition database.")
+                    else:
+                        if self.mysql.initialize():
+                            # This needs MySQL root username and password
+                            #if self.mysql.user_setup(db_uname, db_pword):
+                            database.migrate(self.mysql)
+                        else:
+                            # HERE: add dialog notification about missing
+                            #       gnutr_db database
+                            dialog = Dialog('error',
+                              "MySQL GNUtrition database no longer exists.")
+
             # no error, so skip over page_db_error
-            #self.ui.set_page(3)
-            self.ui.set_page(5)
-            return
-
-        # User Setup (skipped if using SQLite)
-        elif self.ui.page_num == 3:
-            #uname = self.ui.page_list[3].user_entry.get_text()
-            #pword = self.ui.page_list[3].pass_entry.get_text()
-            #if (not uname) or (not pword):
-            #    return
-            #success = self.user_setup(uname, pword)
-            #if not success:
-            #    self.ui.set_page(4)
-            #    return
-            #self.db.change_user(uname, pword, 'gnutr_db')
-
-            # does the user have an entry in the person table?
-            self.person = person.Person()
-            person_name = self.person.get_name(self.db.user)
-            if person_name:
-                config.set_key_value('Name', person_name)
-                self.person.setup()
-
-                self.ui.set_page(7)
-                return
-            self.ui.set_page(5)
+            self.ui.set_page(3)
             return
 
         # Personal details
-        elif self.ui.page_num == 5:
-######
+        elif self.ui.page_num == 3:
             self.person = person.Person()
-            person_name = self.person.get_name(self.db.user)
-            if person_name:
-                config.set_key_value('Name', person_name)
-                self.person.setup()
-
-                self.ui.set_page(7)
-                return
-
-######
-            name = self.ui.page_list[5].name_entry.get_text()
-            age = self.ui.page_list[5].age_entry.get_text()
-            weight_txt = self.ui.page_list[5].weight_entry.get_text()
+            # does the user have an entry in the person table?
+            # Note: sqlite.user is basename $HOME 
+            #       gnutrition MySQL setup asks for MySQL username and that
+            #       will be what is in the 'person' table for 'user_name'
+            db_uname = config.get_value('Username')
+            if db_uname:
+                db_name = db_uname
+            else:
+                db_name = self.sqlite.user
+            name = self.person.get_name(db_name)
+            config.set_key_value('Username', db_name)
+            name = self.ui.page_list[3].name_entry.get_text()
+            age = self.ui.page_list[3].age_entry.get_text()
+            weight_txt = self.ui.page_list[3].weight_entry.get_text()
             if (not name) or (not age) or (not weight_txt):
                 return
             weight = float(weight_txt)
 
-            config.set_key_value('Name', name)
+            config.set_key_value('Age', age)
+            config.set_key_value('Weight', weight)
+
+            if config.get_value('Name') != name:
+                config.set_key_value('Name', name)
+
             self.person.add_name(name)
             self.person.setup()
 
-            if self.ui.page_list[5].weight_combo.get_active() == 0:
+            if self.ui.page_list[3].weight_combo.get_active() == 0:
                 # convert from pounds to kilos
                 weight = weight * 0.4536
-            female = self.ui.page_list[5].female_button.get_active()
+            female = self.ui.page_list[3].female_button.get_active()
             if female == 1:
-                pregnant = self.ui.page_list[5].preg_button.get_active()
-                lactating = self.ui.page_list[5].lac_button.get_active()
+                pregnant = self.ui.page_list[3].preg_button.get_active()
+                lactating = self.ui.page_list[3].lac_button.get_active()
             else:
                 pregnant = 0
                 lactating = 0
 
-            list = calc_rdi.compute(age, weight, female, pregnant, lactating)
+            data = calc_rdi.compute(age, weight, female, pregnant, lactating)
             self.nutr_goal_dlg = nutr_goal_dlg.NutrGoalDlg()
-            self.nutr_goal_dlg.save_goal(list)
+            self.nutr_goal_dlg.save_goal(data)
 
-            self.ui.set_page(7)
+            self.ui.set_page(5)
             return
 
         # Finish
-        elif self.ui.page_num == 7:
+        elif self.ui.page_num == 5:
             self.ui.dialog.hide()
             self.app.startup()
            
-    def user_setup(self, uname, pword):
-        # check to see if user name is already in mysql.user and that the
-        # password is correct
-        if self.user_name_exists(uname):
-            if self.password_match(uname, pword):
-                # add the info to the config file.
-                config.set_key_value('Username', uname)
-                config.set_key_value('Password', pword)
-                # check to see if user can access 'gnutr_db'
-                if not self.user_db_access(uname):
-                    # grant privileges to user
-                    self.db.add_user(uname, pword)
-            else:
-                return 0
-        else:
-            self.db.add_user(uname, pword)
-            config.set_key_value('Username', uname)
-            config.set_key_value('Password', pword)
-        return 1
-
-    def user_name_exists(self, uname):
-        self.db.query("USE mysql")
-        self.db.query("SELECT User FROM user WHERE " +
-            "User = '" + uname + "'")
-        name = self.db.get_single_result()
-        if not name:
-            return 0
-        return 1
-
-    def password_match(self, uname, pword):
-        # check to see if the password is correct
-        self.db.query("SELECT Password FROM user WHERE " +
-            "User = '" + str(uname) + "'")
-        result1 = self.db.get_single_result()
-        self.db.query("SELECT PASSWORD('" + str(pword) + "')")
-        result2 = self.db.get_single_result()
-        if result1 == result2:
-            return 1;
-        return 0
-
-    def user_db_access(self, uname):
-        # does the user have access to the gnutr_db?
-        self.db.query("SELECT Db FROM db WHERE " +
-            "User = '" + str(uname) + "'")
-        result = self.db.get_result()
-        for db_name in result:
-            if db_name[0] == 'gnutr_db':
-                return 1
-        return 0
-
     def on_back(self, w, d=None):
-        # skip back over page_db_error
-        if self.ui.page_num == 5:
-            self.ui.set_page(1)
-        elif self.ui.page_num == 7:
-            self.ui.set_page(5)
-        else:
-            self.ui.set_page(self.ui.page_num - 1)
-
-    def on_back_original(self, w, d=None):
         # skip back over page_db_error
         if self.ui.page_num == 3:
             self.ui.set_page(1)
         elif self.ui.page_num == 5:
             self.ui.set_page(3)
-        elif self.ui.page_num == 7:
-            self.ui.set_page(5)
         else:
             self.ui.set_page(self.ui.page_num - 1)

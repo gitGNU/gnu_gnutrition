@@ -33,6 +33,3 @@ END = 1
 
 GRAPHICAL = 0
 DIALOG = 1
-
-DB_HOST = "gnutrition.sourceforge.net"
-CGI_PATH = "/submit-recipe.php"

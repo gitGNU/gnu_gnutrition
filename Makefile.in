@@ -26,7 +26,7 @@ PYTHON		= @PYTHON@
 
 @SET_MAKE@
 
-SUBDIRS = src data pixmaps doc rpm debian
+SUBDIRS = src data pixmaps rpm debian # doc
 
 files = AUTHORS autogen.sh COPYING gnutrition.desktop py-compile \
 	Changelog configure install-sh INSTALL configure.in \
@@ -72,6 +72,7 @@ distclean: clean deb-clean rpm-clean
 	rm -f config.cache config.log config.status
 	rm -f src/install.py
 	rm -f data/.data_prepped
+	rm -f doc/Makefile
 
 deb:
 	dpkg-buildpackage -rfakeroot -us -uc

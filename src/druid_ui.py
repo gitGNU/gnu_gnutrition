@@ -29,7 +29,7 @@ class DruidPage:
             label1.set_alignment(0.0, 0.5)
             self.vbox.pack_start(label1, False, False, 5)
 
-            label2 = gtk.Label('You seem to be running GNUtrition for the first time.\n\nThe following steps will set up GNUtrition by asking a few simple questions.')
+            label2 = gtk.Label('Running this version of GNUtrition for the first time...\n')
             label2.set_alignment(0.0, 0.5)
             label2.set_line_wrap(True)
             label2.set_justify(gtk.JUSTIFY_FILL)
@@ -42,41 +42,13 @@ class DruidPage:
             table1.set_col_spacings(5)
             self.vbox.pack_start(table1, True, True, 0)
 
-            label1 = gtk.Label('Database Creation.') 
+            label1 = gtk.Label("Click 'Next' to create the USDA food database.") 
             label1.set_alignment(0.0, 0.5)
             table1.attach(label1, 0, 2, 0, 1, gtk.FILL, 0, 0, 0)
 
-#            label2 = gtk.Label(
-#                'Enter the root username and password for MySQL.') 
-#            label2.set_alignment(0.0, 0.5)
-#            table1.attach(label2, 0, 2, 1, 2, gtk.FILL, 0, 0, 0)
-
-#            label3 = gtk.Label('MySQL root username') 
-#            label3.set_alignment(1.0, 0.5)
-#            table1.attach(label3, 0, 1, 2, 3, gtk.FILL, 0, 0, 0)
-
-#            self.root_user_entry = gtk.Entry()
-#            table1.attach(self.root_user_entry, 1, 2, 2, 3, 
-#                gtk.FILL | gtk.EXPAND, 0, 0, 0)
-
-#            label4 = gtk.Label('MySQL root password') 
-#            label4.set_alignment(1.0, 0.5)
-#            table1.attach(label4, 0, 1, 3, 4, gtk.FILL, 0, 0, 0)
-
-#            self.root_pass_entry = gtk.Entry()
-#            self.root_pass_entry.set_visibility(False);
-#            table1.attach(self.root_pass_entry, 1, 2, 3, 4, 
-#                gtk.FILL | gtk.EXPAND, 0, 0, 0)
-
-            label5 = gtk.Label('When you press the "Next" button GNUtrition will check to see if the GNUtrition Database is already installed. If not, GNUtrition will install it for you.') 
-            label5.set_alignment(0.0, 0.5)
-            label5.set_line_wrap(True)
-            label5.set_justify(gtk.JUSTIFY_FILL)
-            table1.attach(label5, 0, 2, 4, 5, gtk.FILL, 0, 0, 0)
-
-            label6 = gtk.Label('This may take some time.') 
-            label6.set_alignment(0.0, 0.5)
-            table1.attach(label6, 0, 2, 5, 6, gtk.FILL, 0, 0, 0)
+            label2 = gtk.Label('This will take a little time...')
+            label2.set_alignment(1.0, 0.5)
+            table1.attach(label2, 0, 1, 2, 3, gtk.FILL, 0, 0, 0)
 
         # Error in Database Creation
         elif page_num == 2:
@@ -88,71 +60,9 @@ class DruidPage:
             label2.set_alignment(0.0, 0.5)
             self.vbox.pack_start(label2, False, False, 5)
 
-            label2 = gtk.Label('Please go back and check that the MySQL root username and password are correct.')
-            label2.set_alignment(0.0, 0.5)
-            label2.set_line_wrap(True)
-            self.vbox.pack_start(label2, False, False, 5)
-
         # User Setup
-        elif page_num == 3:
-            pass
-            #table1 = gtk.Table(2, 4, False)
-            #table1.set_row_spacings(5)
-            #table1.set_col_spacings(5)
-            #self.vbox.pack_start(table1, True, True, 0)
-
-            #label1 = gtk.Label('User Setup.')
-            #label1.set_alignment(0.0, 0.5)
-            #table1.attach(label1, 0, 2, 0, 1, gtk.FILL, 0, 0, 0)
-
-            #label2 = gtk.Label('In order to access the database you need to create a normal MySQL username and password. Specify your choice below. GNUtrition will remember them for you.')
-            #label2.set_alignment(0.0, 0.5)
-            #label2.set_line_wrap(True)
-            #label2.set_justify(gtk.JUSTIFY_FILL)
-            #table1.attach(label2, 0, 2, 1, 2, gtk.FILL, 0, 0, 0)
-
-            #label3 = gtk.Label('MySQL username') 
-            #label3.set_alignment(1.0, 0.5)
-            #table1.attach(label3, 0, 1, 2, 3, gtk.FILL, 0, 0, 0)
-
-            #self.user_entry = gtk.Entry()
-            #self.user_entry.set_text(getpass.getuser())
-            #table1.attach(self.user_entry, 1, 2, 2, 3, 
-            #    gtk.FILL | gtk.EXPAND, 0, 0, 0)
-
-            #label4 = gtk.Label('MySQL password') 
-            #label4.set_alignment(1.0, 0.5)
-            #table1.attach(label4, 0, 1, 3, 4, gtk.FILL, 0, 0, 0)
-
-            #self.pass_entry = gtk.Entry()
-            #self.pass_entry.set_visibility(False)
-            #table1.attach(self.pass_entry, 1, 2, 3, 4, 
-            #    gtk.FILL | gtk.EXPAND, 0, 0, 0)
-
-        # Error in User Setup
-        elif page_num == 4:
-            label1 = gtk.Label('Error: User Setup Failed.')
-            label1.set_alignment(0.0, 0.5)
-            self.vbox.pack_start(label1, False, False, 5)
-
-            label2 = gtk.Label('Unable to connect to the database.')
-            label2.set_alignment(0.0, 0.5)
-            self.vbox.pack_start(label2, False, False, 5)
-
-            label3 = gtk.Label('If you have connected to the database before, go back to the previous page and check that your password is correct.')
-            label3.set_alignment(0.0, 0.5)
-            label3.set_line_wrap(True)
-            label3.set_justify(gtk.JUSTIFY_FILL)
-            self.vbox.pack_start(label3, False, False, 5)
-
-            label4 = gtk.Label('If you are connecting to the database for the very first time, it may be that someone else has already chosen the same user name as you. Try going back and chosing another one.')
-            label4.set_alignment(0.0, 0.5)
-            label4.set_line_wrap(True)
-            label4.set_justify(gtk.JUSTIFY_FILL)
-            self.vbox.pack_start(label4, False, False, 5)
-
         # Personal Details
-        elif page_num == 5:
+        elif page_num == 3:
             table1 = gtk.Table(3, 7, False)
             table1.set_row_spacings(5)
             table1.set_col_spacings(5)
@@ -231,7 +141,7 @@ class DruidPage:
             self.on_male_button_toggled(None)
 
         # Error in Personal Details
-        elif page_num == 6:
+        elif page_num == 4:
             label1 = gtk.Label('Error: Personal Details Setup Failed.')
             label1.set_alignment(0.0, 0.5)
             self.vbox.pack_start(label1, False, False, 5)
@@ -247,7 +157,7 @@ class DruidPage:
             self.vbox.pack_start(label2, False, False, 5)
 
         # Finish
-        elif page_num == 7:
+        elif page_num == 5:
             label1 = gtk.Label('GNUtrition has been successfully set up.')
             label1.set_alignment(0.0, 0.5)
             self.vbox.pack_start(label1, False, False, 5)
@@ -313,7 +223,7 @@ class DruidUI:
         self.connect_signals()
 
         self.page_list = []
-        for num in range(8):
+        for num in range(6):
             page = DruidPage(num)
             self.page_list.append(page)
 
@@ -331,7 +241,7 @@ class DruidUI:
         self.container.remove(self.page_list[self.page_num].vbox)
         self.back_button.set_sensitive(True)
         self.next_button.set_sensitive(True)
-        if num == 7:
+        if num == 5:
             self.next_button.remove(self.button_hbox2)
             self.set_next_button(1)
         else:
@@ -339,7 +249,7 @@ class DruidUI:
             self.set_next_button(0)
         if num == 0:
             self.back_button.set_sensitive(False)
-        if num in [ 2, 4, 6]:
+        if num in [2, 4]:
             self.next_button.set_sensitive(False)
         self.container.pack_start(self.page_list[num].vbox, 
             True, True, 0)

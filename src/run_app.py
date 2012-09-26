@@ -20,11 +20,12 @@ import gtk
 
 class RunApp:
     def __init__(self):
-        if not config.get_value('Name'):
+        if not config.get_value('sqlite3'):
             # First run, program default values can be added here
             import druid
             # Set default version check information
             import gnutr_consts
+            config.set_key_value('sqlite3', 'Yes')
             config.set_key_value('check_disabled', gnutr_consts.CHECK_DISABLED)
             config.set_key_value('check_version', gnutr_consts.CHECK_VERSION)
             config.set_key_value('check_interval', gnutr_consts.CHECK_INTERVAL)
@@ -37,22 +38,9 @@ class RunApp:
     def startup(self):
         import version
         version.check_version()
-        db_uname = config.get_value('Username')
-        db_pword = config.get_value('Password')
 
         import database 
         self.db = database.Database()
-        #success = self.db.change_user(db_uname, db_pword, 'gnutr_db')
-
-        #if success == 0:
-        #    import gnutr
-        #    import sys
-        #    gnutr.Dialog('error', 
-        #        'Failed to connect to the database.\n\n' +
-        #        'I suggest that you delete the file\n ' +
-        #        '"~/.gnutrition/config" and run "gnutrition" again.')
-        #    gtk.main_quit()
-        #    sys.exit()
 
         import store
         self.store = store.Store()

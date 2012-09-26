@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import database
+import config
 
 class Person:
     _shared_state = {}
@@ -33,7 +34,7 @@ class Person:
     def add_name(self, person_name):
         user = self.get_user()
         self.db.query("SELECT person_name FROM person")
-        result = self.db.get_single_result()
+        result = self.db.get_result()
 
         if not result:
             # first name to be added to the table
@@ -98,7 +99,8 @@ class Person:
                         recipe_num))
 
     def get_user(self):
-        return self.db.user
+        #return self.db.user
+        return config.get_value('Username')
 
     def get_person_num(self):
         user_name = self.get_user()

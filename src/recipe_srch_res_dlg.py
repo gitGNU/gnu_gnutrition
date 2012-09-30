@@ -90,16 +90,16 @@ class RecipeSrchResDlg:
             # plan_win.py
             if self.view == gnutr_consts.RECIPE:
                 self.db.query("SELECT no_serv, category_no FROM " +
-                    "recipe WHERE recipe_no = '{0:d}'".format(recipe.num))
+                    "recipe WHERE recipe_no = {0:d}".format(recipe.num))
                 recipe.num_serv, recipe.cat_num = self.db.get_row_result()
                 recipe.cat_desc = self.store.cat_num2desc[ recipe.cat_num]
 
                 self.db.query("SELECT prep_desc FROM preparation WHERE " +
-                    "recipe_no = '{0:d}'".format(recipe.num))
+                    "recipe_no = {0:d}".format(recipe.num))
                 recipe.prep_desc = self.db.get_single_result()
 
                 self.db.query("SELECT amount, Msre_Desc, NDB_No FROM " +
-                    "ingredient WHERE recipe_no = '{0:d}'".format(recipe.num))
+                    "ingredient WHERE recipe_no = {0:d}".format(recipe.num))
                 ingr_list = self.db.get_result()
 
                 recipe.ingr_list = []

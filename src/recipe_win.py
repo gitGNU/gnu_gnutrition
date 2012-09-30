@@ -195,30 +195,39 @@ Do you wish to save it first?""")
     def save_recipe(self, recipe):
         print 'Saving recipe:', recipe.desc
         recipe_no = self.db.next_row('recipe_no', 'recipe')
-        self.db.query("""INSERT INTO recipe VALUES
-            ('%d', '%s', '%s', '%s', '%s')""" % (recipe_no, recipe.desc,
-            recipe.num_serv, str(self.num_ingr), str(recipe.cat_num)))
+        print "*** TYPES ***"
+        print 'recipe_no', type(recipe_no)
+        print 'recipe.desc', type(recipe.desc)
+        print 'recipe.num_serv', type(recipe.num_serv)
+        print 'self.num_ingr', type(self.num_ingr)
+        print 'recipe.cat_num', type(recipe.cat_num)
+        print "*** END TYPES ***"
+        self.db.query("INSERT INTO recipe VALUES" +
+            "(%d, '%s', %d, %d, %d)" % (recipe_no, recipe.desc,
+            recipe.num_serv, self.num_ingr, recipe.cat_num),
+            caller='RecipeWin.save_recipe')
 
         for ingr in recipe.ingr_list:
-            self.db.query("""INSERT INTO ingredient VALUES
-                ('{0:d}', '{1:f}', '{2:s}', '{3:d}')""".format(recipe_no,
-                ingr.amount, ingr.msre_desc, ingr.food_num))
+            self.db.query("INSERT INTO ingredient VALUES" +
+                "({0:d}, {1:f}, '{2:s}', {3:d})".format(recipe_no,
+                ingr.amount, ingr.msre_desc, ingr.food_num),
+                caller='RecipeWin.save_recipe')
 
-        self.db.query("""INSERT INTO preparation VALUES
-            ('%d', '0.0', "%s")"""  % (recipe_no, recipe.prep_desc))
+        self.db.query("INSERT INTO preparation VALUES (%d, 0.0, '%s')"
+            % (recipe_no, recipe.prep_desc), caller='RecipeWin.save_recipe')
         self.dirty = False
 
     def delete_recipe(self, recipe_name):
         self.db.query("""SELECT recipe_no FROM recipe
             WHERE recipe_name = '%s'""" %(recipe_name))
         recipe_num = str(self.db.get_single_result())
-        self.db.query("DELETE FROM recipe WHERE recipe_no = '%s'" 
+        self.db.query("DELETE FROM recipe WHERE recipe_no = %d" 
             % (recipe_num))
-        self.db.query("DELETE FROM ingredient WHERE recipe_no = '%s'" 
+        self.db.query("DELETE FROM ingredient WHERE recipe_no = %d" 
             % (recipe_num))
-        self.db.query("DELETE FROM recipe_plan WHERE recipe_no = '%s'" 
+        self.db.query("DELETE FROM recipe_plan WHERE recipe_no = %d" 
             % (recipe_num))
-        self.db.query("DELETE FROM preparation WHERE recipe_no = '%s'"
+        self.db.query("DELETE FROM preparation WHERE recipe_no = %d"
             % (recipe_num))
 
     def prep_description(self):
@@ -231,7 +240,7 @@ Do you wish to save it first?""")
         num_serv = self.ui.num_serv_entry.get_text()
         cat_desc = self.ui.category_combo.get_active_text()
         prep_desc = self.prep_description()
-        return (desc,num_serv,cat_desc,prep_desc)
+        return (desc,int(num_serv),cat_desc,prep_desc)
 
     def get_recipe(self):
         r = gnutr.Recipe()
@@ -285,7 +294,7 @@ or is not a number.""", self.parent)
             return True
 
         self.db.query("""SELECT prep_desc FROM preparation
-                        WHERE recipe_no = '{0:d}'""".format(recipe_no))
+                        WHERE recipe_no = {0:d}""".format(recipe_no))
         prep_desc = self.db.get_single_result()
 
         start = self.ui.text_buffer.get_start_iter();

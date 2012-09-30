@@ -97,7 +97,7 @@ class MyDateEntry(gtk.HBox):
 
     def on_day_selected(self, w, d=None):
         y, m, d = self.popup.calendar.get_date()
-        self.entry.set_text('%d-%d-%d' % (y, m + 1, d))
+        self.entry.set_text('%d-%02d-%02d' % (y, m + 1, d))
         self.emit('date-changed', self)
 
 gobject.type_register(MyDateEntry)

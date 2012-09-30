@@ -39,7 +39,7 @@ class Person:
         if not result:
             # first name to be added to the table
             person_num = 10001
-            self.db.query("INSERT INTO person VALUES ('%d', '%s', '%s')" 
+            self.db.query("INSERT INTO person VALUES (%d, '%s', '%s')" 
                 % (person_num, person_name, user))
         else:
             match = 0
@@ -68,7 +68,8 @@ class Person:
             "NDB_No INTEGER NOT NULL, " +
             "PRIMARY KEY (date, time, NDB_No))")
 
-        self.db.query("CREATE TEMPORARY TABLE recipe_plan_temp " +
+        #self.db.query("CREATE TEMPORARY TABLE recipe_plan_temp " +
+        self.db.query("CREATE TABLE recipe_plan_temp " +
             "(person_no INTEGER NOT NULL, " +
             "date TEXT NOT NULL, " +
             "time TEXT NOT NULL, " +
@@ -77,26 +78,26 @@ class Person:
             "PRIMARY KEY (date, recipe_no, time) )")
 
         # copy any data from stored tables to temporary ones
-        self.db.query("SELECT * FROM food_plan WHERE person_no = '%d'" 
+        self.db.query("SELECT * FROM food_plan WHERE person_no = %d" 
             % (person_num))
         result = self.db.get_result()
 
         if result and len(result) != 0:
             for person_no, date, time, amount, msre_desc, ndb_no in result:
                 self.db.query("INSERT INTO food_plan_temp VALUES" +
-                    "('%d', '%s', '%s', '%f', '%s', '%d' )"
-                    %(person_no, str(date), str(time), amount, msre_desc, ndb_no))
+                    "(%d, '%s', '%s', %f, '%s', %d )"
+                    %(person_no, str(date), str(time), amount, msre_desc, ndb_no),
+                        caller='Person.setup')
 
-        self.db.query("SELECT * FROM recipe_plan WHERE person_no = '%d'" 
+        self.db.query("SELECT * FROM recipe_plan WHERE person_no = %d" 
             % (person_num))
         result = self.db.get_result()
-
         if result and len(result) != 0:
             for person_num, date, time, num_portions, recipe_num in result:
                 self.db.query("INSERT INTO recipe_plan_temp VALUES" +
-                    " ('%d', '%s', '%s', '%f', '%d' )" 
-                    % (person_num, str(date), str(time), num_portions, 
-                        recipe_num))
+                    " (%d, '%s', '%s', %f, %d )" 
+                    % (person_num, date, time, num_portions, 
+                        recipe_num), caller='Person.setup')
 
     def get_user(self):
         #return self.db.user

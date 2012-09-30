@@ -90,11 +90,11 @@ class NutrCompositionDlg:
     def add_food_to_nutr_total(self, amount, msre_desc, food_num):
 
         self.db.query("SELECT Nutr_No, Nutr_Val FROM nut_data " +
-            "WHERE NDB_No ='%d'" % (food_num))
+            "WHERE NDB_No = %d" % (food_num))
         list_food_nutr = self.db.get_result()
 
         self.db.query("SELECT Gm_wgt FROM weight " +
-            "WHERE NDB_No ='{0:d}' AND Msre_Desc ='{1:s}'".format(
+            "WHERE NDB_No = {0:d}  AND Msre_Desc ='{1:s}'".format(
                     food_num, msre_desc))
         gm_per_msre = self.db.get_single_result()
 
@@ -159,17 +159,17 @@ class NutrCompositionDlg:
         person_num = self.person.get_person_num()
 
         self.db.query("SELECT Nutr_No, goal_val FROM nutr_goal " +
-            "WHERE person_no ='%d'" % (person_num))
+            "WHERE person_no = %d " % (person_num))
         list_nutr_goal = self.db.get_result()
 
         dict = {}
-        print 'list_nutr_tot:'
+        print 'list_nutr_tot (nutr_composition_dlg.py):'
         for num, val in self.list_nutr_tot:
             print 'num:', num, 'val:', val
             dict[num] = val
 
         list_pcnt_goal = []
-        print 'list_nutr_goal:'
+        print 'list_nutr_goal (nutr_composition_dlg.py):'
         for num, val in list_nutr_goal:
             print 'num:', num, 'val:', val
             if val == 0.0:

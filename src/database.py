@@ -120,7 +120,7 @@ class Database:
         self.create_load_table("CREATE TABLE fd_group " + 
             "(FdGrp_Cd INTEGER PRIMARY KEY NOT NULL, " + 
             "FdGrp_Desc TEXT NOT NULL)",
-            ### Insert statement
+            ### Insert statement for one row
             "INSERT INTO 'fd_group' VALUES (?, ?)",
             'fd_group')
 
@@ -134,7 +134,6 @@ class Database:
             "Num_Data_Pts REAL NOT NULL, " + 
             "Std_Error REAL, " + 
             "Src_Cd TEXT NOT NULL, " +
-            # New fields in sr24
             "Deriv_Cd TEXT, " +
             "Ref_NDB_No TEXT, " +
             "Add_Nutr_Mark TEXT, " +
@@ -148,7 +147,7 @@ class Database:
             "AddMod_Date TEXT, " +
             "CC TEXT, " +
             "PRIMARY KEY(NDB_No, Nutr_No))",
-            ### Insert statement
+            ### Insert statement for one row
             "INSERT INTO 'nut_data' VALUES " +
             "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             'nut_data') 
@@ -164,7 +163,7 @@ class Database:
             # Two new in sr24
             "Num_Dec INTEGER NOT NULL, " +
             "SR_Order INTEGER NOT NULL)",
-            ### Insert statement
+            ### Insert statement for one row
             "INSERT INTO 'nutr_def' VALUES " +
             "(?, ?, ?, ?, ?, ?)",
             'nutr_def')
@@ -190,48 +189,32 @@ class Database:
             "Num_Data_Pts INTEGER, " +
             "Std_Dev REAL, " +
             "PRIMARY KEY(NDB_No, Seq))",
-            ### Insert statement
+            ### Insert statement for one row
             "INSERT INTO 'weight' VALUES " +
             "(?, ?, ?, ?, ?, ?, ?)",
             'weight')
 
         # May have user data from previous install that we don't want to lose
-        try:
-            self.query("SELECT name FROM sqlite_master WHERE type='table'")
-        except self.Error, sqlerr:
-            self.con.rollback()
-            import sys
-            print 'Error :', sqlerr, '\nquery:', sql
-            if caller: print 'Caller ', caller
-            sys.exit()
-        search = ['recipe', 'ingredient', 'preparation', 'person',
-                  'food_plan', 'recipe_plan', 'nutr_goal']
-        tables = []
-        for t in self.get_result():
-            if t[0] in search:
-                tables.append(t[0])
+        # so IF NOT EXISTS is used
 
         # create recipe table
-        if not 'recipe' in tables:
-            self.create_table("CREATE TABLE recipe " +
+        # Note: Want index on recipe_name, category_no?
+        self.create_table("CREATE TABLE IF NOT EXISTS recipe" +
             "(recipe_no INTEGER PRIMARY KEY AUTOINCREMENT, " +
             "recipe_name TEXT NOT NULL, " +
             "no_serv INTEGER NOT NULL, " +
             "no_ingr INTEGER NOT NULL, " +
             "category_no INTEGER NOT NULL)", 'recipe') 
-            # Want index on recipe_name, category_no
 
         # create ingredient table
-        if not 'ingredient' in tables:
-            self.create_table("CREATE TABLE ingredient " + 
-            "(recipe_no NOT NULL, " + 
+        self.create_table("CREATE TABLE IF NOT EXISTS ingredient" + 
+            "(recipe_no INTEGER NOT NULL, " + 
             "amount REAL NOT NULL, " +
             "Msre_Desc TEXT NOT NULL, " +
             "NDB_No INTEGER NOT NULL)", 'ingredient')
 
         # create recipe category table
-        self.query("DROP TABLE IF EXISTS category")
-        self.create_load_table("CREATE TABLE category " +
+        self.create_load_table("CREATE TABLE IF NOT EXISTS category" +
             "(category_no INTEGER PRIMARY KEY NOT NULL, " +
             "category_desc TEXT NOT NULL)",
             ### Insert statement
@@ -239,22 +222,19 @@ class Database:
             'category')
 
         # create recipe preparation table
-        if not 'preparation' in tables:
-            self.create_table("CREATE TABLE preparation " +
+        self.create_table("CREATE TABLE IF NOT EXISTS preparation" +
             "(recipe_no INTEGER PRIMARY KEY NOT NULL, " +
             "prep_time TEXT, " +
             "prep_desc TEXT)", 'preparation')
 
         # create person table
-        if not 'person' in tables:
-            self.create_table("CREATE TABLE person " +
+        self.create_table("CREATE TABLE IF NOT EXISTS person" +
             "(person_no INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
             "person_name TEXT, " +
             "user_name TEXT)", 'person')
 
         # create food_plan table
-        if not 'food_plan' in tables:
-            self.create_table("CREATE TABLE food_plan " +
+        self.create_table("CREATE TABLE IF NOT EXISTS food_plan" +
             "(person_no INTEGER NOT NULL, " +
             "date TEXT NOT NULL, " +
             "time TEXT NOT NULL, " +
@@ -263,8 +243,7 @@ class Database:
             "NDB_No INTEGER NOT NULL)", 'food_plan')
 
         # create recipe_plan table
-        if not 'recipe_plan' in tables:
-            self.create_table("CREATE TABLE recipe_plan " +
+        self.create_table("CREATE TABLE IF NOT EXISTS recipe_plan" +
             "(person_no INTEGER NOT NULL, " +
             "date TEXT NOT NULL, " +
             "time TEXT NOT NULL, " +
@@ -272,8 +251,7 @@ class Database:
             "recipe_no INTEGER NOT NULL)", 'recipe_plan')
 
         # create nutr_goal table
-        if not 'nutr_goal' in tables:
-            self.create_table("CREATE TABLE nutr_goal " +
+        self.create_table("CREATE TABLE IF NOT EXISTS nutr_goal" +
             "(person_no INTEGER NOT NULL, " +
             "Nutr_No INTEGER NOT NULL, " +
             "goal_val REAL NOT NULL)", 'nutr_goal')
@@ -285,6 +263,17 @@ class Database:
 
     def curdate(self):
         return curdate()
+
+    def show_query(self, sql, sql_params, caller=None):
+        if not caller: return
+        s = ''
+        if caller: s = '{0:s}(): '.format(caller)
+        s = s + '{0:s}'.format(sql)
+        if sql_params:
+            s = s + '\n\tparams:'
+            print s, sql_params
+        else:
+            print s
 
     def query(self, sql, many=False, sql_params=None, caller=None):
         """Execute the SQL statement with given SQL parameters."""
@@ -310,6 +299,8 @@ class Database:
         self.result = tuple(result)
         self.last_query = sql
         self.last_query_params = sql_params
+        # Added for debugging
+        self.show_query(sql, sql_params, caller)
 
     def get_result(self):
         result = self.result
@@ -501,15 +492,15 @@ def migrate(mysql):
             print 'found', len(result), 'entries in food_plan table'
             for i in range(len(result)):
                 person_no = result[i][0]
-                date = result[i][1]
-                time = result[i][2]
+                date = str(result[i][1])
+                time = str(result[i][2])
                 amount = result[i][3]
                 if use_msre_no:
                     Msre_Desc = msre_desc_from_msre_no(result[i][4])
                 else:
                     Msre_Desc = result[i][4]
                 NDB_No = result[i][5]
-                params = (person_no, date, time, amount, Msre_Desc, NDB_No)
+                params = (person_no, date, time[:-3], amount, Msre_Desc, NDB_No)
                 lite.query("INSERT INTO 'food_plan' VALUES (?,?,?,?,?,?)",
                            many=False, sql_params=params, caller='migrate')
     # recipe_plan table
@@ -527,7 +518,7 @@ def migrate(mysql):
                 time = str(result[r][2])
                 no_portions = result[r][3]
                 recipe_no = result[r][4]
-                params = (person_no, date, time, no_portions, recipe_no)
+                params = (person_no, date, time[:-3], no_portions, recipe_no)
                 print params
                 lite.query("INSERT INTO 'recipe_plan' VALUES (?,?,?,?,?)",
                            many=False, sql_params=params, caller='migrate')
@@ -535,13 +526,5 @@ def migrate(mysql):
     return True
 #---------------------------------------------------------------------------
 if __name__ == '__main__':
-    import mysql
-    try:
-       db = mysql.Database('gnutrition', 'gnutrition')
-    except Exception:
-        dialog = Dialog('error',
-                        "Unable to connect to MySQL's GNUtrition database.")
-    else: 
-        sqlite = Database()
-        sqlite.initialize()
-        migrate('gnutrition','gnutrition')
+    print 'curdate:', curdate()
+    print 'curtime:', curtime()

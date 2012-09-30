@@ -76,7 +76,7 @@ class RecipeSrchDlg:
             dict = self.store.cat_desc2num
             cat_num = dict[cat_desc]
             self.db.query(("SELECT recipe_no, recipe_name " +
-                "FROM recipe WHERE category_no = '%d' " +
-                "AND recipe_name REGEXP '%s'") %(cat_num, srch_text))
+                "FROM recipe WHERE category_no = %d" +
+                " AND recipe_name REGEXP '%s'") %(cat_num, srch_text))
             result_list = self.db.get_result()
         return result_list

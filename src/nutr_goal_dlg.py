@@ -66,7 +66,7 @@ class NutrGoalDlg:
         person_no = self.person.get_person_num()
 
         self.person.db.query("SELECT Nutr_No, goal_val FROM nutr_goal " + 
-            "WHERE person_no = '%d'" % (person_no))
+            "WHERE person_no = %d" % (person_no))
         goal_list = self.person.db.get_result()
 
         return goal_list
@@ -76,8 +76,10 @@ class NutrGoalDlg:
 
         # delete the old goals if necessary
         self.person.db.query("DELETE FROM nutr_goal " +
-            "WHERE person_no = '%d'" % (person_num))
+            "WHERE person_no = %d" % (person_num))
 
         for nutr_num, nutr_val in goal_list:
             self.person.db.query("INSERT INTO nutr_goal VALUES " +
-                "('%d', '%d', '%f')" % (person_num, int(nutr_num), float(nutr_val)))
+                "('%d', '%d', '%f')" % (person_num, int(nutr_num),
+                                        float(nutr_val)),
+                                        caller='save_goal')

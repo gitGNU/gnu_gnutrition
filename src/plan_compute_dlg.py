@@ -35,13 +35,17 @@ class PlanComputeDlg:
         self.ui.dialog.show()
 
     def start_later_than_end(self, start, end):
-        date_split1 = string.split(start, '-')
-        date_split2 = string.split(end, '-')
-        if int(date_split1[0]) > int(date_split2[0]):    # year
+        start, end = string.split(start, '-'), string.split(end, '-')
+        year_start, year_end  = int(start[0]), int(end[0])
+        month_start, month_end = int(start[1]), int(end[1])
+        day_start, day_end = int(start[2]), int(end[2])
+        # Ex: start = 2012-12-31
+        #       end = 2013-1-1
+        if year_start > year_end:
             return 1
-        if int(date_split1[1]) > int(date_split2[1]):    # month
-            return 1
-        if int(date_split1[2]) > int(date_split2[2]):    # day
+        if month_start > month_end and not year_end > year_start: 
+            return 1                 
+        if day_start > day_end and not month_end > month_start: 
             return 1
         return 0
 
@@ -73,7 +77,7 @@ class PlanComputeDlg:
 
         # get recipes in plan within the dates
         self.db.query("SELECT recipe_no, no_portions FROM " +
-            "recipe_plan_temp WHERE date >='%s' AND date <='%s'" 
+            "recipe_plan_temp WHERE date >= '%s' AND date <= '%s'" 
             %(start_date, end_date))
         result = self.db.get_result()
 
@@ -82,7 +86,7 @@ class PlanComputeDlg:
 
         # get foods in plan within the dates
         self.db.query("SELECT amount, Msre_Desc, NDB_No FROM " +
-            "food_plan_temp WHERE date >='%s' AND date <='%s'" 
+            "food_plan_temp WHERE date >= '%s' AND date <= '%s'" 
             %(start_date, end_date))
         result = self.db.get_result()
 
@@ -115,17 +119,18 @@ class PlanComputeDlg:
 
     def get_ingredients(self, recipe_num):
         self.db.query("SELECT amount, Msre_Desc, NDB_No FROM " +
-            "ingredient WHERE recipe_no = '%d'" %(recipe_num))
+            "ingredient WHERE recipe_no = %d" %(recipe_num))
         return self.db.get_result()
 
     def get_food_nutrients(self, food_num):
         self.db.query("SELECT Nutr_No, Nutr_Val FROM nut_data " +
-            "WHERE NDB_No = '%d'" %(food_num))
+            "WHERE NDB_No = %d" %(food_num))
         return self.db.get_result()
-#HERE: take into account Amount unit modifier?
+
+    #HERE: take into account Amount unit modifier?
     def get_gm_per_measure(self, food_num, msre_desc):
         self.db.query("SELECT Gm_wgt FROM weight WHERE " +
-            "NDB_No = '%d' AND Msre_Desc = '%s'" %(food_num, msre_desc))
+            "NDB_No = %d AND Msre_Desc = '%s'" %(food_num, msre_desc))
         return float(self.db.get_single_result())
 
     def add_food_nutr_comp(self, tot_list, food_num, amount, gm_per_msre):
@@ -143,7 +148,7 @@ class PlanComputeDlg:
     def add_recipe_to_total(self, tot_list, recipe_num, num_portions):
         ingr_list = self.get_ingredients(recipe_num)
         self.db.query("SELECT no_serv FROM recipe WHERE " +
-            "recipe_no = '%d'" %(recipe_num))
+            "recipe_no = %d" %(recipe_num))
         num_serv = float(self.db.get_single_result())
         for amount, msre_desc, fd_num in ingr_list:
             tot_amount = amount * num_portions / num_serv

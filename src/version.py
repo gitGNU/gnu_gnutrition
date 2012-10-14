@@ -26,20 +26,29 @@ def get_latest_version(url):
         print e
         return "0.0" # Force update bypass
     reex = r"""
-            version"[\s+]?:    #   version":
+            "version"[\s+]?:   #   version":
             [\s+]?"            #  leading junk
-            (?P<version>([0-9]+[.]?)+)  # target match
+            (?P<VER>([0-9]+[.]?)+)  # target match
             ["][\s+]?,(.+)?$   #  trailing junk until end of line
-            .*"                #  leading junk
-            message"[\s+]?:    #  message":
+            .*"sr"[\s+]?:      #  "sr":
+            [\s+]?"            #  Allow for white space
+            (?P<SR>[2-9][0-9]) # target match  (database version)
+            ["][\s+]?,(.+)?$   #  trailing junk until end of line
+            .*"sr_url"[\s+]?:  #  "sr_url":
+            [\s+]?"            #  Allow for white space
+            (?P<SR_URL>http:..*) #  target match   (where we get database from)
+            ["][\s+]?,(.+)?$   #  trailing junk until end of line
+            .*"message"[\s+]?:    #  "message":
             [\s+]?"            #  eat white space
             (?P<message>.*\.)["]  # target match
             """
     reobj = re.compile(reex, re.X|re.M|re.S)
     m = re.search(reobj, obj.read())
     if m:
-        return (m.group('version'), m.group('message'))
-    return ('0.0', None)
+        config.set_key_value('SR', m.group('SR'))
+        return (m.group('VER'), m.group('SR'),
+                m.group('SR_URL'), m.group('message'))
+    return ('0.0', None, None, None)
 
 def cmp_version_strings(this_ver, curr_ver):
     s1 = this_ver.split('.')
@@ -69,10 +78,30 @@ def update_version(version, message=None):
         msg += '\n{0:s}'.format(message)
     gnutr.Dialog('notify', msg)
 
+def get_database_archive(url):
+    import gnutr_consts
+    from urllib2 import Request, urlopen, URLError, HTTPError
+    from os.path import basename
+    success = 0
+    req = Request(url)
+    try:
+        f = urlopen(req)
+        # HERE: where do we put the file?
+        local_file = open(basename(url), "wb")
+        local_file.write(f.read())
+        local_file.close()
+    except HTTPError, e:
+        print "HTTP Error:",e.code , url
+        success = 1
+    except URLError, e:
+        print "URL Error:",e.reason , url
+        success = 1
+    return success
+
 def check_version():
     import gnutr_consts
     import install
-    this_ver = install.VERSION
+    this_ver = install.gnutr_version()
     if config.get_value('check_disabled') or not config.get_value('check_version'):
         return 0
     import time
@@ -80,14 +109,14 @@ def check_version():
     last_check = config.get_value('last_check')
     time_now = time.time()
     if (time_now - last_check > interval):
-        (curr_ver, mesg) = get_latest_version(gnutr_consts.LATEST_VERSION) 
+        (curr_ver, sr, sr_url, mesg) = get_latest_version(gnutr_consts.LATEST_VERSION) 
+        config.set_key_value('sr_url', sr_url)
         update = False
         if this_ver == curr_ver:
             pass  # Nothing to do
         else:
             update = cmp_version_strings(this_ver,curr_ver)
         if update:
-#HERE: Check for existing MySQL db and ask about migration/deletion
             update_version(curr_ver, mesg)
     last_check = config.set_key_value('last_check',time_now)
     return 1
@@ -103,7 +132,14 @@ if __name__ == '__main__':
         print 'False ==', cmp_ver_strings("0.2.1", "0.2")
     import gnutr_consts
     url = gnutr_consts.LATEST_VERSION
-    (ver,msg) = get_latest_version(url)
+    (ver,sr,sr_url,msg) = get_latest_version(url)
     print 'latest version available:', ver
+    print 'SR:', sr
+    print 'SR URL:', sr_url
     print 'version message:', msg
+
+    if not sr_url: exit()
+
     #str_cmp_test()
+    if get_database_archive(sr_url) == 0:
+		print 'sr{0:s} successfully downloaded'.format(sr)

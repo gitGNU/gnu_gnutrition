@@ -106,6 +106,6 @@ class Store:
 
     def get_msre_desc_tuples(self, fd_num):
         self.db.query("SELECT Msre_Desc FROM weight WHERE " +
-            "NDB_No = {0:d}".format(fd_num))
+            "NDB_No = '{0:s}'".format(fd_num))
         result = self.db.get_result()
         return result

@@ -21,8 +21,12 @@
 CHECK_DISABLED = False
 # Next two can be changed by user
 CHECK_VERSION = True
-CHECK_INTERVAL = 604800   # 60*60*24*7
-LATEST_VERSION = "http://www.gnu.org/software/gnutrition/version"
+CHECK_INTERVAL = 604800   # 60*60*24*7 (one week)
+
+# This file has version information for both the latest application version
+# and the current USDA Standard Reference Database version.
+BASE_URL = "http://www.gnu.org/software/gnutrition/"
+LATEST_VERSION = BASE_URL + "version"
 
 PLAN = 0
 RECIPE = 1

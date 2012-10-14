@@ -56,8 +56,8 @@ class Druid:
                 self.ui.set_page(2)
                 return
             
-            self.sqlite.initialize()
-
+            self.sqlite.init_core()
+            self.sqlite.init_user()
             # See if this user has GNUtrition data from older version
             # which used MySQL. That data should be migrated to newer SQLite
             # storage first.
@@ -72,25 +72,9 @@ class Druid:
                 if reply == gtk.RESPONSE_YES:
                     self.migration = True
                     import mysql
-                    try:
-                        self.mysql = mysql.Database(db_uname, db_pword) 
-                    except Exception:
-                        # HERE: add dialog notification about failure to
-                        #       connect to MySQL server with stored username
-                        #       and password.
-                        dialog = Dialog('error',
-                            "Unable to connect to MySQL's GNUtrition database.")
-                    else:
-                        if self.mysql.initialize():
-                            # This needs MySQL root username and password
-                            #if self.mysql.user_setup(db_uname, db_pword):
-                            database.migrate(self.mysql)
-                        else:
-                            # HERE: add dialog notification about missing
-                            #       gnutr_db database
-                            dialog = Dialog('error',
-                              "MySQL GNUtrition database no longer exists.")
-
+                    self.mysql = mysql.open_mysqldb(db_uname, db_pword)
+                    if self.mysql:
+                        database.migrate(self.mysql)
             # no error, so skip over page_db_error
             self.ui.set_page(3)
             return

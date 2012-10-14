@@ -65,7 +65,7 @@ class Person:
             "time TEXT NOT NULL, " + 
             "amount REAL NOT NULL, " +
             "Msre_Desc TEXT NOT NULL, " +
-            "NDB_No INTEGER NOT NULL, " +
+            "NDB_No TEXT NOT NULL, " +
             "PRIMARY KEY (date, time, NDB_No))")
 
         #self.db.query("CREATE TEMPORARY TABLE recipe_plan_temp " +
@@ -85,7 +85,7 @@ class Person:
         if result and len(result) != 0:
             for person_no, date, time, amount, msre_desc, ndb_no in result:
                 self.db.query("INSERT INTO food_plan_temp VALUES" +
-                    "(%d, '%s', '%s', %f, '%s', %d )"
+                    "(%d, '%s', '%s', %f, '%s', '%s' )"
                     %(person_no, str(date), str(time), amount, msre_desc, ndb_no),
                         caller='Person.setup')
 

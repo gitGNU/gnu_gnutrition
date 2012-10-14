@@ -16,7 +16,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import gtk
-import install
+from install import gnutr_version
+from config import get_value
 
 import gnutr_stock
 import gnutr_widgets
@@ -64,24 +65,6 @@ class BaseWinUI:
         self.plan_button = toolbar.append_button('gnutr-plan', 'Plan', tooltips, 'Switch view to plan')
         self.food_button = toolbar.append_button('gnutr-food', 'Food', tooltips, 'Switch view to food')
 
-# the original version of the buttons (using the deprecated API) looks
-# a bit different, buttons are smaller and have some padding around
-# them:
-
-#         vbox4 = gtk.VBox()
-#         vbox4.set_border_width(10)
-#         self.recipe_button = gtk.Button()
-#         icon2 = gtk.Image()
-#         icon2.set_from_stock('gnutr-recipe', gtk.ICON_SIZE_LARGE_TOOLBAR)
-#         self.recipe_button.add(icon2)
-#         self.recipe_button.set_relief(gtk.RELIEF_NONE)
-#         vbox4.pack_start(self.recipe_button)
-
-#         label3 = gtk.Label('Recipe')
-#         vbox4.pack_start(label3)
-#         toolbar.append_widget(vbox4, 'Switch view to recipe', None)
-
-
         self.pane_box = gtk.HBox(False, 0)
         self.pane_box.set_border_width(2)
         hpaned1.pack2(self.pane_box, True, True)
@@ -94,13 +77,17 @@ class BaseWinUI:
             gtk.RESPONSE_CANCEL))
         self.about_dlg.set_resizable(False)
         about_label = gtk.Label(
-"""GNUtrition %s
-A Diet and Nutrition Analysis Program
-
+"""GNUtrition {0:s}
+A Diet and Nutrition Analysis Program using the USDA
+National Nutrient Database for Standard Reference.
+Current database version is SR{1:s}.
+ 
 (C) 2002 Edgar Denny
 (C) 2010 2012 Free Software Foundation, Inc.
 
-http://www.gnu.org/software/gnutrition/""" % (install.VERSION))
+http://www.gnu.org/software/gnutrition/""".format(gnutr_version(),
+                                                  get_value('SR')))
+
         about_label.set_justify(gtk.JUSTIFY_CENTER)
         vbox6 = gtk.VBox()
         vbox6.set_border_width(5)

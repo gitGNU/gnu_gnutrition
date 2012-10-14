@@ -209,7 +209,7 @@ Do you wish to save it first?""")
 
         for ingr in recipe.ingr_list:
             self.db.query("INSERT INTO ingredient VALUES" +
-                "({0:d}, {1:f}, '{2:s}', {3:d})".format(recipe_no,
+                "({0:d}, {1:f}, '{2:s}', '{3:s}')".format(recipe_no,
                 ingr.amount, ingr.msre_desc, ingr.food_num),
                 caller='RecipeWin.save_recipe')
 

@@ -308,11 +308,11 @@ class PlanWin:
         return food_list
 
     def food_desc_from_NDB_No(self, food_no):
-        self.db.query("SELECT Long_Desc FROM food_des WHERE NDB_No = {0:d}".format(food_no))
+        self.db.query("SELECT Long_Desc FROM food_des WHERE NDB_No = '{0:s}'".format(food_no))
         return self.db.get_result()
 
     def food_quantity_info(self, food_no, msre_desc):
-        self.db.query("SELECT Amount, Gm_wgt FROM weight WHERE NDB_No = {0:d}" +
+        self.db.query("SELECT Amount, Gm_wgt FROM weight WHERE NDB_No = '{0:s}'" +
             "AND Msre_Desc = '{1:s}'".format(food_no, msre_desc))
         return self.db.get_result()
 
@@ -354,7 +354,7 @@ class PlanWin:
     def delete_from_plan_temp_db(self, date, food=None, recipe=None):
         if food:
             self.db.query("DELETE FROM food_plan_temp WHERE " +
-                "date = '%s' AND time = '%s' AND NDB_No = %d"
+                "date = '%s' AND time = '%s' AND NDB_No = '%s'"
                 %(date, food.time, food.food_num))
         else:
             self.db.query("DELETE FROM recipe_plan_temp WHERE " +
@@ -364,7 +364,7 @@ class PlanWin:
     def edit_plan_temp_db(self, date, food=None, recipe=None):
         if food:
             self.db.query("SELECT * FROM food_plan_temp WHERE " +
-                "date = '{0:s}' AND time = '{1:s}' AND NDB_No = {2:d}".format(
+                "date = '{0:s}' AND time = '{1:s}' AND NDB_No = '{2:s}'".format(
 					date, food.time, food.food_num))
             data = self.db.get_result()
             # FIXME: catches a bug where two foods have the same name,
@@ -376,10 +376,10 @@ class PlanWin:
                 data
 
             self.db.query("DELETE FROM food_plan_temp WHERE " +
-                "date = '%s' AND time = '%s' AND NDB_No = %d"
+                "date = '%s' AND time = '%s' AND NDB_No = '%s'"
                 %(date, food.time, food.food_num))
             self.db.query("INSERT INTO food_plan_temp VALUES (" +
-                "{0:d}, '{1:s}', '{2:s}', {3:f}, '{4:s}', {5:d})".format(
+                "{0:d}, '{1:s}', '{2:s}', {3:f}, '{4:s}', '{5:s}')".format(
                 person_num, date2, time, food.amount, food.msre_desc,food_num),
                 caller='PlanWin.edit_plan_temp_db')
         else:

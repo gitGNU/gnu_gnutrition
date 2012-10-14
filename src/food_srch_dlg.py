@@ -118,7 +118,7 @@ class FoodSrchDlg:
         else:
             fg_num = self.store.fg_desc2num[fg_desc]
             self.db.query("SELECT NDB_No FROM food_des " +
-                "WHERE FdGrp_Cd = %d AND %s" % (fg_num, where))
+                "WHERE FdGrp_Cd = '%s' AND %s" % (fg_num, where))
         result = self.db.get_result()
 
         food_num_list = []
@@ -172,8 +172,8 @@ class FoodSrchDlg:
         for nutr_desc, constraint in constr_list:
             nutr_num = dict[nutr_desc]
             nutr_tot_list.append((nutr_num, '0.0', constraint))
-            query = query + " Nutr_No = %d OR" % (nutr_num)
-        query = query + " Nutr_No = 208 )"
+            query = query + " Nutr_No = '%s' OR" % (nutr_num)
+        query = query + " Nutr_No = '208' )"
 
         dict = self.store.fg_desc2num
         if fg_desc == 'All Foods':
@@ -183,7 +183,7 @@ class FoodSrchDlg:
             fg_num = self.store.fg_desc2num[fg_desc]
             query = ("SELECT nut_data.NDB_No, Nutr_No, Nutr_Val FROM " +
                 "nut_data, food_des WHERE " +
-                "food_des.FdGrp_Cd = {0:d} AND ".format(fg_num) +
+                "food_des.FdGrp_Cd = '{0:s}' AND ".format(fg_num) +
                 "nut_data.NDB_No = food_des.NDB_No AND " + query)
         self.db.query(query)
         result = self.db.get_result()

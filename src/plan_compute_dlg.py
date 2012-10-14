@@ -124,13 +124,13 @@ class PlanComputeDlg:
 
     def get_food_nutrients(self, food_num):
         self.db.query("SELECT Nutr_No, Nutr_Val FROM nut_data " +
-            "WHERE NDB_No = %d" %(food_num))
+            "WHERE NDB_No = '%s'" %(food_num))
         return self.db.get_result()
 
     #HERE: take into account Amount unit modifier?
     def get_gm_per_measure(self, food_num, msre_desc):
         self.db.query("SELECT Gm_wgt FROM weight WHERE " +
-            "NDB_No = %d AND Msre_Desc = '%s'" %(food_num, msre_desc))
+            "NDB_No = '%s' AND Msre_Desc = '%s'" %(food_num, msre_desc))
         return float(self.db.get_single_result())
 
     def add_food_nutr_comp(self, tot_list, food_num, amount, gm_per_msre):

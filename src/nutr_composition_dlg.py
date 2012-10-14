@@ -90,11 +90,11 @@ class NutrCompositionDlg:
     def add_food_to_nutr_total(self, amount, msre_desc, food_num):
 
         self.db.query("SELECT Nutr_No, Nutr_Val FROM nut_data " +
-            "WHERE NDB_No = %d" % (food_num))
+            "WHERE NDB_No = '%s'" % (food_num))
         list_food_nutr = self.db.get_result()
 
         self.db.query("SELECT Gm_wgt FROM weight " +
-            "WHERE NDB_No = {0:d}  AND Msre_Desc ='{1:s}'".format(
+            "WHERE NDB_No = '{0:s}'  AND Msre_Desc ='{1:s}'".format(
                     food_num, msre_desc))
         gm_per_msre = self.db.get_single_result()
 

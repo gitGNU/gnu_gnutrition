@@ -16,7 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import MySQLdb
-import warnings
 
 class Database:
     _shared_state = {}
@@ -24,26 +23,12 @@ class Database:
         self.__dict__ = self._shared_state
         if self._shared_state:
             return
-    # supress warning on "DROP TABLE IF EXISTS" for temp tables
-        warnings.filterwarnings("ignore", "Unknown table.*_temp")
-    # supress 'Data truncated ...' 
-        warnings.filterwarnings("ignore", "Data truncated*")
-
         self.db = MySQLdb.Connect(user=uname, passwd=pword)
         self.cursor = self.db.cursor()
         self.user = uname
         self.rows = 0
         self.result = None
  
-    def change_user(self, uname, pword, dbase): 
-        try:
-            self.db = MySQLdb.Connect(user=uname, passwd=pword, db=dbase)
-            self.cursor = self.db.cursor()
-            self.user = uname
-        except:
-            return 0
-        return 1
-
     def initialize(self):
         self.query('SHOW DATABASES')
         db_list = self.get_result()
@@ -67,7 +52,6 @@ class Database:
         self.result = self.cursor.fetchall()
         self.rows = self.db.affected_rows()
         self.db.commit()
-#        return self.get_result()
 
     def get_result(self):
         result = self.result
@@ -99,78 +83,39 @@ class Database:
         print 'Error: not a single value'
         return None
 
-    def create_table(self, query, tablename):
-        self.query(query)
-        print "table created: ", tablename
-
-    def load_table(self, fn, table):
-        self.query("LOAD DATA LOCAL INFILE '"+ fn + "' " +
-            "INTO TABLE " + table + " FIELDS TERMINATED BY '^'")
-
-    def create_load_table(self, query, filename):
-        import install
-        from os import path
-        self.create_table(query, filename)
-        fn = path.join(install.idir,'data',filename.upper() + '.txt')
-        self.load_table(fn, filename)
-        print "table loaded: ", filename
-
-    def add_user(self, user, password):
-        self.query("GRANT USAGE ON *.* TO " + user +
-            "@localhost IDENTIFIED BY '" + password + "'")
-        self.query("GRANT ALL ON gnutr_db.* TO " + user + 
-            "@localhost IDENTIFIED BY '" + password + "'")
-        self.query("FLUSH PRIVILEGES")
-
     def delete_db(self):
         self.query("DROP DATABASE gnutr_db")
 
-    def user_setup(self, uname, pword):
-        # check to see if user name is already in mysql.user and that the
-        # password is correct
-        if self.user_name_exists(uname):
-            if self.password_match(uname, pword):
-                # add the info to the config file.
-                #config.set_key_value('Username', uname)
-                #config.set_key_value('Password', pword)
-                # check to see if user can access 'gnutr_db'
-                if not self.user_db_access(uname):
-                    # grant privileges to user
-                    self.mysql.add_user(uname, pword)
-            else:
-                # HERE: add dialog notifying that ...
-                return 0
+def open_mysqldb(user=None, passwd=None):
+    from gnutr import Dialog
+    db_uname, db_pword = None, None
+    if user and passwd:
+        db_uname, db_pword = user, passwd
+    else:
+        import config
+        # Username and Password would be left over from MySQL versions
+        # of GNUtrition.
+        db_uname = config.get_value('Username')
+        db_pword = config.get_value('Password')
+    if (db_uname and db_pword):
+        try:
+            db_instance = Database(db_uname, db_pword)
+        except Exception:
+            Dialog('error',"Unable to connect to MySQL's GNUtrition database.")
+            return False
         else:
-            # HERE: add dialog notifying that ...
-            return 0
-        return 1
+            if not db_instance.initialize():
+                Dialog('error', "MySQL GNUtrition database no longer exists!")
+                return False
+    else:
+        return False
+    return db_instance
 
-    def user_name_exists(self, uname):
-        self.mysql.query("USE mysql")
-        self.mysql.query("SELECT User FROM user WHERE " +
-            "User = '" + uname + "'")
-        name = self.mysql.get_single_result()
-        if not name:
-            return 0
-        return 1
-
-    def password_match(self, uname, pword):
-        # check to see if the password is correct
-        self.mysql.query("SELECT Password FROM user WHERE " +
-            "User = '" + str(uname) + "'")
-        result1 = self.mysql.get_single_result()
-        self.db.query("SELECT PASSWORD('" + str(pword) + "')")
-        result2 = self.mysql.get_single_result()
-        if result1 == result2:
-            return 1;
-        return 0
-
-    def user_db_access(self, uname):
-        # does the user have access to the gnutr_db?
-        self.mysql.query("SELECT Db FROM db WHERE " +
-            "User = '" + str(uname) + "'")
-        result = self.mysql.get_result()
-        for db_name in result:
-            if db_name[0] == 'gnutr_db':
-                return 1
-        return 0
+if __name__ == '__main__':
+    import sys
+    if open_mysqldb():
+        print 'Successful MySQL database test.'
+    else:
+        print 'MySQL database test failed.', db
+        sys.exit(1)
+    sys.exit(0)

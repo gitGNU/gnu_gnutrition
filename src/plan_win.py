@@ -365,7 +365,7 @@ class PlanWin:
         if food:
             self.db.query("SELECT * FROM food_plan_temp WHERE " +
                 "date = '{0:s}' AND time = '{1:s}' AND NDB_No = '{2:s}'".format(
-					date, food.time, food.food_num))
+                    date, food.time, food.food_num))
             data = self.db.get_result()
             # FIXME: catches a bug where two foods have the same name,
             # date and time. At present can't distinguish between them

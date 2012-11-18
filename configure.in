@@ -91,6 +91,7 @@ AC_OUTPUT( run-gnutrition.py\
 	src/install.py\
 	Makefile\
 	src/Makefile\
+	src/util/Makefile\
 	data/Makefile\
 	pixmaps/Makefile\
 	doc/Makefile\

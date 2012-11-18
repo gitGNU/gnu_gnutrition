@@ -20,6 +20,12 @@ import webbrowser
 import install
 import os
 import string
+from util.log import LOG as log
+debug = log.debug
+info = log.info
+warn = log.warn
+error = log.error
+critical = log.critical
 
 def test_access(file):
     path_list = string.split(os.environ['PATH'], ':')
@@ -38,7 +44,7 @@ def get_browser():
             browser = webbrowser.GenericBrowser(b + ' %s')
             webbrowser.register(b, None, browser)
             return b
-    print 'No Web browser found.'
+    debug('No Web browser found.')
     return ''
 
 def open(html_page):

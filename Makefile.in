@@ -26,7 +26,7 @@ PYTHON		= @PYTHON@
 
 @SET_MAKE@
 
-SUBDIRS = src data pixmaps rpm debian # doc
+SUBDIRS = src src/util data pixmaps rpm debian # doc
 
 files = AUTHORS autogen.sh COPYING gnutrition.desktop py-compile \
 	Changelog configure install-sh INSTALL configure.in \

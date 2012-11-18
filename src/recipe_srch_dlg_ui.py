@@ -55,7 +55,7 @@ class RecipeSrchDlgUI:
         hbox3.set_border_width(5)
         frame1.add(hbox3)
 
-        label2 = gtk.Label('Regular Expression')
+        label2 = gtk.Label('Regular Expression (.* to list all)')
         label2.set_alignment(1.0, 0.5)
         label2.set_padding(10, 0)
         hbox3.pack_start(label2, False, True, 0)

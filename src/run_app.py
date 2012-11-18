@@ -17,9 +17,13 @@
 #
 import config
 import gtk
+from util.log import init_logging
 
 class RunApp:
     def __init__(self):
+        from os import path
+        logfile = path.join(config.udir, 'log')
+        init_logging(logfile, logto='both', level='info')
         if not config.get_value('sqlite3'):
             # First run, program default values can be added here
             import druid

@@ -24,6 +24,12 @@ import gnutr_consts
 import store
 import database
 import help
+from util.log import LOG as log
+debug = log.debug
+info = log.info
+warn = log.warn
+error = log.error
+critical = log.critical
 
 class RecipeWin:
     def __init__(self, app, parent):
@@ -173,7 +179,7 @@ or is not a number.""", self.parent)
                 dlg.destroy()
                 self.on_save_released(None)
             else:
-                print 'Not saving changes.'
+                info('Not saving changes.')
                 dlg.destroy()
 
     def on_clear_released(self, w, d=None):
@@ -193,15 +199,15 @@ Do you wish to save it first?""")
         return self.db.get_single_result()
 
     def save_recipe(self, recipe):
-        print 'Saving recipe:', recipe.desc
+        info('Saving recipe: {0:s}'.format(recipe.desc))
         recipe_no = self.db.next_row('recipe_no', 'recipe')
-        print "*** TYPES ***"
-        print 'recipe_no', type(recipe_no)
-        print 'recipe.desc', type(recipe.desc)
-        print 'recipe.num_serv', type(recipe.num_serv)
-        print 'self.num_ingr', type(self.num_ingr)
-        print 'recipe.cat_num', type(recipe.cat_num)
-        print "*** END TYPES ***"
+        debug("*** TYPES ***")
+        debug('recipe_no'.format(type(recipe_no)))
+        debug('recipe.desc'.format(type(recipe.desc)))
+        debug('recipe.num_serv'.format(type(recipe.num_serv)))
+        debug('self.num_ingr'.format(type(self.num_ingr)))
+        debug('recipe.cat_num'.format(type(recipe.cat_num)))
+        debug("*** END TYPES ***")
         self.db.query("INSERT INTO recipe VALUES" +
             "(%d, '%s', %d, %d, %d)" % (recipe_no, recipe.desc,
             recipe.num_serv, self.num_ingr, recipe.cat_num),
@@ -267,30 +273,30 @@ or is not a number.""", self.parent)
        
     def is_dirty(self):
         if self.dirty:
-            print 'Dirty flag is set.'
+            debug('Dirty flag is set.')
             return True
         if self.empty_window():
-            print 'No recipe displayed.'
+            debug('No recipe displayed.')
             return False
         showing = self.get_recipe()
         if not showing: return False
         if not self.check_recipe_exists(showing.desc):
-            print 'Recipe name has changed.'
+            debug('Recipe name has changed.')
             return True
 
         self.db.query("""SELECT recipe_no, no_serv, category_no FROM recipe
             WHERE recipe_name = '%s'""" % (showing.desc))
         (recipe_no, no_serv, category_no) = self.db.get_row_result()
-        print 'recipe_no:', recipe_no
-        print 'no_serv:', no_serv
-        print 'category_no:', category_no
+        debug('recipe_no: {0:d}'.format(recipe_no))
+        debug('no_serv: {0:d}'.format(no_serv))
+        debug('category_no: {0:d}'.format(category_no))
         if int(no_serv) != int(showing.num_serv):
-            print 'Number of servings has changed.'
-            print 'recipe', no_serv, 'showing', showing.num_serv
+            debug('Number of servings has changed from {0:d} to {1:d}.'.format(
+                    int(no_serv), int(showing.num_serv)))
             return True
 
         if category_no != showing.cat_num:
-            print 'Category has changed.'
+            debug('Category has changed.')
             return True
 
         self.db.query("""SELECT prep_desc FROM preparation
@@ -301,14 +307,14 @@ or is not a number.""", self.parent)
         end = self.ui.text_buffer.get_end_iter();
         curr_prep_desc = self.prep_description()
         if prep_desc != curr_prep_desc:
-            print 'Recipe Instructions have changed.'
+            debug('Recipe Instructions have changed.')
             return True
         return False
 
     def on_save_released(self, w, d=None):
         recipe = self.get_recipe()
         if not recipe:
-            print 'No recipe to save.'
+            debug('No recipe to save.')
             return
         recipe.num = self.check_recipe_exists(recipe.desc)
         if recipe.num:
@@ -319,12 +325,12 @@ in the database. Do you want to overwrite it?""", self.parent)
             if reply == gtk.RESPONSE_YES:
                 dlg.destroy()
                 self.delete_recipe(recipe.desc)
-                print 'Saving changes to recipe.'
+                debug('Saving changes to recipe.')
                 self.save_recipe(recipe)
             else:
                 dlg.destroy()
         else:
-            print 'Saving new recipe.'
+            debug('Saving new recipe.')
             self.save_recipe(recipe)
 
     def add_ingredient(self, ingr):

@@ -572,7 +572,7 @@ PYTHON_SITE_DIR
 PYTHON_PREFIX
 PYTHON_VERSION
 PYTHON
-VERSION
+GNUTR_VERSION
 REVISION
 MINOR_VERSION
 MAJOR_VERSION
@@ -1662,7 +1662,7 @@ PACKAGE=gnutrition
 MAJOR_VERSION=0
 MINOR_VERSION=32
 REVISION=1
-VERSION="0.32.1"
+GNUTR_VERSION="0.32.1"
 
 
 
@@ -1912,7 +1912,7 @@ else
 **** The python interpreter can't find the python bindings for gtk." "$LINENO" 5
 fi
 
-ac_config_files="$ac_config_files run-gnutrition.py src/install.py Makefile src/Makefile data/Makefile pixmaps/Makefile doc/Makefile rpm/Makefile rpm/gnutrition.spec debian/Makefile"
+ac_config_files="$ac_config_files run-gnutrition.py src/install.py Makefile src/Makefile src/util/Makefile data/Makefile pixmaps/Makefile doc/Makefile rpm/Makefile rpm/gnutrition.spec debian/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -2636,6 +2636,7 @@ do
     "src/install.py") CONFIG_FILES="$CONFIG_FILES src/install.py" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
+    "src/util/Makefile") CONFIG_FILES="$CONFIG_FILES src/util/Makefile" ;;
     "data/Makefile") CONFIG_FILES="$CONFIG_FILES data/Makefile" ;;
     "pixmaps/Makefile") CONFIG_FILES="$CONFIG_FILES pixmaps/Makefile" ;;
     "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;

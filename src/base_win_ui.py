@@ -80,13 +80,14 @@ class BaseWinUI:
 """GNUtrition {0:s}
 A Diet and Nutrition Analysis Program using the USDA
 National Nutrient Database for Standard Reference.
-Current database version is SR{1:s}.
+Current database version is SR{1:s}, {2:s}.
  
 (C) 2002 Edgar Denny
 (C) 2010 2012 Free Software Foundation, Inc.
 
 http://www.gnu.org/software/gnutrition/""".format(gnutr_version(),
-                                                  get_value('SR')))
+                                                  get_value('sr'),
+                                                  get_value('sr_date')))
 
         about_label.set_justify(gtk.JUSTIFY_CENTER)
         vbox6 = gtk.VBox()

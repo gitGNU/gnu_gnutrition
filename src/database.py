@@ -17,6 +17,17 @@
 import sqlite3 as dbms
 import datetime, time
 import re
+import config
+from util.utility import stdout, stderr, func
+from util.exception import AppException, AppFileReadError
+from util.log import LOG as log
+debug = log.debug
+info = log.info
+warn = log.warn
+error = log.error
+critical = log.critical
+
+class SQLiteQueryError(AppException): pass
 
 def ticks():
     return time.time()
@@ -30,6 +41,8 @@ def curdate():
     return str(dbms.DateFromTicks(ticks()))
 
 def leap_year(year):
+    """
+    """
     if year % 400 == 0:
         return True
     if year % 100 == 0:
@@ -39,6 +52,8 @@ def leap_year(year):
     return False
 
 def days_since(start_year, datestr):
+    """
+    """
     Y = int(start_year)
     # check for >= 1900 && < 2100
     c = Y/100
@@ -86,7 +101,6 @@ class Database:
             return
         self.Error = dbms.Error
         from os import path
-        import config
         self.user = config.user
         dbfile =  path.join(config.udir, 'gnutr_db.lt3')
         try:
@@ -107,10 +121,17 @@ class Database:
         if self.con:
             self.con.close()
 
-    def init_core(self):
+    def init_USDA_data(self):
         """Load the USDA Standard Reference release data."""
         # Create Food Description (food_des) table.
         # Data file FOOD_DES.
+        self.create_table_food_des()
+        self.create_table_fd_group()
+        self.create_table_nut_data()
+        self.create_table_nutr_def()
+        self.create_table_weight()
+
+    def create_table_food_des(self):
         self.query("DROP TABLE IF EXISTS food_des")
         self.create_load_table("CREATE TABLE food_des" +
             "(NDB_No TEXT NOT NULL, " + 
@@ -135,6 +156,7 @@ class Database:
             "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             'food_des')
 
+    def create_table_fd_group(self):
         # Create Food Group Description (fd_group) table.
         # Data file FD_GROUP.
         self.query("DROP TABLE IF EXISTS fd_group")
@@ -145,6 +167,7 @@ class Database:
             "INSERT INTO 'fd_group' VALUES (?, ?)",
             'fd_group')
 
+    def create_table_nut_data(self):
         # Create Nutrient Data (nut_data) table.
         # Data file NUT_DATA
         self.query("DROP TABLE IF EXISTS nut_data")
@@ -173,6 +196,7 @@ class Database:
             "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             'nut_data') 
 
+    def create_table_nutr_def(self):
         # Create Nutrient Definition (nutr_def table.
         # Data file NUTR_DEF
         self.query("DROP TABLE IF EXISTS nutr_def")
@@ -189,6 +213,7 @@ class Database:
             "(?, ?, ?, ?, ?, ?)",
             'nutr_def')
 
+    def create_table_weight(self):
         # Create temporary weight table.
         # Data file WEIGHT.
         self.query("DROP TABLE IF EXISTS weight")
@@ -278,24 +303,28 @@ class Database:
             "Nutr_No TEXT NOT NULL, " +
             "goal_val REAL NOT NULL)", 'nutr_goal')
 
-        return 1
-
     def curtime(self):
         return curtime()
 
     def curdate(self):
         return curdate()
 
-    def show_query(self, sql, sql_params, caller=None):
+    def show_query(self, sql, sql_params, caller=None, log=False, log_only=False):
         if not caller: return
         s = ''
         if caller: s = '{0:s}(): '.format(caller)
-        s = s + '{0:s}'.format(sql)
+        s = s + '{0:s}\n'.format(sql)
         if sql_params:
-            s = s + '\n\tparams:'
-            print s, sql_params
+            s = s + '\tparams:'
+            if log:
+                info("{0:s} {1!r}".format(s, sql_params))
+            if not log_only:
+                stdout("{0:s} {1!r}\n".format(s, sql_params))
         else:
-            print s
+            if log:
+                info(s)
+            if not log_only:
+                stdout(s)
 
     def query(self, sql, many=False, sql_params=None, caller=None):
         """Execute the SQL statement with given SQL parameters."""
@@ -313,10 +342,11 @@ class Database:
             result = self.cur.fetchall()
         except self.Error, sqlerr:
             self.con.rollback()
-            import sys
-            print 'Error :', sqlerr, '\nquery:', sql
-            if caller: print 'Caller ', caller
-            sys.exit()
+            excp = SQLiteQueryError("{0:s}\n\tquery: {1:s}".format(sqlerr, sql))
+            if caller:
+                excp += '  Caller: {0:s}'.format(caller)
+            error(excp)
+            raise excp
         # Convert to tuple as GNUtrition code expects MySQLdb tuple return
         self.result = tuple(result)
         self.last_query = sql
@@ -325,55 +355,60 @@ class Database:
         self.show_query(sql, sql_params, caller)
 
     def get_result(self):
+        """Return full result, fetchall() from cursor.execute()"""
         result = self.result
         self.result = None
         if not result:
-            print 'No result from:'
-            print 'sql:', self.last_query
+            s = 'No result from:\n  {0:s}'.format(self.last_query)
             if self.last_query_params:
-                print 'sql params:', self.last_query_params
+                s = s + '\n  sql params: {0!r}'.format(self.last_query_params)
+            info(s)
         return result
 
     def get_row_result(self):
+        """Return a single row from query."""
         result = self.result
         self.result = None
         if not result:
-            print 'No result from:'
-            print 'sql:', self.last_query
+            s = 'No result from:\n  {0:s}'.format(self.last_query)
             if self.last_query_params:
-                print 'sql params:', self.last_query_params
-            return None
+                s = s + '\n  sql params: {0!r}'.format(self.last_query_params)
+            info(s)
+            return result
         if len(result) == 1:
             return result[0]
-        print 'Error: not a single row'
+        error('not a single row')
         return None
 
     def get_single_result(self):
+        """Return a single result from a query."""
         result = self.result
         self.result = None
         if not result:
-            print 'No result from:'
-            print 'sql:', self.last_query
+            s = 'No result from:\n  {0:s}'.format(self.last_query)
             if self.last_query_params:
-                print 'sql params:', self.last_query_params
+                s = s + '\n  sql params: {0!r}'.format(self.last_query_params)
+            info(s)
             return None
         if len(result) == 1:
             if len(result[0] ) == 1:
                 return result[0][0]
-        print 'Error: not a single value'
+        error('not a single value')
         return None
 
     def create_table(self, sql, tablename):
         self.query(sql)
-        print "created table '{0:s}'".format(tablename)
+        info("created table '{0:s}'".format(tablename))
 
     def load_table(self, sql, data_fn):
+        """Load a table from disk file."""
         import csv
         try:
             data = csv.reader(open(data_fn,'r'), delimiter='^', quotechar="'")
         except Exception, e:
-            print "Failed to read data file '{0:s}'".format(data_fn)
-            return False
+            e = AppFileReadError(e)
+            e = e + "Failed to read data file '{0:s}'".format(data_fn)
+            raise e
         self.query(sql, many=True, sql_params=data)
         return True
 
@@ -388,21 +423,13 @@ class Database:
         self.create_table(create_sql, table_name)
         data_file = path.join(install.idir, 'data', table_name.upper() + '.txt')
         if self.load_table(insert_sql, data_file):
-            print "loaded table '{0:s}'".format(table_name)
-        else:
-            print "failed to load table '{0:s}'".format(table_name)
-
-    def add_user(self, user, password):
-        self.query("GRANT USAGE ON *.* TO " + user +
-            "@localhost IDENTIFIED BY '" + password + "'")
-        self.query("GRANT ALL ON gnutr_db.* TO " + user + 
-            "@localhost IDENTIFIED BY '" + password + "'")
-        self.query("FLUSH PRIVILEGES")
+            info("loaded table '{0:s}'".format(table_name))
 
     def delete_db(self):
         self.query("DROP DATABASE gnutr_db")
 
     def next_row(self, col, table):
+        """Return a number one greater than maximum row of table."""
         self.query("SELECT MAX({0:s}) from {1:s}".format(col, table))
         m = self.get_single_result()
         if not m:
@@ -411,8 +438,41 @@ class Database:
             m += 1
         return m
 
+def table_exists(table):
+    """Return True or False for existence of table.
+
+    This is for a quick check for 'old_recipes' which is created only if
+    migrating (importing) from MySQL database.
+    """
+    db = Database()
+    sql = "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{0:s}'"
+    db.query(sql.format(table))
+    if db.get_single_result():
+        return True
+    return False
+
+def num2str(number, n):
+    """Convert integer number to text of length n. Add leading zeros if needed.
+
+    The MySQL database stored food number as integer, not string. The correct
+    way to store as per SR documentation is text. Leading zeros from data
+    file need to be retained.
+    """
+    s = str(number)
+    for z in range(n - len(s)):
+        s = '0' + s
+    return s
+ 
+def good_NDB_No(NDB_No):
+    """Verify NDB_No is valid for current data set."""
+    db = Database()
+    sql = "SELECT NDB_No FROM food_des WHERE NDB_No = '{0:s}'".format(NDB_No)
+    db.query(sql)
+    return db.get_single_result()
+
 # These next two are only valid for MySQL database 
 def msre_desc_from_msre_no(mysql=None, msre_no=None):
+    """Use msre_no (measure number) to retrieve corresponding measure description."""
     if not (mysql and msre_no):
         raise Exception("Parameters for MySQL instance and/or msre_no missing.")
     sql = "SELECT msre_desc FROM measure WHERE msre_no = {0:d}"
@@ -420,8 +480,9 @@ def msre_desc_from_msre_no(mysql=None, msre_no=None):
     return mysql.get_single_result()
 
 # Need to be careful here; MySQL db uses int fields in places where SQLite
-# is not.
+# does not (fd_no, nutr_no) == (NDB_No, Nutr_No).
 def gm_wgt_from_fd_and_msre(mysql, NDB_No, Msre_No):
+    """Retrieve gram weight given NDB_No (food number) and Msre_No (measure number)."""
     sql = "SELECT wgt_val FROM weight WHERE fd_no = {0:d}" +\
           " AND msre_no = {1:d}"
     mysql.query(sql.format(int(NDB_No), int(Msre_No)))
@@ -429,12 +490,9 @@ def gm_wgt_from_fd_and_msre(mysql, NDB_No, Msre_No):
 
 # This is only valid for initialized database.Database() class
 def latest_Msre_Desc_for_NDB_No(sqlite, NDB_No):
+    """Retrieve current measure descriptions for given NDB_No (food number)"""
     sql = "SELECT Msre_Desc, Gm_wgt FROM weight WHERE NDB_No = '{0:s}'"
-    ndb_no = str(NDB_No)
-    # HERE: no leading zeros from NDB_No values from MySQL tables.
-    if len(ndb_no) < 5:
-        ndb_no = '0' + ndb_no
-    sqlite.query(sql.format(ndb_no))
+    sqlite.query(sql.format(NDB_No))
     desc_list = sqlite.get_result()
     if not desc_list:
         return ([],[]) # Nothing we can do about this...
@@ -443,30 +501,27 @@ def latest_Msre_Desc_for_NDB_No(sqlite, NDB_No):
     for choice in desc_list: 
         all_desc.append(choice[0])
         all_weights.append(choice[1])
-    print 'latest_Msre_Desc_for_NDB_No({0:s}):'.format(str(ndb_no)), all_desc
-    print 'latest_Msre_Desc_for_NDB_No({0:s}):'.format(str(ndb_no)), all_weights
+    iam = func()
+    debug('{0:s}({1:s}): {2!r}'.format(iam, NDB_No, all_desc))
+    debug('{0:s}({1:s}): {2!r}'.format(iam, NDB_No, all_weights))
     return (all_desc, all_weights)
-
-def find_closest(desc_list, desc):
-    """Attempt to find a close match for Msre_Desc.
-    Parameter desc_list is a list of all Msre_Desc for a particular NDB_No.
-    Parameter desc is a specific Msre_Desc.
+    
+    def find_closest(desc_list, desc): """Attempt to find a close match for Msre_Desc.
+    Parameter desc_list is a current list of all Msre_Desc for a particular NDB_No.
+    Parameter desc is a specific Msre_Desc from old data.
     """
     import re
-    possible = []
-    for haystack in desc_list:
-        # First try searching for desc in each MsreDesc
-        if len(desc) <= len(haystack):
-            m = re.search(desc, haystack)
-            if m:
-                possible.append(m.group(0))
-        # and the reverse
-        if len(haystack) <= len(desc):
-            m = re.search(haystack, desc)
-            if m:
-                possible.append(m.group(0))
-        print 'find_closest:', desc_list, desc
-        print '  result:', possible
+    # Some differences in measure descriptions are just white space. 
+    found = None
+    s2 = desc.replace(' ','')
+    for item in desc_list:
+        s1 = item.replace(' ', '')
+        if s1 == s2:
+            found = item
+            break
+    info('find_closest: {0!r} {1!r}'.format( desc_list, desc))
+    info('  result: {0!r}'.format(found))
+    return found
     
 def to_Msre_Desc(sqlite=None, mysql=None,
                             NDB_No=None, Msre_Desc=None, Msre_No=None):
@@ -495,7 +550,7 @@ def to_Msre_Desc(sqlite=None, mysql=None,
         desc = Msre_Desc
 
     # First see if we have exact match
-    (desc_list, wgt_list) = latest_Msre_Desc_for_NDB_No(sqlite, NDB_No)
+    (desc_list, new_gwt_list) = latest_Msre_Desc_for_NDB_No(sqlite, NDB_No)
     for d in desc_list:
         if d == desc:
             return d  # Great
@@ -503,35 +558,16 @@ def to_Msre_Desc(sqlite=None, mysql=None,
     # Next see if we can match gram weights. If we can chances are excellent
     # we then derive the correct Msre_Desc.
     if Msre_No:
-        gwt = gm_wgt_from_fd_and_msre(mysql, NDB_No, Msre_No)
-        for wt in range(len(wgt_list)):
-            if wgt_list[wt] == gwt:
+        old_gwt = gm_wgt_from_fd_and_msre(mysql, NDB_No, Msre_No)
+        for wt in range(len(new_gwt_list)):
+            if new_gwt_list[wt] == old_gwt:
                 return desc_list[wt]
-
-        # Next see if we are close
-        for wt in range(len(wgt_list)):
-            wgt = wgt_list[wt]
-            # Check +/- five percent of rounded gram weights
-            # Round up
-            if int(wgt+.05) == int(gwt+0.5):
-                return desc_list[wt]
-            # Round down
-            if int(wgt-.05) == int(gwt-0.5):
-                return desc_list[wt]
-    # Still here?
     description = find_closest(desc_list, desc)
     if not description:
-        print 'No Msre_Desc found for desc {0:s} and NDB_No {1:d}'.format(
-                desc, NDB_No)
-        print 'All Msre_Desc for NDB_No:', desc_list
+        debug('No Msre_Desc found for desc {0:s} and NDB_No {1:s}'.format(
+                desc, NDB_No))
+        debug('All Msre_Desc for NDB_No: {0!r}'.format(desc_list))
     return description
-
-    # Try to find closest possible match for this measure description and
-    # gram weight. 
-
-#HERE
-def update_data():
-    pass
 
 def migrate(mysql):
     """Retrieve gnutrition table data from MySQL database.
@@ -561,16 +597,17 @@ def migrate(mysql):
     # 0.31.1 uses fd_no (for NDB_No) and msre_no to index measure table
     # 0.32 onward uses NDB_No and Msre_Desc (no measure table)
 
-    # recipie table
-    if 'recipe' in found:
-        mysql.query("SELECT recipe_no, recipe_name, no_serv, no_ingr, " +
-                    "category_no FROM recipe")
-        result = mysql.get_result()
-        if result and len(result) > 0:
-            print 'found', len(result), 'recipies'
-            print result
-            lite.query("INSERT INTO 'recipe' VALUES (?,?,?,?,?)",
-                           many=True, sql_params=result, caller='migrate')
+    # Any version - food numbers may have disappeared from earlier SR data
+    #               to later SR data. NDB_No inserted in SQLite tables must
+    #               exist in current SR data.
+    #               
+
+    # Create a list of for obsolete NDB_No (food number) and recipe_no 
+    # (recipe number) for recipes which will fail to import properly due to
+    # the obsolete NDB_No.
+    recipe_failures = []
+    obsolete_NDB_No = []
+
     # ingredient table
     if 'ingredient' in found:
         sql1 = "SELECT recipe_no, amount, msre_no, fd_no FROM ingredient"
@@ -581,9 +618,15 @@ def migrate(mysql):
             mysql.query(sql2)
         result = mysql.get_result()
         if result:
-            print 'found', len(result), 'ingredients'
-            print result
+            debug('found {0:d} ingredients'.format(len(result)))
+            debug("{0!r}".format(result))
             for i in range(len(result)):
+                NDB_No = num2str(result[i][3],5)
+                if not good_NDB_No(NDB_No):
+                    recipe_failures.append(recipe_no)
+                    obsolete_NDB_No.append(NDB_No)
+                    debug('NDB_No {0:d} is obsolete.'.format(NDB_No))
+                    continue   
                 Msre_No, Msre_Desc = None, None
                 recipe_no = result[i][0]
                 amount = result[i][1]
@@ -591,35 +634,55 @@ def migrate(mysql):
                     Msre_No = result[i][2]
                 else:
                     Msre_Desc = result[i][2]
-                NDB_No = result[i][3]
-
                 Msre_Desc = to_Msre_Desc(sqlite=lite, mysql=mysql, NDB_No=NDB_No,
                                             Msre_Desc=Msre_Desc, Msre_No=Msre_No)
-                if not Msre_Desc:
-                    Msre_Desc = 'Unknown'
+                assert Msre_Desc
+                debug('Found Msre_Desc {0:s}'.format(Msre_Desc))
                 params = (recipe_no, amount, Msre_Desc, NDB_No)
                 lite.query("INSERT INTO 'ingredient' VALUES (?,?,?,?)",
                            many=False, sql_params=params, caller='migrate')
 
+    # recipie table
+    if 'recipe' in found:
+        mysql.query("SELECT recipe_no, recipe_name, no_serv, no_ingr, " +
+                    "category_no FROM recipe")
+        result = mysql.get_result()
+        if result:
+            debug('found {0:d} recipies'.format(len(result)))
+            debug('{0!r}'.format(result))
+            for i in range(len(result)):
+                if result[i][0] in recipe_failures:
+                    debug('Recipe {0:s} will not import'.format(result[i][1]))
+                    continue
+                lite.query("INSERT INTO 'recipe' VALUES (?,?,?,?,?)",
+                           many=False, sql_params=result[i], caller='migrate')
     # preparation table
     if 'preparation' in found:
         mysql.query("SELECT recipe_no, prep_time, prep_desc FROM preparation")
         result = mysql.get_result()
-        if result and len(result) > 0:
-            print 'found', len(result), 'entries in preparation table'
-            print result
-            lite.query("INSERT INTO 'preparation' VALUES (?,?,?)",
-                           many=True, sql_params=result, caller='migrate')
+        if result:
+            debug('found {0:d} entries in preparation table'.format(len(result)))
+            debug('{0!r}'.format(result))
+            for i in range(len(result)):
+                if result[i][0] in recipe_failures:
+                    continue
+                lite.query("INSERT INTO 'preparation' VALUES (?,?,?)",
+                           many=False, sql_params=result[i], caller='migrate')
 
     # person table
     if 'person' in found:
         mysql.query("SELECT person_no, person_name, user_name FROM person")
         result = mysql.get_result()
         if result and len(result) > 0:
-            print 'found', len(result), 'entries in person table'
-            print result
+            persons = len(result)
+            debug('found {0:d} entries in person table'.format(persons))
+            debug('{0!r}'.format(result))
             lite.query("INSERT INTO 'person' VALUES (?,?,?)",
                            many=True, sql_params=result, caller='migrate')
+            # This for filling in 'Name' in User Setup Personal Details
+            # User can change but show them what they used before.
+            if persons == 1 and not config.get_value('Name'):
+                config.set_key_value('Name', person_name)
 
     # food_plan table
     if 'food_plan' in found:
@@ -630,12 +693,17 @@ def migrate(mysql):
         else:
             mysql.query(sql2)
         result = mysql.get_result()
-        if result and len(result) > 0:
-            print 'found', len(result), 'entries in food_plan table'
+        if result:
+            debug('found {0:d} entries in food_plan table'.format(len(result)))
             for i in range(len(result)):
-                person_no = result[i][0]
+                NDB_No = num2str(result[i][5],5)
                 date = str(result[i][1])
                 time = str(result[i][2])
+                if not good_NDB_No(result[i][5]):
+                    s = 'Food plan for {0:s} {1:s} contains obsolete NDB_No.'
+                    debug(s.format(date, time))
+                    continue
+                person_no = result[i][0]
                 amount = result[i][3]
                 if use_msre_no:
                     Msre_Desc = msre_desc_from_msre_no(result[i][4])
@@ -643,7 +711,6 @@ def migrate(mysql):
                     Msre_Desc = result[i][4]
                 Msre_Desc = to_Msre_Desc(sqlite=lite, mysql=mysql, NDB_No=NDB_No,
                                             Msre_Desc=Msre_Desc, Msre_No=Msre_No)
-                NDB_No = result[i][5]
                 params = (person_no, date, time[:-3], amount, Msre_Desc, NDB_No)
                 lite.query("INSERT INTO 'food_plan' VALUES (?,?,?,?,?,?)",
                            many=False, sql_params=params, caller='migrate')
@@ -654,21 +721,26 @@ def migrate(mysql):
         mysql.query("SELECT person_no, date, time, no_portions, " +
                     "recipe_no FROM recipe_plan")
         result = mysql.get_result()
-        print 'found', len(result), 'entries in recipe_plan table'
-        if result and len(result) > 0:
+        debug('found {0:d} entries in recipe_plan table'.format(len(result)))
+        if result:
             for r in range(len(result)):
-                person_no = result[r][0]
+                recipe_no = result[r][4]
                 date = str(result[r][1])
                 time = str(result[r][2])
+                if recipe_no in recipe_failures:
+                    debug('recipe plan for {0:s} {1:s} will not import'.format(date, time))
+                    continue
+                person_no = result[r][0]
                 no_portions = result[r][3]
-                recipe_no = result[r][4]
                 params = (person_no, date, time[:-3], no_portions, recipe_no)
-                print params
+                debug("{0!r}".format(params))
                 lite.query("INSERT INTO 'recipe_plan' VALUES (?,?,?,?,?)",
                            many=False, sql_params=params, caller='migrate')
     # nutr_goal table needs to be recalculated
     return True
 #---------------------------------------------------------------------------
 if __name__ == '__main__':
-    print 'curdate:', curdate()
-    print 'curtime:', curtime()
+    from util.log import init_logging
+    init_logging('/dev/null', logto='console', level='info')
+    info('curdate: {0:s}'.format(curdate()))
+    info('curtime: {0:s}'.format(curtime()))

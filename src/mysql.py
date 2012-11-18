@@ -16,6 +16,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import MySQLdb
+from util.exception import AppException
+from util.log import LOG as log
+debug = log.debug
+info = log.info
+warn = log.warn
+error = log.error
+critical = log.critical
+
+class MySQLError(AppException): pass
 
 class Database:
     _shared_state = {}
@@ -42,13 +51,14 @@ class Database:
         try:
             self.cursor.execute(query)
         except MySQLdb.Error, sqlerr:
-            print 'Error :', sqlerr, '\nquery:', query
+            excp = MySQLError('{0:s}\nquery: {1:s}'.format(sqlerr,query))
+            error(excp)
             self.cursor.execute('SHOW ERRORS');
             import traceback
             import sys
             traceback.print_exc()
-            if caller: print 'Caller ', caller
-            sys.exit()
+            if caller: excp += 'Caller: '.format(caller)
+            raise excp
         self.result = self.cursor.fetchall()
         self.rows = self.db.affected_rows()
         self.db.commit()
@@ -57,30 +67,30 @@ class Database:
         result = self.result
         self.result = None
         if not result:
-            print 'No result'
+            debug('No result')
         return result
 
     def get_row_result(self):
         result = self.result
         self.result = None
         if not result:
-            print 'No result'
+            debug('No result')
             return None
         if len(result) == 1:
             return result[0]
-        print 'Error: not a single row'
+        error('not a single row')
         return None
 
     def get_single_result(self):
         result = self.result
         self.result = None
         if not result:
-            print 'No result'
+            debug('No result')
             return None
         if len(result) == 1:
             if len(result[0] ) == 1:
                 return result[0][0]
-        print 'Error: not a single value'
+        error('not a single value')
         return None
 
     def delete_db(self):

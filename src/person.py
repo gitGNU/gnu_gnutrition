@@ -51,6 +51,11 @@ class Person:
                 self.db.query("INSERT INTO person VALUES (NULL, '%s', '%s')" 
                     % (person_name, user))
 
+    def update_name(self, old_name, new_name):
+        user = self.get_user()
+        sql = "UPDATE  person SET person_name = '{0:s}' WHERE user_name = '{1:s}'"
+        self.db.query(sql.format(new_name, user))
+
     def setup(self):
         person_num = self.get_person_num()
 
@@ -99,6 +104,15 @@ class Person:
                     % (person_num, date, time, num_portions, 
                         recipe_num), caller='Person.setup')
 
+    # self.db.user is basename($HOME)
+    # 'Username' will be:
+    #   - MySQL username
+    #       If user had older version of app that used MySQL and chose
+    #       to import old MySQL data during installation.
+    #   - basename($HOME)
+    #       If during setup config.get_value('Username') is not set. It
+    #       subsequently will be set to name of user's home directory.
+    #
     def get_user(self):
         #return self.db.user
         return config.get_value('Username')

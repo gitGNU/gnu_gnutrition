@@ -16,7 +16,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+from time import sleep
 import gtk
+from gobject import idle_add
 import druid_ui
 import config
 import person
@@ -55,14 +57,16 @@ class Druid:
             except Exception, ex:
                 self.ui.set_page(2)
                 return
-            
-            self.sqlite.init_core()
+
+            self.sqlite.init_USDA_data()
             self.sqlite.init_user()
+
             # See if this user has GNUtrition data from older version
             # which used MySQL. That data should be migrated to newer SQLite
             # storage first.
             db_uname = config.get_value('Username')
             db_pword = config.get_value('Password')
+
             if (db_uname and db_pword):
                 dialog = Dialog('question',
                     "Would you like to try to import recipies and other\n" +
@@ -82,33 +86,46 @@ class Druid:
         # Personal details
         elif self.ui.page_num == 3:
             self.person = person.Person()
-            # does the user have an entry in the person table?
+            # Does the user have an entry in the person table? They will if
+            # a previous version of gnutrition was installed and the config
+            # file from that installation still remains in user's home directory.
             # Note: sqlite.user is basename $HOME 
             #       gnutrition MySQL setup asks for MySQL username and that
-            #       will be what is in the 'person' table for 'user_name'
+            #       may be what is in the 'person' table for 'user_name'
             db_uname = config.get_value('Username')
             if db_uname:
                 db_name = db_uname
             else:
                 db_name = self.sqlite.user
-            name = self.person.get_name(db_name)
+            # name1 may or not be 'old' name
+            # person.get_name() returns a name from SQLite database associated
+            # with user_name = db_name
+            name1 = self.person.get_name(db_name)
+            # This is the only place in the sources where 'Username' is set
+            # in ~/.gnutrition/config
+            # Note that this may simply be overwriting with same name if
+            # get_value('Username') above returned a name.
             config.set_key_value('Username', db_name)
-            name = self.ui.page_list[3].name_entry.get_text()
+            new_name = self.ui.page_list[3].name_entry.get_text()
             age = self.ui.page_list[3].age_entry.get_text()
             weight_txt = self.ui.page_list[3].weight_entry.get_text()
-            if (not name) or (not age) or (not weight_txt):
+            if (not new_name) or (not age) or (not weight_txt):
                 return
             weight = float(weight_txt)
-
             config.set_key_value('Age', age)
             config.set_key_value('Weight', weight)
-
-            if config.get_value('Name') != name:
-                config.set_key_value('Name', name)
-
-            self.person.add_name(name)
+            if name1 and name1 != new_name:
+#   If person changes 'Name' from previously used one to different one they
+#   should be asked (presented a dialog) about associating new name with
+#   imported (old) recipies. If yes, person table needs to be updated.
+                self.person.update_name(name1, new_name)
+            elif not name1:
+                self.person.add_name(new_name)
+            name2 = config.get_value('Name')
+            # 'Name' is set in two places: here and in database.py in migrate()
+            if name2 != new_name:
+                config.set_key_value('Name', new_name)
             self.person.setup()
-
             if self.ui.page_list[3].weight_combo.get_active() == 0:
                 # convert from pounds to kilos
                 weight = weight * 0.4536

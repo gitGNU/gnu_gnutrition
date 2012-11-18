@@ -16,6 +16,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+
+# Logging defaults
+LOGGING = 'on'
+LOG_LEVEL = 'warn'  # off, debug, info, warn, error, critical 
+LOG_ROTATE = 3      # New one started when LOG_MAX_SZ is reached.
+LOG_MAX_SZ = 50000
+
 # This needs to be added to install process, somthing like:
 # configure --disable-version-check
 CHECK_DISABLED = False

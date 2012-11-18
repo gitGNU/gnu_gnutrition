@@ -20,6 +20,12 @@ import nutr_composition_dlg_ui
 import store
 import database
 import help
+from util.log import LOG as log
+debug = log.debug
+info = log.info
+warn = log.warn
+error = log.error
+critical = log.critical
 
 class NutrCompositionDlg:
     def __init__(self):
@@ -110,7 +116,7 @@ class NutrCompositionDlg:
 
     def compute_pcnt_calories(self):
         dict = self.store.nutr_desc2num
-        c = 0
+        c,cals_protein,cals_fat,cals_carb = 0,0,0,0
         for nutr_num, nutr_val in self.list_nutr_tot:
             if nutr_num == 203:
                 cals_protein = nutr_val * 4.0
@@ -138,10 +144,11 @@ class NutrCompositionDlg:
         for nutr_num in list_nutr_num:
             self.list_nutr_tot.append((nutr_num, 0.000))
 
-        print 'compute_nutr_total(recipe):'
+        info('compute_nutr_total(recipe):')
         # iterate over ingredients
         for ingr in recipe.ingr_list:
-            print '    amount:',ingr.amount,'msre_desc:',ingr.msre_desc,'food_num:',ingr.food_num
+            info('  amount: {0:d} msre_desc: {1:s} food_num: {2:s}'.format(
+                                ingr.amount, ingr.msre_desc, ingr.food_num))
             self.add_food_to_nutr_total(ingr.amount, ingr.msre_desc, ingr.food_num)
 
         # divide by the number of servings

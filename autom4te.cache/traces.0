@@ -158,9 +158,9 @@ m4trace:configure.in:30: -1- m4_pattern_allow([^MINOR_VERSION$])
 m4trace:configure.in:31: -1- AC_SUBST([REVISION])
 m4trace:configure.in:31: -1- AC_SUBST_TRACE([REVISION])
 m4trace:configure.in:31: -1- m4_pattern_allow([^REVISION$])
-m4trace:configure.in:32: -1- AC_SUBST([VERSION])
-m4trace:configure.in:32: -1- AC_SUBST_TRACE([VERSION])
-m4trace:configure.in:32: -1- m4_pattern_allow([^VERSION$])
+m4trace:configure.in:32: -1- AC_SUBST([GNUTR_VERSION])
+m4trace:configure.in:32: -1- AC_SUBST_TRACE([GNUTR_VERSION])
+m4trace:configure.in:32: -1- m4_pattern_allow([^GNUTR_VERSION$])
 m4trace:configure.in:35: -1- AC_SUBST([PYTHON])
 m4trace:configure.in:35: -1- AC_SUBST_TRACE([PYTHON])
 m4trace:configure.in:35: -1- m4_pattern_allow([^PYTHON$])
@@ -205,6 +205,7 @@ m4trace:configure.in:90: -1- AC_CONFIG_FILES([run-gnutrition.py\
 	src/install.py\
 	Makefile\
 	src/Makefile\
+	src/util/Makefile\
 	data/Makefile\
 	pixmaps/Makefile\
 	doc/Makefile\

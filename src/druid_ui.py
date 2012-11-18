@@ -14,14 +14,19 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import pygtk
+pygtk.require("2.0")
+import gtk, gobject
 
-import gtk
-import getpass
+def progress_timeout(pobj):
+    pobj.pulse()
+    return True
 
 class DruidPage:
     def __init__(self, page_num):
         self.vbox = gtk.VBox()
         self.vbox.set_border_width(5)
+        self.timer = 0
 
         # Welcome
         if page_num == 0:
@@ -42,12 +47,15 @@ class DruidPage:
             table1.set_col_spacings(5)
             self.vbox.pack_start(table1, True, True, 0)
 
-            label1 = gtk.Label("Click 'Next' to create the USDA food database.") 
+            label1 = gtk.Label("Creating the USDA food database.") 
             label1.set_alignment(0.0, 0.5)
             table1.attach(label1, 0, 2, 0, 1, gtk.FILL, 0, 0, 0)
 
-            label2 = gtk.Label('This will take a little time...')
-            label2.set_alignment(1.0, 0.5)
+            #label2 = gtk.Label('This will take a little time...')
+            #label2.set_alignment(1.0, 0.5)
+            label2 = gtk.ProgressBar()
+            self.timer = gobject.timeout_add(50,progress_timeout,label2)
+            label2.show()
             table1.attach(label2, 0, 1, 2, 3, gtk.FILL, 0, 0, 0)
 
         # Error in Database Creation
@@ -63,6 +71,8 @@ class DruidPage:
         # User Setup
         # Personal Details
         elif page_num == 3:
+            import config
+            self.timer = 0
             table1 = gtk.Table(3, 7, False)
             table1.set_row_spacings(5)
             table1.set_col_spacings(5)
@@ -85,6 +95,10 @@ class DruidPage:
             self.name_entry = gtk.Entry()
             table1.attach(self.name_entry, 1, 2, 2, 3, 
                 gtk.FILL | gtk.EXPAND, 0, 0, 0)
+            # Fill in name used before if available
+            prev_name = config.get_value('Name')
+            if prev_name:
+                self.name_entry.set_text(prev_name)
 
             label4 = gtk.Label('Age')
             label4.set_alignment(1.0, 0.5)
@@ -93,6 +107,10 @@ class DruidPage:
             self.age_entry = gtk.Entry()
             table1.attach(self.age_entry, 1, 2, 3, 4, 
                 gtk.FILL | gtk.EXPAND, 0, 0, 0)
+            # Fill in age if available
+            past_age = config.get_value('Age')
+            if past_age:
+                self.age_entry.set_text(past_age)
 
             label5 = gtk.Label('Weight')
             label5.set_alignment(1.0, 0.5)
@@ -101,6 +119,10 @@ class DruidPage:
             self.weight_entry = gtk.Entry()
             table1.attach(self.weight_entry, 1, 2, 4, 5, 
                 gtk.FILL | gtk.EXPAND, 0, 0, 0)
+            # Fill in weight if available
+            past_weight = config.get_value('Weight')
+            if past_weight:
+                self.weight_entry.set_text(past_weight)
 
             self.weight_combo = gtk.combo_box_new_text()
             self.weight_combo.append_text('lbs')
@@ -251,8 +273,7 @@ class DruidUI:
             self.back_button.set_sensitive(False)
         if num in [2, 4]:
             self.next_button.set_sensitive(False)
-        self.container.pack_start(self.page_list[num].vbox, 
-            True, True, 0)
+        self.container.pack_start(self.page_list[num].vbox, True, True, 0)
         self.page_num = num
 
     def set_next_button(self, flag):

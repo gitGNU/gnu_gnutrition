@@ -241,7 +241,7 @@ class FoodSrchResDlg:
                 node_text = self.str_from_level(fd_desc, level)
                 iter = tree.append(parent_iter)
                 tree.set_value(iter, 0, node_text)
-                tree.set_value(iter, 1, fd_num)
+                tree.set_value(iter, 1, int(fd_num))
             return
 
         # sort food list into two: those, whose maximum level is equal

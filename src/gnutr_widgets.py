@@ -17,6 +17,12 @@
 
 import gtk
 import gobject
+from util.log import LOG as log
+debug = log.debug
+info = log.info
+warn = log.warn
+error = log.error
+critical = log.critical
 
 class GnutrComboBox(gtk.ComboBox):
     def __init__(self, rows = None, active = -1):
@@ -100,6 +106,6 @@ class GnutrComboBoxEntry(gtk.ComboBoxEntry):
             self.set_active(active)
 
     def entry_changed(self, widget):
-        print 'text changed:', widget.get_text()
+        debug('text changed: {0:s}'.format(widget.get_text()))
         self.popup()
         widget.grab_focus()

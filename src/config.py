@@ -17,9 +17,13 @@
 #
 
 import shelve
-from os import environ, path, access, F_OK, mkdir
+from os import environ, path, access, F_OK, mkdir, name
 
-home = environ['HOME']
+if name == 'nt':
+	home = environ['USERPROFILE']
+else: 
+	home = environ['HOME']
+
 user = path.basename(home)
 udir = path.join(home, '.gnutrition')
 fn = path.join(udir, 'config')

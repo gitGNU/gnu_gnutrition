@@ -87,8 +87,7 @@ else
 **** The python interpreter can't find the python bindings for gtk.])
 fi
 
-AC_OUTPUT( run-gnutrition.py\
-	src/install.py\
+AC_OUTPUT( src/install.py\
 	Makefile\
 	src/Makefile\
 	src/util/Makefile\

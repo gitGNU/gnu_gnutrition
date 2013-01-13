@@ -30,7 +30,7 @@ SUBDIRS = src src/util data pixmaps rpm debian # doc
 
 files = AUTHORS autogen.sh COPYING gnutrition.desktop py-compile \
 	Changelog configure install-sh INSTALL configure.in \
-	run-gnutrition.py.in Makefile.in README
+	Makefile.in README
 
 all:
 	for dir in $(SUBDIRS); do \

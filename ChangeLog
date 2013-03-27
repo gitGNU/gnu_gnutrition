@@ -1,3 +1,9 @@
+2013-03-07  Adam Rakowski <foo-script@o2.pl>
+
+	* Makefile.in
+	* configure (removed from repository, no need to be downloaded)
+	* +run_gnutrition.py (independent from autotools)
+
 2012-07-26  Thomas Sinclair  <thomas.a.sinclair@gmail.com>
 
 	Merging development version 0.33.0 with trunk

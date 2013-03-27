@@ -1,6 +1,7 @@
 #  GNUtrition - a nutrition and diet analysis program.
 #  Copyright(C) 2000-2002 Edgar Denny (edenny@skyweb.net)
 #  Copyright (C) 2010 2012 Free Software Foundation, Inc.
+#  Copyright (C) 2013 Adam 'foo-script' Rakowski (fooscript att o2 dott pl)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,6 +26,7 @@ class RunApp:
         logfile = path.join(config.udir, 'log')
         init_logging(logfile, logto='both', level='info')
         if not config.get_value('sqlite3'):
+            self.first_run = True
             # First run, program default values can be added here
             import druid
             # Set default version check information
@@ -34,6 +36,7 @@ class RunApp:
             config.set_key_value('check_version', gnutr_consts.CHECK_VERSION)
             config.set_key_value('check_interval', gnutr_consts.CHECK_INTERVAL)
             config.set_key_value('last_check', 0)
+            self.user_dir = config.udir
             self.druid = druid.Druid(self)
             self.druid.show()
         else:
@@ -58,9 +61,10 @@ class RunApp:
         self.base_win.show()
 
     def shutdown(self):
-        import database 
-        db = database.Database()
-        db.close()
+        if not self.first_run:          #otherwise, after first run empty db would be created. Smells like program crash in future
+            import database 
+            db = database.Database()    #foo-script: Do we really need it at all?
+            db.close()
         
 def run_app():
     app = RunApp()

@@ -1,4 +1,20 @@
-2013-03-07  Adam Rakowski <foo-script@o2.pl>
+2013-03-27  Adam Rakowski <foo-script@o2.pl>
+
+        * src/config.py
+	* src/druid.py
+	* src/run_app.py 
+
+	Gnutrition homedir is in.gnutrition/version_number.
+
+	Fixing a problem with empty db and empty config when first-run 
+	druid has been canceled.
+
+	If druid was canceled on first screen, then empty sqlite file was
+	created and next time gnutrition tried to load data from this file.
+	Similiar, the empty configuration file wasn't deleted when user cancels
+	config-druid.
+
+2013-03-27  Adam Rakowski <foo-script@o2.pl>
 
 	* Makefile.in
 	* configure (removed from repository, no need to be downloaded)

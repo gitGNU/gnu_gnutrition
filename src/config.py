@@ -1,6 +1,7 @@
 #  GNUtrition - a nutrition and diet analysis program.
 #  Copyright(C) 2000 - 2002 Edgar Denny (edenny@skyweb.net)
 #  Copyright (C) 2012 Free Software Foundation, Inc.
+#  Copyright (C) 2013 Adam 'foo-script' Rakowski (fooscript att o2 dott pl)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import shelve
+import shelve, install
 from os import environ, path, access, F_OK, mkdir, name
 
 if name == 'nt':
@@ -25,7 +26,7 @@ else:
 	home = environ['HOME']
 
 user = path.basename(home)
-udir = path.join(home, '.gnutrition')
+udir = path.join(home, '.gnutrition', install.gnutr_version())
 fn = path.join(udir, 'config')
 if not access(udir, F_OK):
     mkdir(udir)

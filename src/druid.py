@@ -1,6 +1,7 @@
 #  GNUtrition - a nutrition and diet analysis program.
 #  Copyright(C) 2000-2002 Edgar Denny (edenny@skyweb.net)
 #  Copryight (C) 2010 2012 Free Software Foundation, Inc.
+#  Copyright (C) 2013 Adam 'foo-script' Rakowski (fooscript att o2 dott pl)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,6 +23,7 @@ from gobject import idle_add
 import druid_ui
 import config
 import person
+import os
 import calc_rdi
 import database
 import nutr_goal_dlg
@@ -37,6 +39,7 @@ class Druid:
         self.ui.cancel_button.connect('clicked', self.on_cancel)
         self.ui.next_button.connect('clicked', self.on_next)
         self.ui.back_button.connect('clicked', self.on_back)
+        self.ui.dialog.connect('destroy', self.on_cancel)
 
     def show(self):
         self.ui.dialog.show_all()
@@ -44,6 +47,8 @@ class Druid:
     def on_cancel(self, w, d=None):
         self.ui.dialog.hide()
         gtk.main_quit()
+        for user_file in os.listdir(self.app.user_dir):
+            os.unlink(os.path.join(self.app.user_dir, user_file))
         return 0
 
     def on_next(self, w, d=None):

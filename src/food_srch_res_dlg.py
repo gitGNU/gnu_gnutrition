@@ -47,7 +47,7 @@ class FoodSrchResDlg:
         (model, iter) = selection.get_selected()
         self.clear_results()
         if iter:
-            food_num = model.get_value(iter, 1)
+            food_num = model.get_value(iter, 1)            
             if food_num:
                 food_desc = self.store.fd_num2desc[food_num]
                 self.ui.food_entry.set_text(food_desc)
@@ -241,7 +241,7 @@ class FoodSrchResDlg:
                 node_text = self.str_from_level(fd_desc, level)
                 iter = tree.append(parent_iter)
                 tree.set_value(iter, 0, node_text)
-                tree.set_value(iter, 1, int(fd_num))
+                tree.set_value(iter, 1, fd_num)
             return
 
         # sort food list into two: those, whose maximum level is equal

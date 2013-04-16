@@ -91,7 +91,7 @@ dbms.register_adapter(datetime.datetime, curdate)
 
 def regexp(exp, text):
     """Define a function to be called when sqlite3 module sees 'REGEXP'"""
-    return re.search(exp, text) is not None
+    return text is not None and re.search(exp, text) is not None
 
 class Database:
     _shared_state = {}

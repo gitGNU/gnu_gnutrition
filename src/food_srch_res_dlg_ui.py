@@ -33,7 +33,8 @@ class FoodSrchResDlgUI:
         table.set_col_spacings(5)
         self.dialog.vbox.pack_start(table, True, True, 0)
 
-        self.tree = gtk.TreeStore(gobject.TYPE_STRING, gobject.TYPE_INT) 
+        self.tree = gtk.TreeStore(gobject.TYPE_STRING, gobject.TYPE_STRING)     #Second column was set to TYPE_INT
+                                                                                #I don't see a reason for that
         self.treeview = gtk.TreeView(self.tree)
 
         self.selection = self.treeview.get_selection()

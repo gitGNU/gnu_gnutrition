@@ -101,6 +101,7 @@ class Store:
         self.db.query("SELECT NDB_No, Long_Desc FROM food_des")
         result = self.db.get_result()
         for num, desc in result:
+            #despite of description, num is a string, always 5 digits long. If < 10000, then begins with 0's
             self.fd_desc2num[desc] = num
             self.fd_num2desc[num] = desc
 

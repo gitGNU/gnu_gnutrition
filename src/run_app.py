@@ -25,8 +25,8 @@ class RunApp:
         from os import path
         logfile = path.join(config.udir, 'log')
         init_logging(logfile, logto='both', level='info')
-        if not config.get_value('sqlite3'):
-            self.first_run = True
+        self.first_run = not config.get_value('sqlite3')
+        if self.first_run:
             # First run, program default values can be added here
             import druid
             # Set default version check information

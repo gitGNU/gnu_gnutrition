@@ -26,10 +26,13 @@ else:
 	home = environ['HOME']
 
 user = path.basename(home)
-udir = path.join(home, '.gnutrition', install.gnutr_version())
+udir = path.join(home, '.gnutrition')
+versiondir = path.join(home, '.gnutrition', install.gnutr_version())
+
 fn = path.join(udir, 'config')
 if not access(udir, F_OK):
     mkdir(udir)
+    mkdir(versiondir)
 
 def get_value(key):
     db = shelve.open(fn, 'c')

@@ -25,7 +25,8 @@ import gnutr_widgets
 class BaseWinUI:
     def __init__(self):
         self.win = gtk.Window(gtk.WINDOW_TOPLEVEL)
-        self.win.set_title('GNUtrition') 
+        self.win.set_title('GNUtrition')
+        self.win.resize(750, 560)
 
         vbox1 = gtk.VBox(False, 0)
         self.win.add(vbox1)

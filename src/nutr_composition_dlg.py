@@ -73,21 +73,22 @@ class NutrCompositionDlg:
 
     def update(self):
         self.reset()
-
         nutr_num2val_dict = {}
         for num, val in self.list_nutr_tot:
             nutr_num2val_dict[num] = val
+        
         for n in self.ui.nutr_list:
-            if n.num in nutr_num2val_dict.keys():
-                n.entry_amount.set_text('%.3f' %(nutr_num2val_dict[n.num]))
-
+            if str(n.num) in nutr_num2val_dict.keys():
+                n.entry_amount.set_text('%.3f' %(nutr_num2val_dict[str(n.num)]))
+                
         pcnt_num2val_dict = {}
         for num, val in self.list_pcnt_goal:
             pcnt_num2val_dict[num] = val
+        
         for n in self.ui.nutr_list:
-            if n.num in pcnt_num2val_dict.keys():
-                n.entry_pcnt.set_text('%.3f' %(pcnt_num2val_dict[n.num]))
-
+            if str(n.num) in pcnt_num2val_dict.keys():
+                n.entry_pcnt.set_text('%.3f' %(pcnt_num2val_dict[str(n.num)]))
+        
         protein, fat, carbs = self.compute_pcnt_calories()
         self.ui.protein_entry.set_text('%.3f' %(protein))
         self.ui.fat_entry.set_text('%.3f' %(fat))
@@ -115,16 +116,16 @@ class NutrCompositionDlg:
                     self.list_nutr_tot[i] = (tot_nutr_num, total)
 
     def compute_pcnt_calories(self):
-        dict = self.store.nutr_desc2num
+        #dict = self.store.nutr_desc2num #wtf?
         c,cals_protein,cals_fat,cals_carb = 0,0,0,0
         for nutr_num, nutr_val in self.list_nutr_tot:
-            if nutr_num == 203:
+            if nutr_num == '203':
                 cals_protein = nutr_val * 4.0
                 c = c + 1
-            elif nutr_num == 204:
+            elif nutr_num == '204':
                 cals_fat = nutr_val * 9.0
                 c = c + 1
-            elif nutr_num == 205:
+            elif nutr_num == '205':
                 cals_carb = nutr_val * 4.0
                 c = c + 1
             if c == 3:
@@ -170,22 +171,23 @@ class NutrCompositionDlg:
         list_nutr_goal = self.db.get_result()
 
         dict = {}
-        print 'list_nutr_tot (nutr_composition_dlg.py):'
+        #print 'list_nutr_tot (nutr_composition_dlg.py):'
         for num, val in self.list_nutr_tot:
-            print 'num:', num, 'val:', val
+            #print 'num:', num, 'val:', val
             dict[num] = val
 
         list_pcnt_goal = []
         print 'list_nutr_goal (nutr_composition_dlg.py):'
         for num, val in list_nutr_goal:
-            print 'num:', num, 'val:', val
+            #print 'num:', num, 'val:', val
             if val == 0.0:
                 pcnt = 0.0
             else:
                 try:
                     pcnt = dict[num] * 100.0 / val
                 except KeyError:
-                    print 'nutr_composition_dlg: line 179, key error', num  
+                    #DEBUG FIXME: why this error?
+                    print 'nutr_composition_dlg: line 186, key error', num  
                     continue
             list_pcnt_goal.append((num, pcnt))
         return list_pcnt_goal

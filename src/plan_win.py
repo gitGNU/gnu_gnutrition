@@ -460,6 +460,7 @@ class PlanWin:
         person_num = self.person.get_person_num()
 
         # Note: the temporary table is used
+        #FIXME: One of fields is formated as it were number, but it's string. Causes ValueError
         self.db.query("INSERT INTO food_plan_temp VALUES (" +
             "{0:d}, '{1:s}', '{2:s}', {3:f}, '{4:s}', {5:d})".format(
             person_num, date, time, food.amount, food.msre_desc, food.food_num),

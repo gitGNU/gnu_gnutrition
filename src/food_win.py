@@ -52,11 +52,13 @@ class FoodWin:
         self.ui.clear_button.connect('clicked', self.on_clear_released)
         self.ui.compute_button.connect('clicked', self.on_compute_released)
         self.ui.pref_button.connect('clicked', self.on_goals_released)
-
+        
+        self.ui.amount_entry.connect('focus-out-event', self.on_compute_released)
+        self.ui.msre_combo.connect('changed', self.on_compute_released)
         self.ui.food_entry.connect('changed', self.on_food_entry_changed)
 
     def on_food_entry_changed(self, w, d=None):
-        self.nutr_comp_dlg.reset()
+        self.on_compute_released(None, None)
 
     def on_plan_activate(self, w, d=None):
         self.app.base_win.on_plan_button_released(None)
@@ -106,5 +108,5 @@ class FoodWin:
         msre_model = self.store.get_msre_desc_tuples(ingr.food_num)
         self.ui.msre_combo.set_rows(msre_model)
         self.ui.msre_combo.set_active(0)
+        self.ui.amount_entry.set_text('1.00')   #must be before self.ui.food_entry.set_text
         self.ui.food_entry.set_text(ingr.food_desc)
-        self.ui.amount_entry.set_text('1.00')
